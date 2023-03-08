@@ -1,0 +1,12 @@
+# Build output
+**/dist/*
+**/lib/*
+
+# Dependencies
+**/node_modules/*
+
+# Generated type-tests
+**/*.generated.ts
+
+# Test coverage reports
+**/coverage/*
