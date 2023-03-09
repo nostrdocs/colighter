@@ -1,3 +1,9 @@
+import {
+	createTinyliciousCreateNewRequest,
+	InsecureTinyliciousTokenProvider,
+	InsecureTinyliciousUrlResolver,
+} from "@fluidframework/tinylicious-driver";
+import { RouterliciousDocumentServiceFactory } from "@fluidframework/routerlicious-driver";
 import { StaticCodeLoader, NostrCollabLoader } from "./Nostrcollab";
 import {
 	renderHighlightCollection,
@@ -6,9 +12,16 @@ import {
 } from "./Highlight";
 
 async function start() {
+	const tokenProvider = new InsecureTinyliciousTokenProvider();
+
 	// Create a new Fluid loader, load the highlight collection
 	const loader = new NostrCollabLoader<IHighlightCollectionAppModel>(
-		new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
+		{
+			urlResolver: new InsecureTinyliciousUrlResolver(),
+			documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
+			codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
+			generateCreateNewRequest: createTinyliciousCreateNewRequest,
+		}
 	);
 
 	let id: string;

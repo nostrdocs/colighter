@@ -7,7 +7,7 @@ import {
 import { IContainerRuntimeOptions, ContainerRuntime } from "@fluidframework/container-runtime";
 import { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
 import { NamedFluidDataStoreRegistryEntries } from "@fluidframework/runtime-definitions";
-import { makeNostrCollabRequestHandler } from "./loader ";
+import { makeNostrCollabRequestHandler } from "./loader";
 
 /**
  * NostrContainerRuntimeFactory is an abstract container class for building NostrCollab container experiences.
