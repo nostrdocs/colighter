@@ -18,8 +18,6 @@ export class Highlight implements IHighlight {
 }
 
 export class HighlightCollection extends DataObject implements IHighlightCollection {
-	readonly assetHash: string;
-
 	protected async initializeFirstTime() {}
 
 	protected async hasInitialized() {

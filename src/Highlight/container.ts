@@ -13,12 +13,11 @@ export class HighlightContainerAppModel implements IHighlightCollectionAppModel 
 }
 
 export class HighlightContainerRuntimeFactory extends NostrContainerRuntimeFactory<HighlightContainerAppModel> {
-	public constructor(
-		/** Unique identifier of the web resource being highlighted
-		 * Possibly create this by hashing the URI of the web asset being highlighted
-		 */
-		private readonly assetHash: string,
-	) {
+	public constructor() /** Unique identifier of the web resource being highlighted
+	 * Possibly create this by hashing the URI of the web asset being highlighted
+	 */
+	// private readonly assetHash: string,
+	{
 		super(new Map([HighlightCollectionInstantiationFactory.registryEntry]));
 	}
 
@@ -38,7 +37,7 @@ export class HighlightContainerRuntimeFactory extends NostrContainerRuntimeFacto
 		const dataStore = await runtime.createDataStore(
 			HighlightCollectionInstantiationFactory.type,
 		);
-		dataStore.IHighlightCollection.setAssetHash(this.assetHash);
+
 		await dataStore.trySetAlias(highlightCollectionId);
 	}
 }
