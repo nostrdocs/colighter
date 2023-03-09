@@ -1,4 +1,11 @@
-import type { IContainer, IHostLoader } from "@fluidframework/container-definitions";
+import {
+	IContainer,
+	IHostLoader,
+	ICodeDetailsLoader,
+	IFluidCodeDetails,
+	IFluidModuleWithDetails,
+	IRuntimeFactory,
+} from "@fluidframework/container-definitions";
 import { ILoaderProps, Loader } from "@fluidframework/container-loader";
 import type { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
 import type { IRequest, IResponse } from "@fluidframework/core-interfaces";
@@ -63,7 +70,7 @@ export interface INostrCollabLoader<NostrCollab> {
 	loadExisting(id: string): Promise<NostrCollab>;
 }
 
-export class NostrLoader<NostrCollab> implements INostrCollabLoader<NostrCollab> {
+export class NostrCollabLoader<NostrCollab> implements INostrCollabLoader<NostrCollab> {
 	private readonly loader: IHostLoader;
 	private readonly generateCreateNewRequest: () => IRequest;
 
@@ -122,7 +129,17 @@ export class NostrLoader<NostrCollab> implements INostrCollabLoader<NostrCollab>
 				},
 			},
 		});
-		const model = await this.getCollabFromContainer(container);
-		return model;
+		return this.getCollabFromContainer(container);
+	}
+}
+
+export class StaticCodeLoader implements ICodeDetailsLoader {
+	public constructor(private readonly runtimeFactory: IRuntimeFactory) {}
+
+	public async load(details: IFluidCodeDetails): Promise<IFluidModuleWithDetails> {
+		return {
+			module: { fluidExport: this.runtimeFactory },
+			details,
+		};
 	}
 }

@@ -1,9 +1,6 @@
 import { IHighlight, IHighlightCollection } from "./interfaces";
 
-export const renderHighlightCollection = (
-	collection: IHighlightCollection,
-	div: HTMLDivElement,
-) => {
+export const renderHighlightCollection = (collection: IHighlightCollection, div: HTMLElement) => {
 	const highlightsDiv = document.createElement("div");
 
 	// Pre-render all the highlights
