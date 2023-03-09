@@ -11,7 +11,7 @@ import {
 	HighlightContainerRuntimeFactory,
 } from "./Highlight";
 
-async function start() {
+const loadCollabHighlighter = async (pane: HTMLElement, author: string) => {
 	const tokenProvider = new InsecureTinyliciousTokenProvider();
 
 	// Create a new Fluid loader, load the highlight collection
@@ -40,9 +40,18 @@ async function start() {
 	window.location.hash = id;
 	document.title = id;
 
-	// Render the highlight collection
-	const rootDiv = document.getElementById("root");
-	rootDiv && renderHighlightCollection(highlightsCollection.highlightCollection, rootDiv);
+	renderHighlightCollection(highlightsCollection.highlightCollection, pane, author);
+}
+
+
+async function start() {
+	// Load Collab highlighter on the LEFT pane
+	const left = document.getElementById("left-hltr");
+	left && loadCollabHighlighter(left, "left");
+
+	// Load Collab highlighter on the RIGHT pane
+	const right = document.getElementById("right-hltr");
+	right && loadCollabHighlighter(right, "right");
 }
 
 start().catch((error) => console.error(error));

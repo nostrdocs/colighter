@@ -1,10 +1,12 @@
 import { IHighlight, IHighlightCollection } from "./interfaces";
+import { Highlight } from "./model";
 
-export const renderHighlightCollection = (collection: IHighlightCollection, div: HTMLElement) => {
+export const renderHighlightCollection = (collection: IHighlightCollection, div: HTMLElement, author: string) => {
 	const highlightsDiv = document.createElement("div");
 
 	// Pre-render all the highlights
 	const renderHighlights = () => {
+		highlightsDiv.innerHTML = "";
 		collection.getHighlights().then((highlights) => {
 			highlights.forEach((highlight) => renderHighlight(highlight, highlightsDiv));
 		});
@@ -20,8 +22,17 @@ export const renderHighlightCollection = (collection: IHighlightCollection, div:
 	const inpt = document.createElement("input");
 	inpt.placeholder = "Highlight Text";
 
+	
 	const btn = document.createElement("button");
-	btn.textContent = "Add";
+	btn.textContent = "Create";
+	btn.addEventListener("click", async () => {
+		const text = inpt.value;
+
+		const highlight = await Highlight.create(author, text);	
+		await collection.addHighlight(highlight);
+
+		inpt.value = "";
+	});
 
 	addHighlightDiv.append(inpt, btn);
 
