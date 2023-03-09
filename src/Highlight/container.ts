@@ -1,7 +1,7 @@
 import { requestFluidObject } from "@fluidframework/runtime-utils";
 import { IContainer } from "@fluidframework/container-definitions";
 import { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
-import { NostrContainerRuntimeFactory } from "../Nostrdocs";
+import { NostrContainerRuntimeFactory } from "../Nostrcollab";
 import { IHighlightCollection, IHighlightCollectionAppModel } from "./interfaces";
 import { HighlightCollectionInstantiationFactory } from "./model";
 
