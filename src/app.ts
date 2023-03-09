@@ -47,7 +47,7 @@ const loadCollabHighlighter = async (pane: HTMLElement, author: string) => {
 async function start() {
 	// Load Collab highlighter on the LEFT pane
 	const left = document.getElementById("left-hltr");
-	left && loadCollabHighlighter(left, "left");
+	left && await loadCollabHighlighter(left, "left");
 
 	// Load Collab highlighter on the RIGHT pane
 	const right = document.getElementById("right-hltr");
