@@ -15,14 +15,12 @@ const loadCollabHighlighter = async (pane: HTMLElement, author: string) => {
 	const tokenProvider = new InsecureTinyliciousTokenProvider();
 
 	// Create a new Fluid loader, load the highlight collection
-	const loader = new NostrCollabLoader<IHighlightCollectionAppModel>(
-		{
-			urlResolver: new InsecureTinyliciousUrlResolver(),
-			documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
-			codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
-			generateCreateNewRequest: createTinyliciousCreateNewRequest,
-		}
-	);
+	const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
+		urlResolver: new InsecureTinyliciousUrlResolver(),
+		documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
+		codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
+		generateCreateNewRequest: createTinyliciousCreateNewRequest,
+	});
 
 	let id: string;
 	let highlightsCollection: IHighlightCollectionAppModel;
@@ -41,13 +39,12 @@ const loadCollabHighlighter = async (pane: HTMLElement, author: string) => {
 	document.title = id;
 
 	renderHighlightCollection(highlightsCollection.highlightCollection, pane, author);
-}
-
+};
 
 async function start() {
 	// Load Collab highlighter on the LEFT pane
 	const left = document.getElementById("left-hltr");
-	left && await loadCollabHighlighter(left, "left");
+	left && (await loadCollabHighlighter(left, "left"));
 
 	// Load Collab highlighter on the RIGHT pane
 	const right = document.getElementById("right-hltr");
