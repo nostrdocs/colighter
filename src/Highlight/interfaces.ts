@@ -14,6 +14,7 @@ export interface IHighlight {
 }
 
 export interface IHighlightCollection extends EventEmitter {
+	getHighlightBase(): Promise<string>;
 	addHighlight(highlight: IHighlight): Promise<IHighlight>;
 	removeHighlight(hashId: string): Promise<boolean>;
 	getHighlight(hashId: string): Promise<IHighlight | undefined>;
