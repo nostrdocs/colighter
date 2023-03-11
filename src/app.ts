@@ -3,8 +3,7 @@ import {
 	InsecureTinyliciousTokenProvider,
 	InsecureTinyliciousUrlResolver,
 } from "@fluidframework/tinylicious-driver";
-import { RouterliciousDocumentServiceFactory } from "@fluidframework/routerlicious-driver";
-import { StaticCodeLoader, NostrCollabLoader } from "./Nostrcollab";
+import { StaticCodeLoader, NostrCollabLoader, RouterliciousDocumentServiceFactory } from "./Nostrcollab";
 import {
 	renderHighlightCollection,
 	IHighlightCollectionAppModel,
