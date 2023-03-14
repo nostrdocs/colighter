@@ -1,10 +1,10 @@
-import { InsecureTinyliciousTokenProvider } from "@fluidframework/tinylicious-driver";
 import { RouterliciousDocumentServiceFactory } from "@fluidframework/routerlicious-driver";
 import {
 	StaticCodeLoader,
 	NostrCollabLoader,
 	createNostrCreateNewRequest,
 	NostrRelayUrlResolver,
+	NostrRelayTokenProvider,
 } from "./Nostrcollab";
 import {
 	renderHighlightCollection,
@@ -13,7 +13,7 @@ import {
 } from "./Highlight";
 
 const loadCollabHighlighter = async (pane: HTMLElement, author: string) => {
-	const tokenProvider = new InsecureTinyliciousTokenProvider();
+	const tokenProvider = new NostrRelayTokenProvider();
 
 	// Create a new Fluid loader, load the highlight collection
 	const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
