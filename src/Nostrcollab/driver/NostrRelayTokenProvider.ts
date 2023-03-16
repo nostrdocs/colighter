@@ -1,41 +1,43 @@
 import { ScopeType, ITokenClaims } from "@fluidframework/protocol-definitions";
 import { ITokenProvider, ITokenResponse } from "@fluidframework/routerlicious-driver";
-import { getRandomName } from "@fluidframework/server-services-client";
 import { KJUR as jsrsasign } from "jsrsasign";
-import { v4 as uuid } from "uuid";
+import { Relay } from "nostr-tools";
+import { KIND_COLLAB_TOKEN } from "./constants";
 
+/** Produces authentication tokens for accessing collab docs served by a relay */
 export class NostrRelayTokenProvider implements ITokenProvider {
+	public constructor(
+		// The host should provide a pre-connected Nostr collab relay
+		private readonly collabRelay: Relay,
+		// The host should provide a user identity. Possibbly sourced from other relays?
+		private readonly nostrUser: { pubkey: string; name: string },
+	) {}
+
 	public async fetchOrdererToken(tenantId: string, documentId?: string): Promise<ITokenResponse> {
 		return {
 			fromCache: true,
-			jwt: this.getSignedToken(tenantId, documentId),
+			jwt: await this.getSignedToken(tenantId, documentId),
 		};
 	}
 
 	public async fetchStorageToken(tenantId: string, documentId: string): Promise<ITokenResponse> {
 		return {
 			fromCache: true,
-			jwt: this.getSignedToken(tenantId, documentId),
+			jwt: await this.getSignedToken(tenantId, documentId),
 		};
 	}
 
-	private getSignedToken(
+	private async getSignedToken(
 		tenantId: string,
 		documentId: string | undefined,
-		lifetime: number = 60 * 60,
 		ver: string = "1.0",
-	): string {
-		// Current time in seconds
-		const now = Math.round(new Date().getTime() / 1000);
-		const user = { id: uuid(), name: getRandomName() };
+	): Promise<string> {
+		const collab = await this.fetchNostrCollabToken(tenantId, documentId);
+		const user = { id: this.nostrUser.pubkey, name: this.nostrUser.name };
 
 		const claims: ITokenClaims = {
-			documentId: documentId ?? "",
-			scopes: [ScopeType.DocRead, ScopeType.DocWrite, ScopeType.SummaryWrite],
-			tenantId,
+			...collab,
 			user,
-			iat: now,
-			exp: now + lifetime,
 			ver,
 		};
 
@@ -47,4 +49,40 @@ export class NostrRelayTokenProvider implements ITokenProvider {
 			utf8Key,
 		);
 	}
+
+	private async fetchNostrCollabToken(
+		tenantId: string,
+		documentId?: string,
+	): Promise<NostrCollabToken> {
+		const tenantFilter = tenantId ? [tenantId] : [];
+		const docFilter = documentId ? [documentId] : [];
+		let event = await this.collabRelay.get({
+			"kinds": [KIND_COLLAB_TOKEN],
+			"#tenant": tenantFilter,
+			"#doc": docFilter,
+		});
+
+		if (event) {
+			try {
+				let collab: NostrCollabToken = {
+					...JSON.parse(event.content),
+					created_at: event.created_at,
+				};
+				return collab;
+			} catch (err) {
+				return Promise.reject(err);
+			}
+		}
+
+		return Promise.reject("No collab token found");
+	}
+}
+
+export interface NostrCollabToken {
+	tenantId: string;
+	documentId: string;
+	token: string;
+	scopes: ScopeType[];
+	iat: number;
+	exp: number;
 }
