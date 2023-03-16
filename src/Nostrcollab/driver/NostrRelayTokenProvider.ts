@@ -2,6 +2,7 @@ import { ScopeType, ITokenClaims } from "@fluidframework/protocol-definitions";
 import { ITokenProvider, ITokenResponse } from "@fluidframework/routerlicious-driver";
 import { KJUR as jsrsasign } from "jsrsasign";
 import { Relay } from "nostr-tools";
+import { NostrUser } from "../../Nostr";
 import { KIND_COLLAB_TOKEN } from "./constants";
 
 /** Produces authentication tokens for accessing collab docs served by a relay */
@@ -10,8 +11,8 @@ export class NostrRelayTokenProvider implements ITokenProvider {
 		// The host should provide a pre-connected Nostr collab relay
 		private readonly collabRelay: Relay,
 		// The host should provide a user identity. Possibbly sourced from other relays?
-		private readonly nostrUser: { pubkey: string; name: string },
-	) {}
+		private readonly nostrUser: NostrUser,
+	) { }
 
 	public async fetchOrdererToken(tenantId: string, documentId?: string): Promise<ITokenResponse> {
 		return {
@@ -33,7 +34,7 @@ export class NostrRelayTokenProvider implements ITokenProvider {
 		ver: string = "1.0",
 	): Promise<string> {
 		const collab = await this.fetchNostrCollabToken(tenantId, documentId);
-		const user = { id: this.nostrUser.pubkey, name: this.nostrUser.name };
+		const user = { id: this.nostrUser.pubkey, name: this.nostrUser.meta["name"] || "" };
 
 		const claims: ITokenClaims = {
 			...collab,

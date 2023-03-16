@@ -7,23 +7,26 @@ import {
   NostrRelayUrlResolver,
   NostrRelayTokenProvider,
 } from "../../Nostrcollab";
-import { MockCollabRelay } from "../../Nostr";
+import { MockCollabRelay, NostrUser } from "../../Nostr";
 import {
   renderHighlightCollection,
   IHighlightCollectionAppModel,
   HighlightContainerRuntimeFactory,
 } from "../index";
 
-interface Props {
-  author: string;
+
+const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1);
+const mockNostrUser: NostrUser = {
+  pubkey: "0x1234",
+  meta: {}
 }
 
-function App({ author }: Props) {
-  const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1);
+function App() {
+  const [user] = React.useState<NostrUser>(mockNostrUser)
 
   useEffect(() => {
     const loadCollabHighlighter = async (pane: HTMLElement) => {
-      const tokenProvider = new NostrRelayTokenProvider(collabRelay );
+      const tokenProvider = new NostrRelayTokenProvider(collabRelay, user );
 
       // Create a new Fluid loader, load the highlight collection
       const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
@@ -49,7 +52,7 @@ function App({ author }: Props) {
       window.location.hash = id;
       document.title = id;
 
-      renderHighlightCollection(highlightsCollection.highlightCollection, pane, author);
+      renderHighlightCollection(highlightsCollection.highlightCollection, pane, user.pubkey);
     };
 
     // Load Collab highlighter on the LEFT pane
@@ -59,7 +62,7 @@ function App({ author }: Props) {
     // Load Collab highlighter on the RIGHT pane
     const right = document.getElementById("right-hltr");
     right && loadCollabHighlighter(right);
-  }, [author]);
+  }, [user]);
 
   return (
     <div>
