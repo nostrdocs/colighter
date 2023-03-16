@@ -5,3 +5,4 @@ export {
 	NostrRelayTokenProvider,
 	createNostrCreateNewRequest,
 } from "./driver";
+export { MockCollabRelay } from "./relay";

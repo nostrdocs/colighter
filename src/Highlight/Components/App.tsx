@@ -6,8 +6,9 @@ import {
   createNostrCreateNewRequest,
   NostrRelayUrlResolver,
   NostrRelayTokenProvider,
+  MockCollabRelay,
 } from "../../Nostrcollab";
-import { MockCollabRelay, NostrUser } from "../../Nostr";
+import { NostrUser } from "../../Nostr";
 import {
   renderHighlightCollection,
   IHighlightCollectionAppModel,
