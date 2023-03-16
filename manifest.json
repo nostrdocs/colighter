@@ -1,0 +1,10 @@
+{
+    "manifest_version": 3,
+    "name": "Coolighter",
+    "description": "An amazing collaborative highlighter extension on Nostr",
+    "version": "4.0.4",
+    "author": "Nostrodocs Devleopers",
+    "action": {
+        "default_popup": "dist/index.html"
+    }
+}
