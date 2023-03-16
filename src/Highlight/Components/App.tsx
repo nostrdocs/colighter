@@ -7,6 +7,7 @@ import {
   NostrRelayUrlResolver,
   NostrRelayTokenProvider,
 } from "../../Nostrcollab";
+import { MockCollabRelay } from "../../Nostr";
 import {
   renderHighlightCollection,
   IHighlightCollectionAppModel,
@@ -18,9 +19,11 @@ interface Props {
 }
 
 function App({ author }: Props) {
+  const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1);
+
   useEffect(() => {
     const loadCollabHighlighter = async (pane: HTMLElement) => {
-      const tokenProvider = new NostrRelayTokenProvider();
+      const tokenProvider = new NostrRelayTokenProvider(collabRelay );
 
       // Create a new Fluid loader, load the highlight collection
       const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
