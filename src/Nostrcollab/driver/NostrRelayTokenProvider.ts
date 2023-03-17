@@ -57,10 +57,11 @@ export class NostrRelayTokenProvider implements ITokenProvider {
 	): Promise<NostrCollabToken> {
 		const tenantFilter = tenantId ? [tenantId] : [];
 		const docFilter = documentId ? [documentId] : [];
+
 		let event = await this.collabRelay.get({
 			"kinds": [KIND_COLLAB_TOKEN],
 			"#tenant": tenantFilter,
-			"#doc": docFilter,
+			"#document": docFilter,
 		});
 
 		if (event) {
@@ -82,7 +83,6 @@ export class NostrRelayTokenProvider implements ITokenProvider {
 export interface NostrCollabToken {
 	tenantId: string;
 	documentId: string;
-	token: string;
 	scopes: ScopeType[];
 	iat: number;
 	exp: number;
