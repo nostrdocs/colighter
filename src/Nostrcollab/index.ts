@@ -1,3 +1,8 @@
 export { NostrContainerRuntimeFactory } from "./container";
 export { NostrCollabLoader, StaticCodeLoader } from "./loader";
-export { NostrRelayUrlResolver, NostrRelayTokenProvider, createNostrCreateNewRequest } from "./driver";
+export {
+	NostrRelayUrlResolver,
+	NostrRelayTokenProvider,
+	createNostrCreateNewRequest,
+} from "./driver";
+export { MockCollabRelay } from "./relay";

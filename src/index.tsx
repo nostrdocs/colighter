@@ -4,4 +4,4 @@ import App from "./Highlight/Components/App";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
-root.render(<App  author="John Doe"/>);
+root.render(<App/>);
