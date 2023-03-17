@@ -15,7 +15,6 @@ import {
   HighlightContainerRuntimeFactory,
 } from "../index";
 
-
 const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1);
 const mockNostrUser: NostrUser = {
   pubkey: "0x1234",
@@ -31,7 +30,7 @@ function App() {
 
       // Create a new Fluid loader, load the highlight collection
       const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
-        urlResolver: new NostrRelayUrlResolver(),
+        urlResolver: new NostrRelayUrlResolver(collabRelay),
         documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
         codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
         generateCreateNewRequest: createNostrCreateNewRequest,
