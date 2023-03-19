@@ -10,3 +10,6 @@
 
 # Test coverage reports
 **/coverage/*
+
+# Config files
+.env*
