@@ -14,6 +14,7 @@ import {
   IHighlightCollectionAppModel,
   HighlightContainerRuntimeFactory,
 } from "../index";
+import './App.css'
 
 const collabRelayUrl = process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
 const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1, collabRelayUrl);
