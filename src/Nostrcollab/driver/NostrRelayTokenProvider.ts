@@ -2,7 +2,7 @@ import { ScopeType, ITokenClaims } from "@fluidframework/protocol-definitions";
 import { ITokenProvider, ITokenResponse } from "@fluidframework/routerlicious-driver";
 import { KJUR as jsrsasign } from "jsrsasign";
 import { Relay } from "nostr-tools";
-import { NostrUser } from "../../Nostr";
+import { NostrUser } from "../../Common/Types";
 import { KIND_COLLAB_TOKEN } from "./constants";
 
 /** Produces authentication tokens for accessing collab docs served by a relay */

@@ -1,6 +1,6 @@
 {
 	"exclude": ["dist", "node_modules"],
-	"include": ["src/**/*"],
+	"include": ["src/**/*", "src/background.js", "src/contentScript.js"],
 	"compilerOptions": {
 		"target": "es2017",
 		"declaration": true,
