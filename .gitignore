@@ -13,3 +13,6 @@
 
 # Config files
 .env*
+
+# Local history
+.history
