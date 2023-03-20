@@ -8,7 +8,7 @@ import {
   NostrRelayTokenProvider,
   MockCollabRelay,
 } from "../../Nostrcollab";
-import { NostrUser } from "../../Nostr";
+import { NostrUser } from "../../Common/Types";
 import {
   renderHighlightCollection,
   IHighlightCollectionAppModel,
