@@ -1,104 +1,101 @@
-// // import { initialize } from './ContentScripts/index.js';
+let color: string = 'FAA99D';
+const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
 
-// // initialize();
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  switch (request.action) {
+    case 'TOGGLE_HIGHLIGHT':
+      if (request.data.highlightStatus) {
+        document.addEventListener('mouseup', highlightText);
+        document.addEventListener('keyup', highlightText);
+      } else {
+        document.removeEventListener('mouseup', highlightText);
+        document.removeEventListener('keyup', highlightText);
+      }
+      break;
+    case 'SET_COLOR':
+      color = request.data.color;
+      break;
+    case 'HIGHLIGHT':
+      highlightText();
+      break;
+    case 'REMOVE_HIGHLIGHT':
+      removeHighlight();
+      break;
+    default:
+      sendResponse({ data: 'ERR' });
+  }
+});
 
-// let color = 'FAA99D';
-// const HIGHLIGHT_KEY = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
+/* Get selected text */
+function getSelectedText(): string {
+  let text: string = '';
+  if (typeof window.getSelection !== 'undefined') {
+    text = window.getSelection()?.toString() ?? '';
+  } else if (
+    typeof (document as any).selection !== 'undefined' &&
+    (document as any).selection.type === 'Text'
+  ) {
+    text = (document as any).selection.createRange().text;
+  }
+  return text;
+}
 
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   switch (request.action) {
-//     case 'TOGGLE_HIGHLIGHT':
-//       if (request.data.highlightStatus) {
-//         document.addEventListener('mouseup', highlightText);
-//         document.addEventListener('keyup', highlightText);
-//       } else {
-//         document.removeEventListener('mouseup', highlightText);
-//         document.removeEventListener('keyup', highlightText);
-//       }
-//       break;
-//     case 'SET_COLOR':
-//       color = request.data.color;
-//       break;
-//     case 'HIGHLIGHT':
-//       highlightText();
-//       break;
-//     case 'REMOVE_HIGHLIGHT':
-//       removeHighlight();
-//       break;
-//     default:
-//       sendResponse({ data: 'ERR' });
-//   }
-// });
+/* Highlight given selection */
+function highlightText(): void {
+  let parent = getHighlightedMark();
 
-// /* Get selected text */
-// function getSelectedText(): string {
-//   let text = '';
-//   if (typeof window.getSelection !== 'undefined') {
-//     text = window.getSelection()?.toString() ?? '';
-//   } else if (
-//     typeof document.selection !== 'undefined' &&
-//     document.selection.type === 'Text'
-//   ) {
-//     text = document.selection.createRange().text;
-//   }
-//   return text;
-// }
+  if (parent?.className !== HIGHLIGHT_KEY) {
+    let selectedText: string = getSelectedText();
+    if (selectedText) {
+      highlight();
+    }
+  }
+}
 
-// /* Highlight given selection */
-// function highlightText() {
-//   let parent = getHighlightedMark();
+/* Insert mark around selected text */
+function highlight(): void {
+  let mark: HTMLElement = document.createElement('mark');
+  mark.setAttribute('style', `background-color: #${color}`);
+  mark.className = HIGHLIGHT_KEY;
+  let sel: Selection | null = window.getSelection();
+  if (sel?.rangeCount) {
+    let range: Range = sel.getRangeAt(0).cloneRange();
+    range.surroundContents(mark);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+}
 
-//   if (parent?.className !== HIGHLIGHT_KEY) {
-//     let selectedText = getSelectedText();
-//     if (selectedText) {
-//       highlight();
-//     }
-//   }
-// }
+/* Remove highlight for given selected text */
+function removeHighlight(): void {
+  let highlightedSelection = getHighlightedMark();
 
-// /* Insert mark around selected text */
-// function highlight() {
-//   let mark = document.createElement('mark');
-//   mark.setAttribute('style', `background-color: #${color}`);
-//   mark.className = HIGHLIGHT_KEY;
-//   let sel = window.getSelection();
-//   if (sel?.rangeCount) {
-//     let range = sel.getRangeAt(0).cloneRange();
-//     range.surroundContents(mark);
-//     sel.removeAllRanges();
-//     sel.addRange(range);
-//   }
-// }
+  if (highlightedSelection?.className === HIGHLIGHT_KEY) {
+    let parent: Node | null = highlightedSelection.parentNode;
+    let text: Text | null = document.createTextNode(highlightedSelection.innerHTML);
 
-// /* Remove highlight for given selected text */
-// function removeHighlight() {
-//   let highlightedSelection = getHighlightedMark();
+    parent?.insertBefore(text, highlightedSelection);
+    highlightedSelection.remove();
+  }
+}
 
-//   if (highlightedSelection?.className === HIGHLIGHT_KEY) {
-//     let parent = highlightedSelection.parentNode;
-//     let text = document.createTextNode(highlightedSelection.innerHTML);
+/* Get parent element from selected text
+ * @returns parent element of selected text
+ */
+function getHighlightedMark(): HTMLElement | null {
+  let parent: HTMLElement | null = null;
+  let sel: Selection | null;
+  if (window.getSelection) {
+    sel = window.getSelection();
+    if (sel?.rangeCount) {
+      parent = sel.getRangeAt(0).commonAncestorContainer as HTMLElement;
+      if (parent.nodeType !== 1) {
+        parent = parent.parentNode as HTMLElement;
+      }
+    }
+  } else if ((sel = (document as any).selection) && sel.type !== 'Control') {
+    parent = (sel as any).createRange().parentElement() as HTMLElement;
+  }
+  return parent;
+}
 
-//     parent?.insertBefore(text, highlightedSelection);
-//     highlightedSelection.remove();
-//   }
-// }
-
-// /* Get parent element from selected text
-//  * @returns parent element of selected text
-//  */
-// function getHighlightedMark(): HTMLElement | null {
-//   let parent: HTMLElement | null = null;
-//   let sel: Selection | null;
-//   if (window.getSelection) {
-//     sel = window.getSelection();
-//     if (sel?.rangeCount) {
-//       parent = sel.getRangeAt(0).commonAncestorContainer as HTMLElement;
-//       if (parent.nodeType !== 1) {
-//         parent = parent.parentNode as HTMLElement;
-//       }
-//     }
-//   } else if ((sel = document.selection) && sel.type !== 'Control') {
-//     parent = sel.createRange().parentElement() as HTMLElement;
-//   }
-//   return parent;
-// }
