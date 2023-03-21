@@ -1,31 +1,58 @@
-import React, { useEffect, useState } from "react";
-import { ColorDescription } from "../../Nostr";
-import { setupHighlighting } from "../Services/Setup/highlightServiceSetup";
-import { setupColorUsage } from "../Services/Setup/colorServiceSetup";
-import HighlightedText from "./Components/Highlight";
+import React, { useEffect, useRef, useState } from "react";
+import { ColorDescription, NostrUser } from "../../Nostr";
+import { IHighlightCollection } from "../types";
+import { loadCollabHighlighter, setupColorUsage, setupHighlighting } from "../utils";
+import { renderHighlightCollection } from "../view";
+import { HighlightedText } from "./Components";
+
+const mockNostrUser: NostrUser = {
+	pubkey: "0x1234",
+	meta: {},
+};
+
+const colorOptions: ColorDescription[] = [
+	{ name: "red", val: "FAA99D" },
+	{ name: "yellow", val: "FDDF7E" },
+	{ name: "green", val: "CCE29C" },
+	{ name: "blue", val: "67EBFA" },
+	{ name: "purple", val: "CE97FB" },
+];
 
 function Extension() {
+	const [user] = React.useState<NostrUser>(mockNostrUser);
+	const [showHighlights, toggleShowHighlights] = React.useState<boolean>(false);
 	const [selectedColor, setSelectedColor] = useState("");
-	const colorOptions: ColorDescription[] = [
-		{ name: "red", val: "FAA99D" },
-		{ name: "yellow", val: "FDDF7E" },
-		{ name: "green", val: "CCE29C" },
-		{ name: "blue", val: "67EBFA" },
-		{ name: "purple", val: "CE97FB" },
-	];
+
+	const [collab, setCollab] = useState<IHighlightCollection | undefined>(undefined);
+	const collabViewRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		setupHighlighting();
 		setupColorUsage(colorOptions);
 	}, []);
 
+	useEffect(() => {
+		loadCollabHighlighter(user)
+			.then((collab) => {
+				setCollab(collab);
+			})
+			.catch((e) => {
+				console.log("Failed to load collab", e);
+			});
+	}, [user]);
+
+	useEffect(() => {
+		if (collabViewRef.current && collab) {
+			renderHighlightCollection(collab, collabViewRef.current, user.pubkey);
+		}
+	}, [collabViewRef, collab, user]);
+
 	const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setSelectedColor(event.target.value);
 	};
 
-	const handleToggleHighlight = () => {
-		const toggleHighlightBtn = document.getElementById("toggle-highlight") as HTMLInputElement;
-		toggleHighlightBtn.checked = !toggleHighlightBtn.checked;
+	const handleToggleHighlight = (event: React.ChangeEvent<HTMLInputElement>) => {
+		toggleShowHighlights(event.target.checked);
 	};
 
 	return (
@@ -46,17 +73,22 @@ function Extension() {
 					</label>
 				))}
 			</div>
-
 			<div className="row">
 				<p>
 					<strong>Toggle Highlight</strong>
 				</p>
 				<label className="switch">
-					<input id="toggle-highlight" type="checkbox" onChange={handleToggleHighlight} />
+					<input
+						id="toggle-highlight"
+						type="checkbox"
+						checked={showHighlights}
+						onChange={handleToggleHighlight}
+					/>
 					<span className="slider round"></span>
 				</label>
 			</div>
 			<HighlightedText text={""} color={""} />
+			<div ref={collabViewRef}></div>
 		</div>
 	);
 }
