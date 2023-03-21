@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { ColorDescription, NostrUser, StorageKey } from "../../Nostr";
+import { NostrUser } from "../../Nostr";
+import { ColorDescription, StorageKey } from "../types";
 import {
 	useCollabHighlighter,
 	useColorSelectedColor,
