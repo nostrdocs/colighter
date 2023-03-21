@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { ColorDescription } from "../../Nostr";
 import { setupHighlighting } from "../Services/Setup/highlightServiceSetup";
 import { setupColorUsage } from "../Services/Setup/colorServiceSetup";
-import { ColorDescription } from "../../Common/Types";
 import HighlightedText from "./Components/Highlight";
 
 function Extension() {

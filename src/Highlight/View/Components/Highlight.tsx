@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import browser from "webextension-polyfill";
-import { MessageData } from "../../../Common/Types";
+import { MessageData } from "../../../Nostr";
 import { sendMessage } from "../../Services/Message/sendMessageService";
 
 interface Props {
