@@ -8,8 +8,15 @@ import {
 	NostrRelayTokenProvider,
 	MockCollabRelay,
 } from "../Nostrcollab";
-import { ColorDescription, MessageAction, MessageData, NostrUser, StorageKey } from "../Nostr";
-import { IHighlightCollection, IHighlightCollectionAppModel } from "./types";
+import { NostrUser } from "../Nostr";
+import {
+	ColorDescription,
+	MessageAction,
+	MessageData,
+	IHighlightCollection,
+	IHighlightCollectionAppModel,
+	StorageKey,
+} from "./types";
 import { HighlightContainerRuntimeFactory } from "./container";
 import { useEffect, useState } from "react";
 
