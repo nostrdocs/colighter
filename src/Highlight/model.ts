@@ -1,5 +1,5 @@
 import { DataObject, DataObjectFactory } from "@fluidframework/aqueduct";
-import { IHighlight, IHighlightCollection } from "./interfaces";
+import { IHighlight, IHighlightCollection } from "./types";
 
 const HIGHLIGHT_BASE_ASSET_KEY = "HIGHLIGHT_BASE_ASSET_KEY";
 const HIGHLIGHT_BASE_ASSET_DEFAULT_VALUE = "HIGHLIGHT_BASE_ASSET_DEFAULT_VALUE";

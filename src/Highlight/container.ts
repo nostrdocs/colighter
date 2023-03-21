@@ -2,7 +2,7 @@ import { requestFluidObject } from "@fluidframework/runtime-utils";
 import { IContainer } from "@fluidframework/container-definitions";
 import { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
 import { NostrContainerRuntimeFactory } from "../Nostrcollab";
-import { IHighlightCollection, IHighlightCollectionAppModel } from "./interfaces";
+import { IHighlightCollection, IHighlightCollectionAppModel } from "./types";
 import { HighlightCollectionInstantiationFactory } from "./model";
 
 const highlightCollectionId = "highlightCollection";

@@ -1,4 +1,4 @@
-import { IHighlight, IHighlightCollection } from "./interfaces";
+import { IHighlight, IHighlightCollection } from "./types";
 import { Highlight } from "./model";
 
 export const renderHighlightCollection = (
