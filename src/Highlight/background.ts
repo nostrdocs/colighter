@@ -1,8 +1,13 @@
-// import { initialize } from './Background/index.js';
+//test
+chrome.runtime.sendMessage('I am loading content script', (response) => {
+  console.log(response);
+  console.log('I am content script')
 
-// // NOTE: This file must be in the top-level directory of the extension according to the docs
+})
 
-// initialize();
+window.onload = (event: any) => {
+  console.log('page is fully loaded');
+};
 
 chrome.contextMenus.create({
   id: 'highlight-selection',
@@ -19,6 +24,7 @@ chrome.contextMenus.create({
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
   if (info.menuItemId === 'highlight-selection') {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+     let t = tabs[0]
       chrome.tabs.sendMessage(tabs[0].id, { action: 'HIGHLIGHT' });
     });
   } else if (info.menuItemId === 'remove-selection') {
