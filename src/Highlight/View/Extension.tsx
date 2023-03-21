@@ -1,4 +1,12 @@
+import "@fontsource/inter/400.css";
+import "@fontsource/oxygen-mono/400.css";
+import "@fontsource/quicksand/400.css";
+import "@fontsource/quicksand/500.css";
+import "@fontsource/quicksand/600.css";
+import "./Styles/app.preserved.css";
+
 import React, { useEffect, useRef } from "react";
+import { ThemeProvider } from "styled-components";
 import { NostrUser } from "../../Nostr";
 import { ColorDescription, StorageKey } from "../types";
 import {
@@ -9,6 +17,7 @@ import {
 } from "../utils";
 import { renderHighlightCollection } from "../view";
 import { HighlightedText } from "./Components";
+import { theme } from "./Theme";
 
 const mockNostrUser: NostrUser = {
 	pubkey: "0x1234",
@@ -45,42 +54,44 @@ function Extension() {
 	};
 
 	return (
-		<div>
-			<h2>Colighter</h2>
-			<p>Select Highlighter Color</p>
-			<div id="color-row">
-				{colorOptions.map((color) => (
-					<label className="color-label" key={color.name}>
+		<ThemeProvider theme={theme}>
+			<div>
+				<h2>Colighter</h2>
+				<p>Select Highlighter Color</p>
+				<div id="color-row">
+					{colorOptions.map((color) => (
+						<label className="color-label" key={color.name}>
+							<input
+								type="radio"
+								name="color"
+								value={color.val}
+								checked={selectedColor.val === color.val}
+								onChange={() => {
+									updateSelectedColor(color);
+								}}
+							/>
+							<div style={{ background: `#${color.val}` }}></div>
+						</label>
+					))}
+				</div>
+				<div className="row">
+					<p>
+						<strong>Toggle Highlight</strong>
+					</p>
+					<label className="switch">
 						<input
-							type="radio"
-							name="color"
-							value={color.val}
-							checked={selectedColor.val === color.val}
-							onChange={() => {
-								updateSelectedColor(color);
-							}}
+							id="toggle-highlight"
+							type="checkbox"
+							checked={showHighlights}
+							onChange={handleToggleHighlight}
 						/>
-						<div style={{ background: `#${color.val}` }}></div>
+						<span className="slider round"></span>
 					</label>
-				))}
+				</div>
+				<HighlightedText text={""} color={""} />
+				<div ref={collabViewRef}></div>
 			</div>
-			<div className="row">
-				<p>
-					<strong>Toggle Highlight</strong>
-				</p>
-				<label className="switch">
-					<input
-						id="toggle-highlight"
-						type="checkbox"
-						checked={showHighlights}
-						onChange={handleToggleHighlight}
-					/>
-					<span className="slider round"></span>
-				</label>
-			</div>
-			<HighlightedText text={""} color={""} />
-			<div ref={collabViewRef}></div>
-		</div>
+		</ThemeProvider>
 	);
 }
 
