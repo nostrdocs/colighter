@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { setupHighlighting } from "../Services/Setup/highlightServiceSetup";
 import { setupColorUsage } from "../Services/Setup/colorServiceSetup";
-import { ColorDescription } from "../Common/Types";
-import HighlightedText from "./Highlight"
+import { ColorDescription } from "../../Common/Types";
+import HighlightedText from "./Components/Highlight";
 
-function App() {
+function Extension() {
 	const [selectedColor, setSelectedColor] = useState("");
 	const colorOptions: ColorDescription[] = [
 		{ name: "red", val: "FAA99D" },
@@ -29,8 +29,8 @@ function App() {
 	};
 
 	return (
-		<>
-			<h2>Colighter</h2>
+		<div>
+				<h2>Colighter</h2>
 			<p>Select Highlighter Color</p>
 			<div id="color-row">
 				{colorOptions.map((color) => (
@@ -56,9 +56,9 @@ function App() {
 					<span className="slider round"></span>
 				</label>
 			</div>
-      <HighlightedText text={""} color={""} />
-		</>
+			<HighlightedText text={""} color={""} />
+		</div>
 	);
 }
 
-export default App;
+export default Extension;

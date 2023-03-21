@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import browser from 'webextension-polyfill';
-import { MessageData } from '../Common/Types';
-import { sendMessage } from '../Services/Message/sendMessageService';
+import { MessageData } from '../../../Common/Types';
+import { sendMessage } from '../../Services/Message/sendMessageService';
 
 interface Props {
   text: string;
@@ -34,7 +34,7 @@ const HighlightedText: React.FC<Props> = ({ text, color }) => {
     return () => {
       sendMessage({
           action: 'REMOVE_HIGHLIGHTS',
-          data: undefined
+          data: ""
       });
     };
   }, [text, color, highlighted]);
