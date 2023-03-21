@@ -105,7 +105,9 @@ export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
 	return [selectedColor, updateSelectedColor] as const;
 };
 
-export const loadCollabHighlighter = async (user: NostrUser): Promise<IHighlightCollection> => {
+export const useCollabHighlighter = (user: NostrUser) => {
+	const [highlightCollection, setHighlightCollection] = useState<IHighlightCollection>();
+
 	const collabRelayUrl = process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
 	const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1, collabRelayUrl);
 
@@ -119,21 +121,25 @@ export const loadCollabHighlighter = async (user: NostrUser): Promise<IHighlight
 		generateCreateNewRequest: createNostrCreateNewRequest,
 	});
 
-	let id: string;
-	let highlightsCollection: IHighlightCollectionAppModel;
+	readLocalStorage<string>(StorageKey.COLLAB_ID)
+		.then(async (collabId) => {
+			if (collabId) {
+				const highlightsCollection: IHighlightCollectionAppModel =
+					await loader.loadExisting(collabId);
+				setHighlightCollection(highlightsCollection.highlightCollection);
+			} else {
+				const createResponse = await loader.createDetached("0.1.0");
+				const highlightsCollection: IHighlightCollectionAppModel = createResponse.collab;
+				collabId = await createResponse.attach();
+				setHighlightCollection(highlightsCollection.highlightCollection);
 
-	if (window.location.hash.length === 0) {
-		const createResponse = await loader.createDetached("0.1.0");
-		highlightsCollection = createResponse.collab;
-		id = await createResponse.attach();
-	} else {
-		id = window.location.hash.substring(1);
-		highlightsCollection = await loader.loadExisting(id);
-	}
+				// Update storage with known collab id
+				writeLocalStorage<string>(StorageKey.COLLAB_ID, collabId);
+			}
+		})
+		.catch((e) => {
+			console.log("Failed to read local storage", e);
+		});
 
-	// Update the browser url and window title with the container ID
-	window.location.hash = id;
-	document.title = id;
-
-	return highlightsCollection.highlightCollection;
+	return [highlightCollection];
 };

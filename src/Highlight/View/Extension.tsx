@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { ColorDescription, NostrUser, StorageKey } from "../../Nostr";
-import { IHighlightCollection } from "../types";
 import {
-	loadCollabHighlighter,
+	useCollabHighlighter,
 	useColorSelectedColor,
 	writeLocalStorage,
 	useShowHighlights,
@@ -28,18 +27,8 @@ function Extension() {
 	const [showHighlights, toggleShowHighlights] = useShowHighlights();
 	const [selectedColor, updateSelectedColor] = useColorSelectedColor(colorOptions);
 
-	const [collab, setCollab] = useState<IHighlightCollection | undefined>(undefined);
+	const [collab] = useCollabHighlighter(user);
 	const collabViewRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		loadCollabHighlighter(user)
-			.then((collab) => {
-				setCollab(collab);
-			})
-			.catch((e) => {
-				console.log("Failed to load collab", e);
-			});
-	}, [user]);
 
 	useEffect(() => {
 		if (collabViewRef.current && collab) {
