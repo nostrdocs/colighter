@@ -10,7 +10,7 @@ module.exports = (env) => {
 		{
 			entry: {
 				app: "./src/Highlight/View/index.tsx",
-				background: ".src/Highlight/background.ts",
+				background: "./src/Highlight/background.ts",
 				contentScript: "./src/Highlight/contentScript.ts",
 			},
 			resolve: {
