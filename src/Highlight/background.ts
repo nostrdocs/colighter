@@ -16,18 +16,14 @@ const background = () => {
 		contexts: ["selection"],
 	});
 
-	chrome.contextMenus.onClicked.addListener(function (info, tab) {
-		const currentTab = tab?.id;
-
-		if (!currentTab) return;
-
+	chrome.contextMenus.onClicked.addListener((info, tab) =>{
 		if (info.menuItemId === "highlight-selection") {
-			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-				chrome.tabs.sendMessage(currentTab, { action: "HIGHLIGHT" });
+			chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) =>{
+				chrome.tabs.sendMessage(tabs[0].id!, { action: "HIGHLIGHT" });
 			});
 		} else if (info.menuItemId === "remove-selection") {
-			chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-				chrome.tabs.sendMessage(currentTab, { action: "REMOVE_HIGHLIGHT" });
+			chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
+				chrome.tabs.sendMessage(tabs[0].id!, { action: "REMOVE_HIGHLIGHT" });
 			});
 		}
 	});
