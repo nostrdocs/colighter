@@ -10,12 +10,12 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["src/contentScript.js"],
+			"js": ["dist/contentScript.bundle.js"],
 			"all_frames": true
 		}
 	],
 	"background": {
-		"service_worker": "src/background.js"
+		"service_worker": "dist/background.bundle.js"
 	},
 	"commands": {
 		"execute-highlight": {
