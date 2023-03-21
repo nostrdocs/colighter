@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import browser from "webextension-polyfill";
-import { MessageData } from "../../../Nostr";
-import { sendMessage } from "../../Services/Message/sendMessageService";
+import { MessageAction, MessageData } from "../../../Nostr";
+import { sendMessage } from "../../utils";
 
 interface Props {
 	text: string;
 	color: string;
 }
 
-const HighlightedText: React.FC<Props> = ({ text, color }) => {
+export const HighlightedText: React.FC<Props> = ({ text, color }) => {
 	const [highlighted, setHighlighted] = useState(false);
 
 	useEffect(() => {
 		const message: MessageData = {
-			action: "HIGHLIGHT_TEXT",
+			action: MessageAction.TOGGLE_HIGHLIGHT,
 			data: {
 				text: text,
 				color: color,
@@ -26,14 +26,14 @@ const HighlightedText: React.FC<Props> = ({ text, color }) => {
 		};
 
 		browser.runtime.onMessage.addListener((request) => {
-			if (request.action === "TOGGLE_HIGHLIGHTED_TEXT") {
+			if (request.action === MessageAction.TOGGLE_HIGHLIGHT) {
 				toggleHighlight();
 			}
 		});
 
 		return () => {
 			sendMessage({
-				action: "REMOVE_HIGHLIGHTS",
+				action: MessageAction.REMOVE_HIGHLIGHTS,
 				data: "",
 			});
 		};
@@ -41,5 +41,3 @@ const HighlightedText: React.FC<Props> = ({ text, color }) => {
 
 	return <span className={`highlighted-text ${highlighted ? "highlighted" : ""}`}>{text}</span>;
 };
-
-export default HighlightedText;
