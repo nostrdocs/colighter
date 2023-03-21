@@ -1,9 +1,9 @@
 {
 	"manifest_version": 3,
 	"name": "Colighter",
-	"description": "An amazing collaborative highlighter extension on Nostr",
+	"description": "A collaborative web resource highlighter extension, built on Nostr",
 	"version": "0.0.1",
-	"author": "Nostrodocs Devleopers",
+	"author": "Nostrdocs Developers",
 	"action": {
 		"default_popup": "dist/index.html"
 	},
