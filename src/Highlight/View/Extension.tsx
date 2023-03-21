@@ -1,7 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ColorDescription, NostrUser } from "../../Nostr";
+import { ColorDescription, NostrUser, StorageKey } from "../../Nostr";
 import { IHighlightCollection } from "../types";
-import { loadCollabHighlighter, setupColorUsage, setupHighlighting } from "../utils";
+import {
+	loadCollabHighlighter,
+	setupColorUsage,
+	writeLocalStorage,
+	useShowHighlights,
+} from "../utils";
 import { renderHighlightCollection } from "../view";
 import { HighlightedText } from "./Components";
 
@@ -20,14 +25,13 @@ const colorOptions: ColorDescription[] = [
 
 function Extension() {
 	const [user] = React.useState<NostrUser>(mockNostrUser);
-	const [showHighlights, toggleShowHighlights] = React.useState<boolean>(false);
+	const [showHighlights, toggleShowHighlights] = useShowHighlights();
 	const [selectedColor, setSelectedColor] = useState("");
 
 	const [collab, setCollab] = useState<IHighlightCollection | undefined>(undefined);
 	const collabViewRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		setupHighlighting();
 		setupColorUsage(colorOptions);
 	}, []);
 
@@ -52,7 +56,10 @@ function Extension() {
 	};
 
 	const handleToggleHighlight = (event: React.ChangeEvent<HTMLInputElement>) => {
-		toggleShowHighlights(event.target.checked);
+		let showHighlights = event.target.checked;
+		toggleShowHighlights(showHighlights);
+
+		writeLocalStorage(StorageKey.SHOW_HIGHLIGHTS, showHighlights);
 	};
 
 	return (

@@ -8,16 +8,21 @@ import {
 	NostrRelayTokenProvider,
 	MockCollabRelay,
 } from "../Nostrcollab";
-import { ColorDescription, MessageAction, MessageData, NostrUser } from "../Nostr";
+import { ColorDescription, MessageAction, MessageData, NostrUser, StorageKey } from "../Nostr";
 import { IHighlightCollection, IHighlightCollectionAppModel } from "./types";
 import { HighlightContainerRuntimeFactory } from "./container";
+import { useState } from "react";
 
-export const readLocalStorage = async (key: string): Promise<string | undefined> => {
+export const readLocalStorage = async <T,>(key: StorageKey): Promise<T | undefined> => {
 	const storage = await browser.storage.local.get();
 	return storage[key];
 };
 
-export const sendMessage = (data: MessageData) => {
+export const writeLocalStorage = async <T,>(key: StorageKey, value: T) => {
+	await browser.storage.local.set({ [key]: value });
+};
+
+export const sendMessage = <T,>(data: MessageData<T>) => {
 	const queryOptions = { active: true, currentWindow: true };
 
 	browser.tabs.query(queryOptions).then((tabs: Tabs.Tab[]) => {
@@ -30,6 +35,40 @@ export const sendMessage = (data: MessageData) => {
 			});
 		}
 	});
+};
+
+export const useShowHighlights = () => {
+	const [showHighlights, setShowHighlights] = useState(false);
+
+	const toggleShowHighlights = (showHighlights: boolean) => {
+		// Update state and local storage
+		setShowHighlights(showHighlights);
+		writeLocalStorage(StorageKey.SHOW_HIGHLIGHTS, showHighlights);
+
+		// Send message for render action by content script
+		sendMessage({
+			action: MessageAction.TOGGLE_HIGHLIGHTS,
+			data: showHighlights,
+		});
+	};
+
+	readLocalStorage<boolean>(StorageKey.SHOW_HIGHLIGHTS)
+		.then((storedShowHighlights) => {
+			// Update state
+			let updatedShowHighlights = storedShowHighlights ?? showHighlights;
+			setShowHighlights(updatedShowHighlights);
+
+			// Send message for render action by content script
+			sendMessage<boolean>({
+				action: MessageAction.TOGGLE_HIGHLIGHTS,
+				data: updatedShowHighlights,
+			});
+		})
+		.catch((e) => {
+			console.log("Failed to read local storage", e);
+		});
+
+	return [showHighlights, toggleShowHighlights] as const;
 };
 
 export const setupColorUsage = (colorOptions: ColorDescription[]) => {
@@ -67,33 +106,6 @@ export const setupColorUsage = (colorOptions: ColorDescription[]) => {
 			}
 		});
 	}
-};
-
-export const setupHighlighting = () => {
-	let highlightStatus = false;
-	const toggleHighlightBtn = document.getElementById("toggle-highlight") as HTMLInputElement;
-
-	// Load value from local storage
-	browser.storage.local.get().then((store) => {
-		highlightStatus = store.highlight_status || false;
-
-		sendMessage({
-			action: MessageAction.TOGGLE_HIGHLIGHT,
-			data: { highlightStatus: highlightStatus },
-		});
-		toggleHighlightBtn.checked = highlightStatus;
-	});
-
-	// Enable/Disable highlighting on toggle button click
-	toggleHighlightBtn.addEventListener("click", () => {
-		highlightStatus = !highlightStatus;
-		browser.storage.local.set({ highlight_status: highlightStatus });
-
-		sendMessage({
-			action: MessageAction.TOGGLE_HIGHLIGHT,
-			data: { highlightStatus: highlightStatus },
-		});
-	});
 };
 
 export const loadCollabHighlighter = async (user: NostrUser): Promise<IHighlightCollection> => {

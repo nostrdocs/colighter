@@ -13,7 +13,7 @@ export interface ColorDescription {
 }
 
 export enum MessageAction {
-	TOGGLE_HIGHLIGHT = "TOGGLE_HIGHLIGHT",
+	TOGGLE_HIGHLIGHTS = "TOGGLE_HIGHLIGHTS",
 	REMOVE_HIGHLIGHTS = "REMOVE_HIGHLIGHTS",
 	SET_COLOR = "SET_COLOR",
 }
@@ -24,6 +24,6 @@ export interface MessageData {
 }
 
 export enum StorageKey {
-	HIGHLIGHT_STATUS = "HIGHLIGHT_STATUS",
+	SHOW_HIGHLIGHTS = "SHOW_HIGHLIGHTS",
 	HIGHLIGHTING_COLOR = "HIGHLIGHTING_COLOR",
 }
