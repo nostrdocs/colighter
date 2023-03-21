@@ -17,6 +17,7 @@
 	"background": {
 		"service_worker": "dist/background.bundle.js"
 	},
+	"options_page": "dist/index.html",
 	"commands": {
 		"execute-highlight": {
 			"suggested_key": {
