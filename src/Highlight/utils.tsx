@@ -11,7 +11,7 @@ import {
 import { ColorDescription, MessageAction, MessageData, NostrUser, StorageKey } from "../Nostr";
 import { IHighlightCollection, IHighlightCollectionAppModel } from "./types";
 import { HighlightContainerRuntimeFactory } from "./container";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const readLocalStorage = async <T,>(key: StorageKey): Promise<T | undefined> => {
 	const storage = await browser.storage.local.get();
@@ -120,6 +120,51 @@ export const useCollabHighlighter = (user: NostrUser) => {
 		codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
 		generateCreateNewRequest: createNostrCreateNewRequest,
 	});
+
+	useEffect(() => {
+		if (!highlightCollection) {
+			readLocalStorage<string>(StorageKey.COLLAB_ID)
+				.then(async (collabId) => {
+					if (collabId) {
+						const highlightsCollection: IHighlightCollectionAppModel =
+							await loader.loadExisting(collabId);
+						setHighlightCollection(highlightsCollection.highlightCollection);
+					} else {
+						const createResponse = await loader.createDetached("0.1.0");
+						const highlightsCollection: IHighlightCollectionAppModel =
+							createResponse.collab;
+						collabId = await createResponse.attach();
+						setHighlightCollection(highlightsCollection.highlightCollection);
+
+						// Update storage with known collab id
+						writeLocalStorage<string>(StorageKey.COLLAB_ID, collabId);
+					}
+				})
+				.catch((e) => {
+					console.log("Failed to read local storage", e);
+				});
+		} else {
+			highlightCollection.on("highlightCollectionChanged", () => {
+				// TODO: Optimize this to only send the changed highlights
+				sendMessage({
+					action: MessageAction.RENDER_HIGHGHLIGHTS,
+					data: highlightCollection.getHighlights(),
+				});
+			});
+
+			// First pass render of highlights
+			sendMessage({
+				action: MessageAction.RENDER_HIGHGHLIGHTS,
+				data: highlightCollection.getHighlights(),
+			});
+		}
+
+		return () => {
+			if (highlightCollection) {
+				highlightCollection.removeAllListeners();
+			}
+		};
+	}, [highlightCollection]);
 
 	readLocalStorage<string>(StorageKey.COLLAB_ID)
 		.then(async (collabId) => {
