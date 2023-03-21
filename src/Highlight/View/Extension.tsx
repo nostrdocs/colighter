@@ -3,7 +3,7 @@ import { ColorDescription, NostrUser, StorageKey } from "../../Nostr";
 import { IHighlightCollection } from "../types";
 import {
 	loadCollabHighlighter,
-	setupColorUsage,
+	useColorSelectedColor,
 	writeLocalStorage,
 	useShowHighlights,
 } from "../utils";
@@ -26,14 +26,10 @@ const colorOptions: ColorDescription[] = [
 function Extension() {
 	const [user] = React.useState<NostrUser>(mockNostrUser);
 	const [showHighlights, toggleShowHighlights] = useShowHighlights();
-	const [selectedColor, setSelectedColor] = useState("");
+	const [selectedColor, updateSelectedColor] = useColorSelectedColor(colorOptions);
 
 	const [collab, setCollab] = useState<IHighlightCollection | undefined>(undefined);
 	const collabViewRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		setupColorUsage(colorOptions);
-	}, []);
 
 	useEffect(() => {
 		loadCollabHighlighter(user)
@@ -51,10 +47,6 @@ function Extension() {
 		}
 	}, [collabViewRef, collab, user]);
 
-	const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setSelectedColor(event.target.value);
-	};
-
 	const handleToggleHighlight = (event: React.ChangeEvent<HTMLInputElement>) => {
 		let showHighlights = event.target.checked;
 		toggleShowHighlights(showHighlights);
@@ -68,13 +60,15 @@ function Extension() {
 			<p>Select Highlighter Color</p>
 			<div id="color-row">
 				{colorOptions.map((color) => (
-					<label className="color-label" key={color.val}>
+					<label className="color-label" key={color.name}>
 						<input
 							type="radio"
 							name="color"
 							value={color.val}
-							checked={selectedColor === color.val}
-							onChange={handleColorChange}
+							checked={selectedColor.val === color.val}
+							onChange={() => {
+								updateSelectedColor(color);
+							}}
 						/>
 						<div style={{ background: `#${color.val}` }}></div>
 					</label>
