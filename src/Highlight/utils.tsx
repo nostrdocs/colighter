@@ -71,41 +71,38 @@ export const useShowHighlights = () => {
 	return [showHighlights, toggleShowHighlights] as const;
 };
 
-export const setupColorUsage = (colorOptions: ColorDescription[]) => {
-	let selectedColor: string;
+export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
+	const [selectedColor, setSelectedColor] = useState<ColorDescription>(colorOptions[0]);
 
-	// Load selected color data from local storage
-	browser.storage.local.get().then((store) => {
-		selectedColor = store.selected_color || colorOptions[0].val;
-		const selectedBtn = document.getElementById(`${selectedColor}`) as HTMLInputElement;
+	const updateSelectedColor = (selectedColor: ColorDescription) => {
+		// Update state and local storage
+		setSelectedColor(selectedColor);
+		writeLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION, selectedColor);
 
-		sendMessage({
-			action: MessageAction.SET_COLOR,
-			data: { color: selectedColor },
+		// Send message for render action by content script
+		sendMessage<ColorDescription>({
+			action: MessageAction.SELECT_COLOR,
+			data: selectedColor,
+		});
+	};
+
+	readLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION)
+		.then((storedSelectedColor) => {
+			// Update state
+			const updatedSelectedColor = storedSelectedColor ?? selectedColor;
+			setSelectedColor(updatedSelectedColor);
+
+			// Send message for render action by content script
+			sendMessage({
+				action: MessageAction.SELECT_COLOR,
+				data: updatedSelectedColor,
+			});
+		})
+		.catch((e) => {
+			console.log("Failed to read local storage", e);
 		});
 
-		if (selectedBtn != null) selectedBtn.checked = true;
-	});
-
-	const colorButtonGroup = document.getElementById("color-row");
-	const colorButtons = document.querySelectorAll('input[name="color"]');
-
-	if (colorButtonGroup != null) {
-		colorButtonGroup.addEventListener("click", () => {
-			for (const colorButton of colorButtons as any) {
-				if (colorButton.checked) {
-					const colorSelection = colorButton.getAttribute("value");
-					browser.storage.local.set({
-						selected_color: colorSelection,
-					});
-					sendMessage({
-						action: MessageAction.SET_COLOR,
-						data: { color: colorSelection },
-					});
-				}
-			}
-		});
-	}
+	return [selectedColor, updateSelectedColor] as const;
 };
 
 export const loadCollabHighlighter = async (user: NostrUser): Promise<IHighlightCollection> => {

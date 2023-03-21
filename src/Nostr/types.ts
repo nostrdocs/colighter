@@ -15,15 +15,16 @@ export interface ColorDescription {
 export enum MessageAction {
 	TOGGLE_HIGHLIGHTS = "TOGGLE_HIGHLIGHTS",
 	REMOVE_HIGHLIGHTS = "REMOVE_HIGHLIGHTS",
-	SET_COLOR = "SET_COLOR",
+	SELECT_COLOR = "SELECT_COLOR",
 }
 
-export interface MessageData {
+export interface MessageData<T> {
 	action: MessageAction;
-	data: any;
+	data: T;
 }
 
 export enum StorageKey {
 	SHOW_HIGHLIGHTS = "SHOW_HIGHLIGHTS",
 	HIGHLIGHTING_COLOR = "HIGHLIGHTING_COLOR",
+	COLOR_SELECTION = "COLOR_SELECTION",
 }
