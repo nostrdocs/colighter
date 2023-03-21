@@ -1,14 +1,7 @@
-import browser, { Tabs } from "webextension-polyfill";
-
-//test
 chrome.runtime.sendMessage("I am loading content script", (response) => {
 	console.log(response);
 	console.log("I am content script");
 });
-
-window.onload = (event: any) => {
-	console.log("page is fully loaded");
-};
 
 chrome.contextMenus.create({
 	id: "highlight-selection",
