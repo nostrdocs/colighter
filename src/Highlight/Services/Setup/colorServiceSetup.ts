@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { ColorDescription } from '../../Common/Types';
+import { ColorDescription } from '../../../Common/Types';
 import { sendMessage } from '../Message/sendMessageService';
 
 function setupColorUsage(colorOptions: ColorDescription[]) {

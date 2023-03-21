@@ -1,5 +1,5 @@
 import browser, { Tabs } from 'webextension-polyfill';
-import { MessageData } from '../../Common/Types';
+import { MessageData } from '../../../Common/Types';
 
 function sendMessage(data: MessageData) {
   const queryOptions = { active: true, currentWindow: true };
