@@ -9,7 +9,9 @@ module.exports = (env) => {
 	return merge(
 		{
 			entry: {
-				app: "./src/Template/index.tsx",
+				app: "./src/Highlight/View/index.tsx",
+				background: ".src/Highlight/background.ts",
+				contentScript: "./src/Highlight/contentScript.ts",
 			},
 			resolve: {
 				extensions: [".ts", ".tsx", ".js"],
@@ -40,7 +42,7 @@ module.exports = (env) => {
 					process: "process/browser",
 				}),
 				new HtmlWebpackPlugin({
-					template: "./src/Template/index.html",
+					template: "./src/Highlight/View/index.html",
 				}),
 			],
 		},
