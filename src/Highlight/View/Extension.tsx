@@ -30,7 +30,7 @@ function Extension() {
 
 	return (
 		<div>
-				<h2>Colighter</h2>
+			<h2>Colighter</h2>
 			<p>Select Highlighter Color</p>
 			<div id="color-row">
 				{colorOptions.map((color) => (

@@ -11,4 +11,4 @@ You can run this example using the following steps:
 1. Start the Highlighter experience with `npm start` - this renders the Highlighter experience with a collab relay using a `COLLAB_RELAY_URL` configured in .env
 
 > Note: If `COLLAB_RELAY_URL` is configured to `http://localhost:7070`,
-you should `run npm start:server` in a second shell
+> you should `run npm start:server` in a second shell

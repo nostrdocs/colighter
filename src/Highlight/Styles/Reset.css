@@ -1,33 +1,54 @@
-
 /*
   Josh's Custom CSS Reset
   https://www.joshwcomeau.com/css/custom-css-reset/
 */
 
-#root, html, body {
-  height: 100%;
+#root,
+html,
+body {
+	height: 100%;
 }
 body {
-  line-height: 1.5;
+	line-height: 1.5;
 }
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
 }
 #root {
-  isolation: isolate;
+	isolation: isolate;
 }
 
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
 	display: block;
 }
-ol, ul {
+ol,
+ul {
 	list-style: none;
 }
 
@@ -35,14 +56,14 @@ ol, ul {
 
 /* reset button */
 button {
-  background-color: transparent;
-  border-width: 0;
-  width: auto;
-  font-family: inherit;
-  font-size: inherit;
-  font-style: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  padding: 0;
-  margin: 0;
+	background-color: transparent;
+	border-width: 0;
+	width: auto;
+	font-family: inherit;
+	font-size: inherit;
+	font-style: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	padding: 0;
+	margin: 0;
 }
