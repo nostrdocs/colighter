@@ -10,9 +10,9 @@ export interface NostrUserMetadata {
 export interface ColorDescription {
 	name: string;
 	val: string;
-  }
-  
-  export interface MessageData {
+}
+
+export interface MessageData {
 	action: string;
 	data: any;
-  }
+}

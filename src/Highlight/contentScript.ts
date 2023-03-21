@@ -83,8 +83,8 @@
 //   }
 // }
 
-// /* Get parent element from selected text 
-//  * @returns parent element of selected text 
+// /* Get parent element from selected text
+//  * @returns parent element of selected text
 //  */
 // function getHighlightedMark(): HTMLElement | null {
 //   let parent: HTMLElement | null = null;
