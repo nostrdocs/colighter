@@ -1,3 +1,5 @@
+import { MessageAction } from "./types";
+
 const background = () => {
 	chrome.runtime.sendMessage("I am loading content script", (response) => {
 		console.log(response);
@@ -19,11 +21,11 @@ const background = () => {
 	chrome.contextMenus.onClicked.addListener((info, tab) =>{
 		if (info.menuItemId === "highlight-selection") {
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) =>{
-				chrome.tabs.sendMessage(tabs[0].id!, { action: "HIGHLIGHT" });
+				chrome.tabs.sendMessage(tabs[0].id!, { action: MessageAction.RENDER_HIGHLIGHTS });
 			});
 		} else if (info.menuItemId === "remove-selection") {
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
-				chrome.tabs.sendMessage(tabs[0].id!, { action: "REMOVE_HIGHLIGHT" });
+				chrome.tabs.sendMessage(tabs[0].id!, { action: MessageAction.REMOVE_HIGHLIGHTS });
 			});
 		}
 	});
