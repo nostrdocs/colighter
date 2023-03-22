@@ -154,14 +154,14 @@ export const useCollabHighlighter = (user: NostrUser) => {
 			highlightCollection.on("highlightCollectionChanged", () => {
 				// TODO: Optimize this to only send the changed highlights
 				sendMessage({
-					action: MessageAction.RENDER_HIGHGHLIGHTS,
+					action: MessageAction.RENDER_HIGHLIGHTS,
 					data: highlightCollection.getHighlights(),
 				});
 			});
 
 			// First pass render of highlights
 			sendMessage({
-				action: MessageAction.RENDER_HIGHGHLIGHTS,
+				action: MessageAction.RENDER_HIGHLIGHTS,
 				data: highlightCollection.getHighlights(),
 			});
 		}

@@ -1,9 +1,11 @@
+import { MessageAction } from "./types";
+
 let color: string = 'FAA99D';
 const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
-    case 'TOGGLE_HIGHLIGHT':
+    case MessageAction.TOGGLE_HIGHLIGHTS:
       if (request.data.highlightStatus) {
         document.addEventListener('mouseup', highlightText);
         document.addEventListener('keyup', highlightText);
@@ -12,13 +14,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         document.removeEventListener('keyup', highlightText);
       }
       break;
-    case 'SET_COLOR':
+    case MessageAction.SELECT_COLOR:
       color = request.data.color;
       break;
-    case 'HIGHLIGHT':
+    case MessageAction.RENDER_HIGHLIGHTS:
       highlightText();
       break;
-    case 'REMOVE_HIGHLIGHT':
+    case MessageAction.REMOVE_HIGHLIGHTS:
       removeHighlight();
       break;
     default:
