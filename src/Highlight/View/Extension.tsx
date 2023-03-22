@@ -32,17 +32,19 @@ const colorOptions: ColorDescription[] = [
 	{ name: "purple", val: "CE97FB" },
 ];
 
-function Extension() {
+export const Extension = React.memo(function Extension() {
 	const [user] = React.useState<NostrUser>(mockNostrUser);
 	const [showHighlights, toggleShowHighlights] = useShowHighlights();
 	const [selectedColor, updateSelectedColor] = useColorSelectedColor(colorOptions);
 
 	const [collab] = useCollabHighlighter(user);
 	const collabViewRef = useRef<HTMLDivElement>(null);
+	const [rendered, setRendered] = React.useState(false);
 
 	useEffect(() => {
-		if (collabViewRef.current && collab) {
+		if (collabViewRef.current && collab && !rendered) {
 			renderHighlightCollection(collab, collabViewRef.current, user.pubkey);
+			setRendered(true);
 		}
 	}, [collabViewRef, collab, user]);
 
@@ -93,6 +95,4 @@ function Extension() {
 			</div>
 		</ThemeProvider>
 	);
-}
-
-export default Extension;
+});
