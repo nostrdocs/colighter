@@ -18,7 +18,7 @@ import {
 	StorageKey,
 } from "./types";
 import { HighlightContainerRuntimeFactory } from "./container";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const readLocalStorage = async <T,>(key: StorageKey): Promise<T | undefined> => {
 	const storage = await browser.storage.local.get();
@@ -33,10 +33,11 @@ export const sendMessage = <T,>(data: MessageData<T>) => {
 	const queryOptions = { active: true, currentWindow: true };
 
 	browser.tabs.query(queryOptions).then((tabs: Tabs.Tab[]) => {
-		const currentTab = tabs[0];
-		if (currentTab.id !== undefined) {
-			browser.tabs.sendMessage(currentTab.id, data).then((response) => {
-				if (response.data == "ERR") {
+		const currentTabId = tabs[0]?.id;
+
+		if (currentTabId !== undefined) {
+			browser.tabs.sendMessage(currentTabId, data).then((response) => {
+				if (response?.data == "ERR") {
 					alert("COLIGHTER ERROR");
 				}
 			});
@@ -47,7 +48,7 @@ export const sendMessage = <T,>(data: MessageData<T>) => {
 export const useShowHighlights = () => {
 	const [showHighlights, setShowHighlights] = useState(false);
 
-	const toggleShowHighlights = (showHighlights: boolean) => {
+	const toggleShowHighlights = useCallback((showHighlights: boolean) => {
 		// Update state and local storage
 		setShowHighlights(showHighlights);
 		writeLocalStorage(StorageKey.SHOW_HIGHLIGHTS, showHighlights);
@@ -57,23 +58,19 @@ export const useShowHighlights = () => {
 			action: MessageAction.TOGGLE_HIGHLIGHTS,
 			data: showHighlights,
 		});
-	};
+	}, []);
 
-	readLocalStorage<boolean>(StorageKey.SHOW_HIGHLIGHTS)
-		.then((storedShowHighlights) => {
-			// Update state
-			let updatedShowHighlights = storedShowHighlights ?? showHighlights;
-			setShowHighlights(updatedShowHighlights);
-
-			// Send message for render action by content script
-			sendMessage<boolean>({
-				action: MessageAction.TOGGLE_HIGHLIGHTS,
-				data: updatedShowHighlights,
+	useEffect(() => {
+		readLocalStorage<boolean>(StorageKey.SHOW_HIGHLIGHTS)
+			.then((storedShowHighlights) => {
+				// Update state
+				let updatedShowHighlights = storedShowHighlights ?? showHighlights;
+				toggleShowHighlights(updatedShowHighlights);
+			})
+			.catch((e) => {
+				console.log("Failed to read local storage", e);
 			});
-		})
-		.catch((e) => {
-			console.log("Failed to read local storage", e);
-		});
+	}, []);
 
 	return [showHighlights, toggleShowHighlights] as const;
 };
