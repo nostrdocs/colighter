@@ -1,30 +1,67 @@
-import React, { useState, useEffect } from "react";
-import browser from "webextension-polyfill";
-import { MessageAction } from "../../types";
-import { sendMessage } from "../../utils";
+import React, { useCallback, useEffect, useState } from "react";
+import { Highlight } from "../../model";
+import { IHighlight, IHighlightCollection } from "../../types";
 
-interface Props {
-	text: string;
-	color: string;
-}
+type HighlightViewProps = Pick<IHighlight, "text" | "author">;
 
-export const HighlightedText: React.FC<Props> = ({ text, color }) => {
-	const [highlighted] = useState(false);
+const HighlightView = ({ text, author }: HighlightViewProps) => {
+	return <div>{`${text} : ${author}`}</div>;
+};
+
+type HighlightListProps = {
+	collab: IHighlightCollection;
+	renderHighlightsOnCanvas: (highlights: IHighlight[]) => void;
+};
+
+export const HighlightList = React.memo(function HighlightList({
+	collab,
+	renderHighlightsOnCanvas,
+}: HighlightListProps) {
+	const [highlights, setHighlights] = useState<IHighlight[]>([]);
+
+	const updateHighlights = useCallback(async (highlights: IHighlight[]) => {
+		renderHighlightsOnCanvas(highlights);
+		setHighlights(highlights);
+	}, []);
+
+	const createNewHighlight = useCallback(async () => {
+		let highlight = await Highlight.create("sample", `test-${highlights.length}`);
+		await collab.addHighlight(highlight);
+	}, [highlights]);
 
 	useEffect(() => {
-		browser.runtime.onMessage.addListener((request) => {
-			if (request.action === MessageAction.TOGGLE_HIGHLIGHTS) {
-				console.log("toggleHighlight: ", request.data);
-			}
-		});
+		// Load any existing highlights from collab
+		collab
+			.getHighlights()
+			.then((highlights) => {
+				updateHighlights(highlights);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
+
+		const changeListener = async () => {
+			const highlights = await collab.getHighlights();
+			updateHighlights(highlights);
+		};
+
+		collab.on("highlightCollectionChanged", changeListener);
 
 		return () => {
-			sendMessage({
-				action: MessageAction.REMOVE_HIGHLIGHTS,
-				data: "",
-			});
+			collab.off("highlightCollectionChanged", changeListener);
 		};
-	}, [text, color, highlighted]);
+	}, []);
 
-	return <span className={`highlighted-text ${highlighted ? "highlighted" : ""}`}>{text}</span>;
-};
+	return (
+		<>
+			{highlights.map((highlight) => (
+				<HighlightView
+					text={highlight.text}
+					author={highlight.author}
+					key={highlight.hashId}
+				/>
+			))}
+			<input type="button" value="Test Highlight" onClick={() => createNewHighlight()} />
+		</>
+	);
+});

@@ -1,19 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { NostrUser } from "../../../Nostr";
+import React from "react";
 import { ColorDescription, StorageKey } from "../../types";
-import {
-	useCollabHighlighter,
-	useColorSelectedColor,
-	useShowHighlights,
-	writeLocalStorage,
-} from "../../utils";
-import { renderHighlightCollection } from "../../view";
-import { HighlightedText } from "./Highlight";
-
-const mockNostrUser: NostrUser = {
-	pubkey: "0x1234",
-	meta: {},
-};
+import { useColorSelectedColor, useShowHighlights, writeLocalStorage } from "../../utils";
 
 const colorOptions: ColorDescription[] = [
 	{ name: "red", val: "FAA99D" },
@@ -24,20 +11,8 @@ const colorOptions: ColorDescription[] = [
 ];
 
 export function HighlightPicker() {
-	const [user] = useState<NostrUser>(mockNostrUser);
 	const [showHighlights, toggleShowHighlights] = useShowHighlights();
 	const [selectedColor, updateSelectedColor] = useColorSelectedColor(colorOptions);
-
-	const [collab] = useCollabHighlighter(user);
-	const collabViewRef = useRef<HTMLDivElement>(null);
-	const [rendered, setRendered] = React.useState(false);
-
-	useEffect(() => {
-		if (collabViewRef.current && collab && !rendered) {
-			renderHighlightCollection(collab, collabViewRef.current, user.pubkey);
-			setRendered(true);
-		}
-	}, [collab, user]);
 
 	const handleToggleHighlight = (event: React.ChangeEvent<HTMLInputElement>) => {
 		let showHighlights = event.target.checked;
@@ -78,8 +53,6 @@ export function HighlightPicker() {
 					<span className="slider round"></span>
 				</label>
 			</div>
-			<HighlightedText text="" color="" />
-			<div ref={collabViewRef}></div>
 		</div>
 	);
 }
