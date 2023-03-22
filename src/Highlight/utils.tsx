@@ -108,80 +108,44 @@ export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
 export const useCollabHighlighter = (user: NostrUser) => {
 	const [highlightCollection, setHighlightCollection] = useState<IHighlightCollection>();
 
-	const collabRelayUrl = process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
-	const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1, collabRelayUrl);
-
-	const tokenProvider = new NostrRelayTokenProvider(collabRelay, user);
-
-	// Create a new Fluid loader, load the highlight collection
-	const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
-		urlResolver: new NostrRelayUrlResolver(collabRelay),
-		documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
-		codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
-		generateCreateNewRequest: createNostrCreateNewRequest,
-	});
-
 	useEffect(() => {
-		if (!highlightCollection) {
-			readLocalStorage<string>(StorageKey.COLLAB_ID)
-				.then(async (collabId) => {
-					if (collabId) {
-						const highlightsCollection: IHighlightCollectionAppModel =
-							await loader.loadExisting(collabId);
-						setHighlightCollection(highlightsCollection.highlightCollection);
-					} else {
-						const createResponse = await loader.createDetached("0.1.0");
-						const highlightsCollection: IHighlightCollectionAppModel =
-							createResponse.collab;
-						collabId = await createResponse.attach();
-						setHighlightCollection(highlightsCollection.highlightCollection);
+		const collabRelayUrl = process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
+		const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1, collabRelayUrl);
 
-						// Update storage with known collab id
-						writeLocalStorage<string>(StorageKey.COLLAB_ID, collabId);
-					}
-				})
-				.catch((e) => {
-					console.log("Failed to read local storage", e);
-				});
-		} else {
-			highlightCollection.on("highlightCollectionChanged", async () => {
-				// TODO: Optimize this to only send the changed highlights
-				// TODO: Only render if change is not originated locally
-				sendMessage({
-					action: MessageAction.RENDER_HIGHLIGHTS,
-					data: await highlightCollection.getHighlights(),
-				});
-			});
+		const tokenProvider = new NostrRelayTokenProvider(collabRelay, user);
 
-			// TODO: Render any highlighs that are already in the collection
-		}
+		// Create a new Fluid loader, load the highlight collection
+		const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
+			urlResolver: new NostrRelayUrlResolver(collabRelay),
+			documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
+			codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
+			generateCreateNewRequest: createNostrCreateNewRequest,
+		});
 
-		return () => {
-			if (highlightCollection) {
-				highlightCollection.removeAllListeners();
-			}
-		};
-	}, []);
+		const loadCollabHighlighter = async () => {
+			let collabId = await readLocalStorage<string>(StorageKey.COLLAB_ID);
+			let highlightsCollection: IHighlightCollectionAppModel;
 
-	readLocalStorage<string>(StorageKey.COLLAB_ID)
-		.then(async (collabId) => {
 			if (collabId) {
-				const highlightsCollection: IHighlightCollectionAppModel =
-					await loader.loadExisting(collabId);
-				setHighlightCollection(highlightsCollection.highlightCollection);
+				highlightsCollection = await loader.loadExisting(collabId);
 			} else {
 				const createResponse = await loader.createDetached("0.1.0");
-				const highlightsCollection: IHighlightCollectionAppModel = createResponse.collab;
+				highlightsCollection = createResponse.collab;
 				collabId = await createResponse.attach();
-				setHighlightCollection(highlightsCollection.highlightCollection);
 
 				// Update storage with known collab id
 				writeLocalStorage<string>(StorageKey.COLLAB_ID, collabId);
 			}
-		})
-		.catch((e) => {
-			console.log("Failed to read local storage", e);
-		});
 
-	return [highlightCollection];
+			setHighlightCollection(highlightsCollection.highlightCollection);
+		};
+
+		loadCollabHighlighter().catch((e) => console.error(e));
+
+		return () => {
+			// TODO: Cancel promise loading collab
+		};
+	}, []);
+
+	return [highlightCollection] as const;
 };

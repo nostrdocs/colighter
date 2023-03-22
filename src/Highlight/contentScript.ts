@@ -21,6 +21,12 @@ chrome.runtime.onMessage.addListener(
 				color = request.data.color;
 				break;
 			case MessageAction.RENDER_HIGHLIGHTS:
+				if (request.data) {
+					// We don't know how to render collab highlights yet
+					// TODO: Render submitted highlights
+					break;
+				}
+
 				highlightText();
 				break;
 			case MessageAction.REMOVE_HIGHLIGHTS:
