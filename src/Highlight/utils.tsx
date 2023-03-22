@@ -144,19 +144,16 @@ export const useCollabHighlighter = (user: NostrUser) => {
 					console.log("Failed to read local storage", e);
 				});
 		} else {
-			highlightCollection.on("highlightCollectionChanged", () => {
+			highlightCollection.on("highlightCollectionChanged", async () => {
 				// TODO: Optimize this to only send the changed highlights
+				// TODO: Only render if change is not originated locally
 				sendMessage({
 					action: MessageAction.RENDER_HIGHLIGHTS,
-					data: highlightCollection.getHighlights(),
+					data: await highlightCollection.getHighlights(),
 				});
 			});
 
-			// First pass render of highlights
-			sendMessage({
-				action: MessageAction.RENDER_HIGHLIGHTS,
-				data: highlightCollection.getHighlights(),
-			});
+			// TODO: Render any highlighs that are already in the collection
 		}
 
 		return () => {
@@ -164,7 +161,7 @@ export const useCollabHighlighter = (user: NostrUser) => {
 				highlightCollection.removeAllListeners();
 			}
 		};
-	}, [highlightCollection]);
+	}, []);
 
 	readLocalStorage<string>(StorageKey.COLLAB_ID)
 		.then(async (collabId) => {
