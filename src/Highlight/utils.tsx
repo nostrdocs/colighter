@@ -78,7 +78,7 @@ export const useShowHighlights = () => {
 export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
 	const [selectedColor, setSelectedColor] = useState<ColorDescription>(colorOptions[0]);
 
-	const updateSelectedColor = (selectedColor: ColorDescription) => {
+	const updateSelectedColor = useCallback((selectedColor: ColorDescription) => {
 		// Update state and local storage
 		setSelectedColor(selectedColor);
 		writeLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION, selectedColor);
@@ -88,23 +88,19 @@ export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
 			action: MessageAction.SELECT_COLOR,
 			data: selectedColor,
 		});
-	};
+	}, []);
 
-	readLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION)
-		.then((storedSelectedColor) => {
-			// Update state
-			const updatedSelectedColor = storedSelectedColor ?? selectedColor;
-			setSelectedColor(updatedSelectedColor);
-
-			// Send message for render action by content script
-			sendMessage({
-				action: MessageAction.SELECT_COLOR,
-				data: updatedSelectedColor,
+	useEffect(() => {
+		readLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION)
+			.then((storedSelectedColor) => {
+				// Update state
+				const updatedSelectedColor = storedSelectedColor ?? selectedColor;
+				updateSelectedColor(updatedSelectedColor);
+			})
+			.catch((e) => {
+				console.log("Failed to read local storage", e);
 			});
-		})
-		.catch((e) => {
-			console.log("Failed to read local storage", e);
-		});
+	}, []);
 
 	return [selectedColor, updateSelectedColor] as const;
 };
