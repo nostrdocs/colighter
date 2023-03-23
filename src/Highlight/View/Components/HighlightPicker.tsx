@@ -1,18 +1,11 @@
 import React from "react";
-import { ColorDescription, StorageKey } from "../../types";
+import { HIGHLIGHT_COLOR_OPTIONS } from "../../constants";
+import { StorageKey } from "../../types";
 import { useColorSelectedColor, useShowHighlights, writeLocalStorage } from "../../utils";
-
-const colorOptions: ColorDescription[] = [
-	{ name: "red", val: "FAA99D" },
-	{ name: "yellow", val: "FDDF7E" },
-	{ name: "green", val: "CCE29C" },
-	{ name: "blue", val: "67EBFA" },
-	{ name: "purple", val: "CE97FB" },
-];
 
 export function HighlightPicker() {
 	const [showHighlights, toggleShowHighlights] = useShowHighlights();
-	const [selectedColor, updateSelectedColor] = useColorSelectedColor(colorOptions);
+	const [selectedColor, updateSelectedColor] = useColorSelectedColor();
 
 	const handleToggleHighlight = (event: React.ChangeEvent<HTMLInputElement>) => {
 		let showHighlights = event.target.checked;
@@ -24,7 +17,7 @@ export function HighlightPicker() {
 	return (
 		<div>
 			<div id="color-row">
-				{colorOptions.map((color) => (
+				{HIGHLIGHT_COLOR_OPTIONS.map((color) => (
 					<label className="color-label" key={color.name}>
 						<input
 							type="radio"

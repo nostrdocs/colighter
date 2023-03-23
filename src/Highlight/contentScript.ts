@@ -1,6 +1,7 @@
-import { ActionResponse, MessageAction } from "./types";
+import { DEFAULT_HIGHLIGHT_COLOR } from "./constants";
+import { ActionResponse, ColorDescription, MessageAction } from "./types";
 
-let color: string = "FAA99D";
+let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
 const HIGHLIGHT_KEY: string = "NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F";
 
 /**
@@ -21,7 +22,7 @@ chrome.runtime.onMessage.addListener(
 				}
 				outcome = { success: true };
 			case MessageAction.SELECT_COLOR:
-				color = request.data.color;
+				color = request.data;
 				outcome = { success: true };
 				break;
 			case MessageAction.RENDER_HIGHLIGHTS:
@@ -69,7 +70,7 @@ function highlightText(): ActionResponse {
 
 		if (selectedText) {
 			let mark: HTMLElement = document.createElement("mark");
-			mark.setAttribute("style", `background-color: #${color}`);
+			mark.setAttribute("style", `background-color: #${color.val}`);
 			mark.className = HIGHLIGHT_KEY;
 			let sel: Selection | null = window.getSelection();
 

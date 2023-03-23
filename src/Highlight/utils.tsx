@@ -1,6 +1,7 @@
 import browser, { Tabs } from "webextension-polyfill";
 import { ColorDescription, MessageAction, MessageData, StorageKey, IHighlight } from "./types";
 import { useCallback, useEffect, useState } from "react";
+import { DEFAULT_HIGHLIGHT_COLOR } from "./constants";
 
 export const tryReadLocalStorage = async <T,>(key: string): Promise<T | undefined> => {
 	const storage = await browser.storage.local.get();
@@ -62,14 +63,16 @@ export const useShowHighlights = () => {
 	return [showHighlights, toggleShowHighlights] as const;
 };
 
-export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
-	const [selectedColor, setSelectedColor] = useState<ColorDescription>(colorOptions[0]);
+export const useColorSelectedColor = () => {
+	const [selectedColor, setSelectedColor] = useState<ColorDescription>(DEFAULT_HIGHLIGHT_COLOR);
 
 	const updateSelectedColor = useCallback(async (selectedColor: ColorDescription) => {
 		// Send message for render action by content script
 		await sendMessage<ColorDescription>({
 			action: MessageAction.SELECT_COLOR,
 			data: selectedColor,
+		}).catch((e) => {
+			console.log("Failed to send message", e);
 		});
 
 		// Update state and local storage
@@ -83,7 +86,7 @@ export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
 			.then((storedSelectedColor) => {
 				// Update state
 				const updatedSelectedColor = storedSelectedColor || selectedColor;
-				updateSelectedColor(updatedSelectedColor);
+				setSelectedColor(updatedSelectedColor);
 			})
 			.catch((e) => {
 				console.log("Failed to read local storage", e);
