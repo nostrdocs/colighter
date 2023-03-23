@@ -20,7 +20,7 @@
 	},
 	"options_page": "dist/index.html",
 	"commands": {
-		"execute-highlight": {
+		"create-highlight": {
 			"suggested_key": {
 				"default": "Alt+H",
 				"mac": "MacCtrl+H"
