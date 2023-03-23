@@ -1,29 +1,37 @@
 import { MessageAction } from "./types";
 
-const background = () => {
-	chrome.contextMenus.create({
-		id: "highlight-selection",
-		title: "Highlight",
-		contexts: ["selection"],
-	});
-
-	chrome.contextMenus.create({
-		id: "remove-selection",
-		title: "Remove Highlight",
-		contexts: ["selection"],
-	});
-
-	chrome.contextMenus.onClicked.addListener((info, tab) => {
-		if (info.menuItemId === "highlight-selection") {
+chrome.runtime.onInstalled.addListener(() => {
+	chrome.contextMenus.create(
+		{
+			id: "colighter-add",
+			title: "Highlight",
+			contexts: ["selection"],
+		},
+		() => {
 			chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
-				chrome.tabs.sendMessage(tabs[0].id!, { action: MessageAction.RENDER_HIGHLIGHTS });
+				chrome.tabs
+					.sendMessage(tabs[0].id!, { action: MessageAction.RENDER_HIGHLIGHTS })
+					.catch((err) => {
+						console.log(err);
+					});
 			});
-		} else if (info.menuItemId === "remove-selection") {
-			chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
-				chrome.tabs.sendMessage(tabs[0].id!, { action: MessageAction.REMOVE_HIGHLIGHTS });
-			});
-		}
-	});
-};
+		},
+	);
 
-background();
+	chrome.contextMenus.create(
+		{
+			id: "colighter-remove",
+			title: "Remove Highlight",
+			contexts: ["selection"],
+		},
+		() => {
+			chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
+				chrome.tabs
+					.sendMessage(tabs[0].id!, { action: MessageAction.REMOVE_HIGHLIGHTS })
+					.catch((err) => {
+						console.log(err);
+					});
+			});
+		},
+	);
+});
