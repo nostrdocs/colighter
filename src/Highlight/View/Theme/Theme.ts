@@ -7,6 +7,7 @@ export const theme = {
 		secondaryTint: "#C4C4C4",
 		textLight: "#575757",
 		white: "#FFFFFF",
+		lightGray: "#D7D7D7",
 	},
 } as const;
 
