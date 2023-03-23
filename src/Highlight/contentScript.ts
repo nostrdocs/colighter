@@ -185,6 +185,9 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 				action: MessageAction.RENDER_HIGHLIGHTS,
 				data: highlights,
 			});
+
+			// Notify render of highlights on popup UI
+			writeLocalStorage<IHighlight[]>(StorageKey.COLLAB_HIGHLIGHTS, highlights);
 		};
 
 		collab.on("highlightCollectionChanged", changeListener);
