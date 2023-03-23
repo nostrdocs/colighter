@@ -1,16 +1,84 @@
-body {
-	margin: 0;
-	font-family: "Quicksand", "Inter", Arial, Helvetica, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+@import url("./reset.css");
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
 }
 
 :root {
 	--main-color: #ff1c55ff;
 }
 
+html {
+	font-size: 62.5%;
+}
+
+body {
+	margin: 0;
+	font-family: "Quicksand", "Inter", Arial, Helvetica, sans-serif;
+	font-size: 2.4rem;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3 {
+	line-height: 1.1;
+	margin-bottom: 1rem;
+}
+
+h1 {
+	font-size: 7rem;
+}
+
+h2 {
+	font-size: 4rem;
+}
+
+h3 {
+	font-size: 3rem;
+}
+
+h5 {
+	font-size: 2.4rem;
+}
+
+p {
+	margin: 0;
+	font-size: 1.2rem;
+}
+
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+@media screen and (min-width: 1024px) {
+	body {
+		font-size: 1.8rem;
+	}
+
+	h1 {
+		font-size: 8rem;
+	}
+
+	h2 {
+		font-size: 4rem;
+	}
+
+	h3 {
+		font-size: 2.4rem;
+	}
+
+	h5 {
+		font-size: 2rem;
+	}
+}
+
+a {
+	text-decoration: none;
 }
 
 /* The switch - the box around the slider */
@@ -78,18 +146,6 @@ input:checked + .slider:before {
 }
 
 /* Other Styles https://codepen.io/tobiasdev/pen/YWpBxX*/
-
-h2 {
-	font-size: 20px;
-	text-align: center;
-	width: 150px;
-	margin-bottom: 20px;
-}
-
-p {
-	text-align: center;
-	font-size: 12px;
-}
 
 .row {
 	display: flex;
