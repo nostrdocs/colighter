@@ -2,13 +2,21 @@ import browser, { Tabs } from "webextension-polyfill";
 import { ColorDescription, MessageAction, MessageData, StorageKey, IHighlight } from "./types";
 import { useCallback, useEffect, useState } from "react";
 
-export const readLocalStorage = async <T,>(key: StorageKey): Promise<T | undefined> => {
+export const tryReadLocalStorage = async <T,>(key: string): Promise<T | undefined> => {
 	const storage = await browser.storage.local.get();
 	return storage[key];
 };
 
-export const writeLocalStorage = async <T,>(key: StorageKey, value: T) => {
+export const readLocalStorage = async <T,>(key: StorageKey): Promise<T | undefined> => {
+	return tryReadLocalStorage<T>(key);
+};
+
+export const tryWriteLocalStorage = async <T,>(key: string, value: T) => {
 	await browser.storage.local.set({ [key]: value });
+};
+
+export const writeLocalStorage = async <T,>(key: StorageKey, value: T) => {
+	return tryWriteLocalStorage<T>(key, value);
 };
 
 export const sendMessage = async <T,>(data: MessageData<T>) => {
@@ -99,4 +107,12 @@ export const useCollabHighlights = () => {
 	}, []);
 
 	return [highlights, setHighlights] as const;
+};
+
+export const sha256Hash = async (message: string): Promise<string> => {
+	const encoder = new TextEncoder();
+	const hashArray = Array.from(
+		new Uint8Array(await crypto.subtle.digest("SHA-256", encoder.encode(message))),
+	);
+	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 };
