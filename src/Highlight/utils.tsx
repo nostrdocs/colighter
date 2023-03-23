@@ -84,3 +84,19 @@ export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
 
 	return [selectedColor, updateSelectedColor] as const;
 };
+
+export const useCollabHighlights = () => {
+	const [highlights, setHighlights] = useState<IHighlight[]>([]);
+
+	useEffect(() => {
+		browser.storage.local.onChanged.addListener((changes) => {
+			if (changes[StorageKey.COLLAB_HIGHLIGHTS]) {
+				const updatedHighlights = changes[StorageKey.COLLAB_HIGHLIGHTS]
+					.newValue as IHighlight[];
+				setHighlights(updatedHighlights);
+			}
+		});
+	}, []);
+
+	return [highlights, setHighlights] as const;
+};
