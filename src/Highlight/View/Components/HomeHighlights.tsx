@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 import { Highlight } from "../../model";
-import { IHighlight, IHighlightCollection } from "../../types";
+import { IHighlight } from "../../types";
+import { useCollabHighlights } from "../../utils";
 
 const Text = styled.p<{ isFirst: boolean }>`
 	text-align: left;
@@ -11,46 +12,13 @@ const Text = styled.p<{ isFirst: boolean }>`
 	border-top: ${({ isFirst, theme }) => (isFirst ? `1px solid ${theme.palette.lightGray}` : "")};
 `;
 
-type HomeHighlightsProps = {
-	collab: IHighlightCollection;
-	renderHighlightsOnCanvas: (highlights: IHighlight[]) => void;
-};
-
-export function HomeHighlights({ collab, renderHighlightsOnCanvas }: HomeHighlightsProps) {
-	const [highlights, setHighlights] = useState<IHighlight[]>([]);
-
-	const updateHighlights = useCallback(async (highlights: IHighlight[]) => {
-		renderHighlightsOnCanvas(highlights);
-		setHighlights(highlights);
-	}, []);
+export function HomeHighlights() {
+	const [highlights, setHighlights] = useCollabHighlights();
 
 	const createNewHighlight = useCallback(async () => {
 		let highlight = await Highlight.create("gru", `mock highlight #${highlights.length}`);
-		await collab.addHighlight(highlight);
+		setHighlights([...highlights, highlight]);
 	}, [highlights]);
-
-	useEffect(() => {
-		// Load any existing highlights from collab
-		collab
-			.getHighlights()
-			.then((highlights) => {
-				updateHighlights(highlights);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-
-		const changeListener = async () => {
-			const highlights = await collab.getHighlights();
-			updateHighlights(highlights);
-		};
-
-		collab.on("highlightCollectionChanged", changeListener);
-
-		return () => {
-			collab.off("highlightCollectionChanged", changeListener);
-		};
-	}, []);
 
 	return (
 		<>

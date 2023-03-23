@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { NostrUser } from "../../../Nostr";
-import { IHighlight, IUser, MessageAction } from "../../types";
-import { sendMessage, useCollabHighlighter } from "../../utils";
+import { IUser } from "../../types";
 
 import Colighter from "../Assets/Svg/colighter.svg";
 import Gear from "../Assets/Svg/gear.svg";
@@ -40,23 +38,7 @@ const users = Array.from({ length: 10 }).map((_, i) => ({
 	imageUrl: "https://source.unsplash.com/100x100/?profile-image",
 })) satisfies IUser[];
 
-const mockNostrUser: NostrUser = {
-	pubkey: "0x1234",
-	meta: {},
-};
-
 export function HomePopUp() {
-	const [user] = useState<NostrUser>(mockNostrUser);
-	const [collab] = useCollabHighlighter(user);
-
-	const renderHighlightsOnCanvas = async (highlights: IHighlight[]) => {
-		// Send message for render action by content script
-		await sendMessage<IHighlight[]>({
-			action: MessageAction.RENDER_HIGHLIGHTS,
-			data: highlights,
-		});
-	};
-
 	return (
 		<Container>
 			<Row>
@@ -65,12 +47,7 @@ export function HomePopUp() {
 			</Row>
 			<div>
 				<Heading>Your Highlights</Heading>
-				{collab && (
-					<HomeHighlights
-						collab={collab}
-						renderHighlightsOnCanvas={renderHighlightsOnCanvas}
-					/>
-				)}
+				<HomeHighlights />
 			</div>
 			<div>
 				<UserHeading>132 people have highlighted this page</UserHeading>
