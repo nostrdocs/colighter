@@ -1,11 +1,11 @@
-import { MessageAction } from "./types";
+import { ActionResponse, MessageAction } from "./types";
 
 let color: string = "FAA99D";
 const HIGHLIGHT_KEY: string = "NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F";
 
 chrome.runtime.onMessage.addListener(
 	(request: { action: MessageAction; data: any }, _sender, sendResponse) => {
-		console.log("Action: ", request.action);
+		let outcome: ActionResponse;
 
 		switch (request.action) {
 			case MessageAction.TOGGLE_HIGHLIGHTS:
@@ -16,25 +16,30 @@ chrome.runtime.onMessage.addListener(
 					document.removeEventListener("mouseup", highlightText);
 					document.removeEventListener("keyup", highlightText);
 				}
-				break;
+				outcome = { success: true };
 			case MessageAction.SELECT_COLOR:
 				color = request.data.color;
+				outcome = { success: true };
 				break;
 			case MessageAction.RENDER_HIGHLIGHTS:
 				if (request.data) {
 					// We don't know how to render collab highlights yet
 					// TODO: Render submitted highlights
+					outcome = { error: "Not implemented" };
 					break;
 				}
 
-				highlightText();
+				outcome = highlightText();
 				break;
 			case MessageAction.REMOVE_HIGHLIGHTS:
-				removeHighlight();
+				outcome = removeHighlight();
 				break;
 			default:
-				sendResponse({ data: "ERR" });
+				outcome = { error: "Unknown message action" };
+				break;
 		}
+
+		sendResponse(outcome);
 	},
 );
 
@@ -53,33 +58,39 @@ function getSelectedText(): string {
 }
 
 /* Highlight given selection */
-function highlightText(): void {
+function highlightText(): ActionResponse {
 	let parent = getHighlightedMark();
 
 	if (parent?.className !== HIGHLIGHT_KEY) {
 		let selectedText: string = getSelectedText();
-		if (selectedText) {
-			highlight();
-		}
-	}
-}
 
-/* Insert mark around selected text */
-function highlight(): void {
-	let mark: HTMLElement = document.createElement("mark");
-	mark.setAttribute("style", `background-color: #${color}`);
-	mark.className = HIGHLIGHT_KEY;
-	let sel: Selection | null = window.getSelection();
-	if (sel?.rangeCount) {
-		let range: Range = sel.getRangeAt(0).cloneRange();
-		range.surroundContents(mark);
-		sel.removeAllRanges();
-		sel.addRange(range);
+		if (selectedText) {
+			let mark: HTMLElement = document.createElement("mark");
+			mark.setAttribute("style", `background-color: #${color}`);
+			mark.className = HIGHLIGHT_KEY;
+			let sel: Selection | null = window.getSelection();
+
+			if (sel?.rangeCount) {
+				let range: Range = sel.getRangeAt(0).cloneRange();
+				range.surroundContents(mark);
+				sel.removeAllRanges();
+				sel.addRange(range);
+
+				// TODO: return highlight for persistence in collab
+				return { success: true };
+			}
+
+			return { error: "Failed to create highlight" };
+		}
+
+		return { error: "No text selected" };
 	}
+
+	return { error: "Already highlighted" };
 }
 
 /* Remove highlight for given selected text */
-function removeHighlight(): void {
+function removeHighlight(): ActionResponse {
 	let highlightedSelection = getHighlightedMark();
 
 	if (highlightedSelection?.className === HIGHLIGHT_KEY) {
@@ -88,7 +99,11 @@ function removeHighlight(): void {
 
 		parent?.insertBefore(text, highlightedSelection);
 		highlightedSelection.remove();
+
+		return { success: true };
 	}
+
+	return { error: "Failed to remove highlight" };
 }
 
 /* Get parent element from selected text
