@@ -34,4 +34,15 @@ chrome.runtime.onInstalled.addListener(() => {
 			});
 		},
 	);
+
+	chrome.commands.onCommand.addListener((command, tab) => {
+		if (command === "execute-highlight") {
+			tab.id !== undefined &&
+				chrome.tabs
+					.sendMessage(tab.id, { action: MessageAction.RENDER_HIGHLIGHTS })
+					.catch((err) => {
+						console.log(err);
+					});
+		}
+	});
 });
