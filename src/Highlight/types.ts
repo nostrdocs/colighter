@@ -53,3 +53,8 @@ export enum StorageKey {
 	COLOR_SELECTION = "COLOR_SELECTION",
 	COLLAB_ID = "COLLAB_ID",
 }
+
+export interface IUser {
+	userName: string;
+	imageUrl: string;
+}
