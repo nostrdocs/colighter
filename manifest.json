@@ -15,7 +15,8 @@
 		}
 	],
 	"background": {
-		"service_worker": "dist/background.bundle.js"
+		"service_worker": "dist/background.bundle.js",
+		"type": "module"
 	},
 	"options_page": "dist/index.html",
 	"commands": {
