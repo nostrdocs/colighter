@@ -1,4 +1,3 @@
-export { HighlightList } from "./Highlight";
 export { Avatar } from "./Avatar";
 export { AvatarList } from "./AvatarList";
 export { Button } from "./Button";
