@@ -17,7 +17,13 @@ import {
 	MessageAction,
 	StorageKey,
 } from "./types";
-import { readLocalStorage, sendMessage, writeLocalStorage } from "./utils";
+import {
+	tryReadLocalStorage,
+	sendMessage,
+	sha256Hash,
+	writeLocalStorage,
+	tryWriteLocalStorage,
+} from "./utils";
 
 let color: string = "FAA99D";
 const HIGHLIGHT_KEY: string = "NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F";
@@ -163,14 +169,14 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 			generateCreateNewRequest: createNostrCreateNewRequest,
 		});
 
-		let collabId = await readLocalStorage<string>(StorageKey.COLLAB_ID);
+		let storageKey = await sha256Hash(tab.url ?? "");
+		let collabId = await tryReadLocalStorage<string>(storageKey);
 
 		if (!collabId) {
 			const createResponse = await loader.createDetached("0.1.0");
 			collab = createResponse.collab.highlightCollection;
-			writeLocalStorage<string>(StorageKey.COLLAB_ID, await createResponse.attach());
+			tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
 		} else {
-			collabId = window.location.hash.substring(1);
 			collab = (await loader.loadExisting(collabId)).highlightCollection;
 		}
 	}
