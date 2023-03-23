@@ -11,6 +11,7 @@ module.exports = (env) => {
 			entry: {
 				app: "./src/Highlight/View/index.tsx",
 				background: "./src/Highlight/background.ts",
+				collabScript: "./src/Highlight/collabScript.ts",
 				contentScript: "./src/Highlight/contentScript.ts",
 			},
 			resolve: {

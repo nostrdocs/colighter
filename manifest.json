@@ -10,7 +10,7 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["dist/contentScript.bundle.js"],
+			"js": ["dist/collabScript.bundle.js", "dist/contentScript.bundle.js"],
 			"all_frames": true
 		}
 	],
