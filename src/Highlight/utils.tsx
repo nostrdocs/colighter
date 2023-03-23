@@ -29,20 +29,15 @@ export const writeLocalStorage = async <T,>(key: StorageKey, value: T) => {
 	await browser.storage.local.set({ [key]: value });
 };
 
-export const sendMessage = <T,>(data: MessageData<T>) => {
+export const sendMessage = async <T,>(data: MessageData<T>) => {
 	const queryOptions = { active: true, currentWindow: true };
+	const tabs: Tabs.Tab[] = await browser.tabs.query(queryOptions);
+	const currentTabId = tabs[0]?.id;
 
-	browser.tabs.query(queryOptions).then((tabs: Tabs.Tab[]) => {
-		const currentTabId = tabs[0]?.id;
-
-		if (currentTabId !== undefined) {
-			browser.tabs.sendMessage(currentTabId, data).then((response) => {
-				if (response?.data == "ERR") {
-					alert("COLIGHTER ERROR");
-				}
-			});
-		}
-	});
+	if (currentTabId !== undefined) {
+		const res = await browser.tabs.sendMessage(currentTabId, data);
+		console.log(res);
+	}
 };
 
 export const useShowHighlights = () => {
@@ -57,6 +52,8 @@ export const useShowHighlights = () => {
 		sendMessage({
 			action: MessageAction.TOGGLE_HIGHLIGHTS,
 			data: showHighlights,
+		}).catch((e) => {
+			console.log("Failed to send message", e);
 		});
 	}, []);
 
@@ -78,23 +75,24 @@ export const useShowHighlights = () => {
 export const useColorSelectedColor = (colorOptions: ColorDescription[]) => {
 	const [selectedColor, setSelectedColor] = useState<ColorDescription>(colorOptions[0]);
 
-	const updateSelectedColor = useCallback((selectedColor: ColorDescription) => {
-		// Update state and local storage
-		setSelectedColor(selectedColor);
-		writeLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION, selectedColor);
-
+	const updateSelectedColor = useCallback(async (selectedColor: ColorDescription) => {
 		// Send message for render action by content script
-		sendMessage<ColorDescription>({
+		await sendMessage<ColorDescription>({
 			action: MessageAction.SELECT_COLOR,
 			data: selectedColor,
 		});
+
+		// Update state and local storage
+		writeLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION, selectedColor);
+
+		setSelectedColor(selectedColor);
 	}, []);
 
 	useEffect(() => {
 		readLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION)
 			.then((storedSelectedColor) => {
 				// Update state
-				const updatedSelectedColor = storedSelectedColor ?? selectedColor;
+				const updatedSelectedColor = storedSelectedColor || selectedColor;
 				updateSelectedColor(updatedSelectedColor);
 			})
 			.catch((e) => {
