@@ -57,6 +57,7 @@ function getSelectedText(): string {
 	) {
 		text = (document as any).selection.createRange().text;
 	}
+	console.log("Selected text: ", text);
 	return text;
 }
 
@@ -68,20 +69,7 @@ function highlightText(): ActionResponse {
 		let selectedText: string = getSelectedText();
 
 		if (selectedText) {
-			let mark: HTMLElement = document.createElement("mark");
-			mark.setAttribute("style", `background-color: #${color}`);
-			mark.className = HIGHLIGHT_KEY;
-			let sel: Selection | null = window.getSelection();
-
-			if (sel?.rangeCount) {
-				let range: Range = sel.getRangeAt(0).cloneRange();
-				range.surroundContents(mark);
-				sel.removeAllRanges();
-				sel.addRange(range);
-
-				// TODO: return highlight for persistence in collab
-				return { success: true };
-			}
+			highlight();
 
 			return { error: "Failed to create highlight" };
 		}
@@ -90,6 +78,22 @@ function highlightText(): ActionResponse {
 	}
 
 	return { error: "Already highlighted" };
+}
+
+/* Insert mark around selected text */
+function highlight() {
+	let mark: HTMLElement = document.createElement("mark");
+	mark.setAttribute("style", `background-color: #${color}`);
+	mark.className = HIGHLIGHT_KEY;
+	let sel: Selection | null = window.getSelection();
+
+	if (sel?.rangeCount) {
+		let range: Range = sel.getRangeAt(0).cloneRange();
+		range.surroundContents(mark);
+		sel.removeAllRanges();
+		sel.addRange(range);
+		return { success: true };
+	}
 }
 
 /* Remove highlight for given selected text */
