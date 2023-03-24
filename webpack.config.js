@@ -48,6 +48,7 @@ module.exports = (env) => {
 				// https://github.com/webpack/webpack/issues/7939
 				devtoolNamespace: "colighter",
 				libraryTarget: "umd",
+				publicPath: "",
 			},
 			plugins: [
 				new webpack.ProvidePlugin({
