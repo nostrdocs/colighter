@@ -7,11 +7,22 @@ export interface IHighlight {
 	 * This could be the pubkey identifier of the author
 	 */
 	author: string;
+	/** Range of the highlight
+	 * This is a serialized representation of the range
+	 */
+	range: SerializedRange;
 	/** Unique hash identifier of the highlight
 	 *  Possibly create this by hashing concat of author + text
 	 */
 	hashId: string;
 }
+
+export type SerializedRange = {
+	startPath: number[];
+	endPath: number[];
+	startOffset: number;
+	endOffset: number;
+};
 
 export interface IHighlightCollection extends EventEmitter {
 	addHighlight(highlight: IHighlight): Promise<IHighlight>;
