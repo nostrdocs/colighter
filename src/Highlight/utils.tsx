@@ -107,12 +107,12 @@ export const useCollabHighlights = () => {
 	const [highlights, setHighlights] = useState<IHighlight[]>([]);
 
 	useEffect(() => {
-		browser.storage.local.onChanged.addListener((changes) => {
-			if (changes[StorageKey.COLLAB_HIGHLIGHTS]) {
-				const updatedHighlights = changes[StorageKey.COLLAB_HIGHLIGHTS]
-					.newValue as IHighlight[];
-				setHighlights(updatedHighlights);
+		chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+			if (message.action !== MessageAction.GET_COLLAB_HIGHLIGHTS || !message.data) {
+				return;
 			}
+
+			setHighlights(message.data as IHighlight[]);
 		});
 	}, []);
 
