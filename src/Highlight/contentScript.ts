@@ -14,15 +14,18 @@ import { Highlight } from "./model";
 import {
 	ActionResponse,
 	ColorDescription,
+	IHighlight,
 	IHighlightCollection,
 	IHighlightCollectionAppModel,
 	MessageAction,
+	StorageKey,
 } from "./types";
 import {
 	tryReadLocalStorage,
 	sha256Hash,
 	tryWriteLocalStorage,
 	serializeRange,
+	writeLocalStorage,
 } from "./utils";
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
@@ -49,6 +52,28 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
 						error: e,
 					} as ActionResponse);
 				});
+				break;
+
+			case MessageAction.GET_COLLAB_HIGHLIGHTS:
+				if (collab !== null) {
+					outcome = await collab
+						.getHighlights()
+						.then((highlights) => {
+							return (outcome = {
+								success: true,
+								data: highlights,
+							} as ActionResponse);
+						})
+						.catch((e) => {
+							return (outcome = {
+								success: false,
+								error: e,
+							} as ActionResponse);
+						});
+					break;
+				}
+
+				outcome = { success: false, error: "Collab not ready" } as ActionResponse;
 				break;
 
 			case MessageAction.TOGGLE_HIGHLIGHTS:
@@ -217,16 +242,31 @@ const loadCollab = async (url: string): Promise<ActionResponse> => {
 		const highlights = await collab!.getHighlights();
 
 		// Request render highlights on canvas
-		chrome.runtime.sendMessage({
-			action: MessageAction.RENDER_HIGHLIGHTS,
-			data: highlights,
-		});
+		chrome.runtime
+			.sendMessage({
+				action: MessageAction.RENDER_HIGHLIGHTS,
+				data: highlights,
+			})
+			.catch((e) => {
+				console.error(e);
+			});
 
 		// Request render of highlights on popup UI
-		chrome.runtime.sendMessage({
-			action: MessageAction.GET_COLLAB_HIGHLIGHTS,
-			data: highlights,
-		});
+		chrome.runtime
+			.sendMessage({
+				action: MessageAction.POST_COLLAB_HIGHLIGHTS,
+				data: highlights,
+			})
+			.catch((e) => {
+				console.error(e);
+			});
+
+		// Write highlights to local storage for when the popup is closed
+		await writeLocalStorage<IHighlight[]>(StorageKey.COLLAB_HIGHLIGHTS, highlights).catch(
+			(e) => {
+				console.error(e);
+			},
+		);
 	};
 
 	collab.on("highlightCollectionChanged", changeListener);
