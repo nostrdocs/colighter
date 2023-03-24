@@ -47,4 +47,15 @@ chrome.runtime.onInstalled.addListener(() => {
 					});
 		}
 	});
+
+	chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+		// Load collab whenever on fully loaded tabs
+		if (changeInfo.status === "complete") {
+			chrome.tabs
+				.sendMessage(tabId, { action: MessageAction.LOAD_COLLAB, data: tab.url || "" })
+				.catch((err) => {
+					console.log(err);
+				});
+		}
+	});
 });
