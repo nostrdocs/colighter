@@ -9,3 +9,8 @@ export const getNostrUser = async (): Promise<NostrUser> => {
 
 	return mockNostrUser;
 };
+
+
+// const pubKey = (): string => {
+// 	return window.nostr.getPublicKey().toString();
+// }
