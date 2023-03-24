@@ -14,7 +14,6 @@ import { Highlight } from "./model";
 import {
 	ActionResponse,
 	ColorDescription,
-	IHighlight,
 	IHighlightCollection,
 	IHighlightCollectionAppModel,
 	MessageAction,
@@ -24,7 +23,6 @@ import {
 	sha256Hash,
 	tryWriteLocalStorage,
 	serializeRange,
-	sendMessage,
 } from "./utils";
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
@@ -219,7 +217,7 @@ const loadCollab = async (url: string): Promise<ActionResponse> => {
 		const highlights = await collab!.getHighlights();
 
 		// Request render highlights on canvas
-		await sendMessage<IHighlight[]>({
+		chrome.runtime.sendMessage({
 			action: MessageAction.RENDER_HIGHLIGHTS,
 			data: highlights,
 		});
