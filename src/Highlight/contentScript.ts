@@ -18,15 +18,13 @@ import {
 	IHighlightCollection,
 	IHighlightCollectionAppModel,
 	MessageAction,
-	StorageKey,
 } from "./types";
 import {
 	tryReadLocalStorage,
-	sendMessage,
 	sha256Hash,
-	writeLocalStorage,
 	tryWriteLocalStorage,
 	serializeRange,
+	sendMessage,
 } from "./utils";
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
@@ -163,14 +161,14 @@ const getHighlightedMark = (selection: Selection): HTMLElement | null => {
 
 // ######################## Collab Script ########################
 
-let collab: IHighlightCollection | null = null;
-
 /**
  * Listen for tab updates, and appropriately load the collab model whenever a tab is fully loaded
  */
 chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 	// Load collab whenever on fully loaded tabs
 	if (changeInfo.status === "complete") {
+		let collab: IHighlightCollection;
+
 		const collabRelayUrl = process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
 		const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1, collabRelayUrl);
 
@@ -182,7 +180,7 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 			documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
 			codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
 			generateCreateNewRequest: createNostrCreateNewRequest,
-		});``
+		});
 
 		let storageKey = await sha256Hash(tab.url ?? "");
 		let collabId = await tryReadLocalStorage<string>(storageKey);
@@ -194,9 +192,7 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 		} else {
 			collab = (await loader.loadExisting(collabId)).highlightCollection;
 		}
-	}
 
-	if (collab !== null) {
 		// Listen for changes to the highlight collection
 		const changeListener = async () => {
 			const highlights = await collab!.getHighlights();
@@ -207,8 +203,11 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 				data: highlights,
 			});
 
-			// Notify render of highlights on popup UI
-			writeLocalStorage<IHighlight[]>(StorageKey.COLLAB_HIGHLIGHTS, highlights);
+			// Request render of highlights on popup UI
+			chrome.runtime.sendMessage({
+				action: MessageAction.GET_COLLAB_HIGHLIGHTS,
+				data: highlights,
+			});
 		};
 
 		collab.on("highlightCollectionChanged", changeListener);
@@ -216,16 +215,16 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
 });
 
 const trySaveHighlight = async (range: Range, text: string): Promise<ActionResponse> => {
-	if (collab !== null) {
-		try {
-			const rangeSer = serializeRange(range);
-			const highlight = await Highlight.create(text, rangeSer, "0x000000");
-			await collab.addHighlight(highlight);
-			return { success: true };
-		} catch (e) {
-			return { success: false, error: e } as ActionResponse;
-		}
+	try {
+		const collab = (await chrome.storage.session.get("collab")).collab as IHighlightCollection;
+
+		const rangeSer = serializeRange(range);
+		const highlight = await Highlight.create(text, rangeSer, "0x000000");
+		await collab.addHighlight(highlight);
+		return { success: true };
+	} catch (e) {
+		return { success: false, error: e } as ActionResponse;
 	}
 
-	return { success: false, error: "Collab model not ready" } as ActionResponse;
+	// return { success: false, error: "Collab model not ready" } as ActionResponse;
 };
