@@ -29,6 +29,7 @@ import {
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
 const HIGHLIGHT_KEY: string = "NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F";
+let collab: IHighlightCollection | null = null;
 
 /**
  * Listen for highlight mesages and take actions that render highlights on the page
@@ -38,6 +39,20 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
 		let outcome: ActionResponse;
 
 		switch (request.action) {
+			case MessageAction.LOAD_COLLAB:
+				if (collab) {
+					outcome = { success: true, data: "Collab already loaded" } as ActionResponse;
+					break;
+				}
+
+				outcome = await loadCollab(request.data).catch((e) => {
+					return (outcome = {
+						success: false,
+						error: e,
+					} as ActionResponse);
+				});
+				break;
+
 			case MessageAction.TOGGLE_HIGHLIGHTS:
 				if (request.data) {
 					// TODO: render all highlights
@@ -159,65 +174,12 @@ const getHighlightedMark = (selection: Selection): HTMLElement | null => {
 	return parent;
 };
 
-// ######################## Collab Script ########################
-
-/**
- * Listen for tab updates, and appropriately load the collab model whenever a tab is fully loaded
- */
-chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
-	// Load collab whenever on fully loaded tabs
-	if (changeInfo.status === "complete") {
-		let collab: IHighlightCollection;
-
-		const collabRelayUrl = process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
-		const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1, collabRelayUrl);
-
-		const tokenProvider = new NostrRelayTokenProvider(collabRelay, await getNostrUser());
-
-		// Create a new Fluid loader, load the highlight collection
-		const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
-			urlResolver: new NostrRelayUrlResolver(collabRelay),
-			documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
-			codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
-			generateCreateNewRequest: createNostrCreateNewRequest,
-		});
-
-		let storageKey = await sha256Hash(tab.url ?? "");
-		let collabId = await tryReadLocalStorage<string>(storageKey);
-
-		if (!collabId) {
-			const createResponse = await loader.createDetached("0.1.0");
-			collab = createResponse.collab.highlightCollection;
-			tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
-		} else {
-			collab = (await loader.loadExisting(collabId)).highlightCollection;
-		}
-
-		// Listen for changes to the highlight collection
-		const changeListener = async () => {
-			const highlights = await collab!.getHighlights();
-
-			// Request render highlights on canvas
-			await sendMessage<IHighlight[]>({
-				action: MessageAction.RENDER_HIGHLIGHTS,
-				data: highlights,
-			});
-
-			// Request render of highlights on popup UI
-			chrome.runtime.sendMessage({
-				action: MessageAction.GET_COLLAB_HIGHLIGHTS,
-				data: highlights,
-			});
-		};
-
-		collab.on("highlightCollectionChanged", changeListener);
-	}
-});
-
 const trySaveHighlight = async (range: Range, text: string): Promise<ActionResponse> => {
-	try {
-		const collab = (await chrome.storage.session.get("collab")).collab as IHighlightCollection;
+	if (collab === null) {
+		return { success: false, error: "Collab model not ready" } as ActionResponse;
+	}
 
+	try {
 		const rangeSer = serializeRange(range);
 		const highlight = await Highlight.create(text, rangeSer, "0x000000");
 		await collab.addHighlight(highlight);
@@ -225,6 +187,51 @@ const trySaveHighlight = async (range: Range, text: string): Promise<ActionRespo
 	} catch (e) {
 		return { success: false, error: e } as ActionResponse;
 	}
+};
 
-	// return { success: false, error: "Collab model not ready" } as ActionResponse;
+const loadCollab = async (url: string): Promise<ActionResponse> => {
+	const collabRelayUrl = process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
+	const collabRelay = new MockCollabRelay("wss://mockcollabrelay", 1, collabRelayUrl);
+
+	const tokenProvider = new NostrRelayTokenProvider(collabRelay, await getNostrUser());
+
+	// Create a new Fluid loader, load the highlight collection
+	const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
+		urlResolver: new NostrRelayUrlResolver(collabRelay),
+		documentServiceFactory: new RouterliciousDocumentServiceFactory(tokenProvider),
+		codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
+		generateCreateNewRequest: createNostrCreateNewRequest,
+	});
+
+	let storageKey = await sha256Hash(url);
+	let collabId = await tryReadLocalStorage<string>(storageKey);
+
+	if (!collabId) {
+		const createResponse = await loader.createDetached("0.1.0");
+		collab = createResponse.collab.highlightCollection;
+		tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
+	} else {
+		collab = (await loader.loadExisting(collabId)).highlightCollection;
+	}
+
+	// Listen for changes to the highlight collection
+	const changeListener = async () => {
+		const highlights = await collab!.getHighlights();
+
+		// Request render highlights on canvas
+		await sendMessage<IHighlight[]>({
+			action: MessageAction.RENDER_HIGHLIGHTS,
+			data: highlights,
+		});
+
+		// Request render of highlights on popup UI
+		chrome.runtime.sendMessage({
+			action: MessageAction.GET_COLLAB_HIGHLIGHTS,
+			data: highlights,
+		});
+	};
+
+	collab.on("highlightCollectionChanged", changeListener);
+
+	return { success: true };
 };
