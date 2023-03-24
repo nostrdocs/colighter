@@ -1,13 +1,18 @@
 import { DataObject, DataObjectFactory } from "@fluidframework/aqueduct";
-import { IHighlight, IHighlightCollection } from "./types";
+import { IHighlight, IHighlightCollection, SerializedRange } from "./types";
 import { sha256Hash } from "./utils";
 
 export class Highlight implements IHighlight {
-	protected constructor(public author: string, public text: string, public hashId: string) {}
+	protected constructor(
+		public author: string,
+		public text: string,
+		public range: SerializedRange,
+		public hashId: string,
+	) {}
 
-	static async create(author: string, text: string) {
+	static async create(text: string, range: SerializedRange, author: string) {
 		const hash = await sha256Hash(`${author}-${text}`);
-		return new Highlight(author, text, hash);
+		return new Highlight(author, text, range, hash);
 	}
 }
 
