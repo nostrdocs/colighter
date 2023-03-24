@@ -50,8 +50,8 @@ export function HomePopUp() {
 				<HomeHighlights />
 			</div>
 			<div>
-				<UserHeading>132 people have highlighted this page</UserHeading>
-				<AvatarList avatarSize={48} maxUsers={8} users={users} />
+				<UserHeading>2 people have highlighted this page</UserHeading>
+				<AvatarList avatarSize={48} maxUsers={2} users={users} />
 			</div>
 			<HighlightPicker />
 		</Container>
