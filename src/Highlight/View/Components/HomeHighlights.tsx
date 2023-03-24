@@ -1,6 +1,5 @@
-import React, { useCallback } from "react";
+import React from "react";
 import styled from "styled-components";
-import { Highlight } from "../../model";
 import { IHighlight } from "../../types";
 import { useCollabHighlights } from "../../utils";
 
@@ -13,12 +12,7 @@ const Text = styled.p<{ isFirst: boolean }>`
 `;
 
 export function HomeHighlights() {
-	const [highlights, setHighlights] = useCollabHighlights();
-
-	const createNewHighlight = useCallback(async () => {
-		let highlight = await Highlight.create("gru", `mock highlight #${highlights.length}`);
-		setHighlights([...highlights, highlight]);
-	}, [highlights]);
+	const [highlights] = useCollabHighlights();
 
 	return (
 		<>
@@ -30,11 +24,6 @@ export function HomeHighlights() {
 					isFirst={index === 0}
 				/>
 			))}
-			<input
-				type="button"
-				value="Create Mock Highlight"
-				onClick={() => createNewHighlight()}
-			/>
 		</>
 	);
 }

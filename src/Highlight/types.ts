@@ -52,16 +52,18 @@ export enum MessageAction {
 	SELECT_COLOR = "SELECT_COLOR",
 }
 
-interface SucccessAcionResponse {
+export interface ActionResponse {
 	success: boolean;
+}
+export interface SucccessAcionResponse extends ActionResponse {
+	success: true;
 	data?: any;
 }
 
-interface ErrorActionResponse {
+export interface ErrorActionResponse extends ActionResponse {
+	success: false;
 	error: string;
 }
-
-export type ActionResponse = SucccessAcionResponse | ErrorActionResponse;
 
 export interface MessageData<T> {
 	action: MessageAction;
