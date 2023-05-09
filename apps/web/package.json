@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "colighter-web",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -12,10 +12,14 @@
     "clean": "rm -rf build"
   },
   "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "@chakra-ui/react": "^2.6.1",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "framer-motion": "^10.12.9",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "5.0.0",
-    "ui": "workspace:*",
+    "ui": "*",
     "web-vitals": "^2.1.2"
   },
   "devDependencies": {
@@ -24,10 +28,10 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.0.3",
     "@types/node": "^16.11.14",
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@types/testing-library__jest-dom": "^5.14.5",
-    "tsconfig": "workspace:*",
+    "tsconfig": "*",
     "typescript": "^4.5.4"
   },
   "eslintConfig": {

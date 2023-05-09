@@ -1,34 +1,22 @@
-# Turborepo Create React App starter
+# Colighter Project
 
-This is an official starter Turborepo.
+## What's Inside
 
-## Using this example
+This project includes the following apps / packages:
 
-Run the following command:
+### Apps
 
-```sh
-npx create-turbo@latest -e with-create-react-app
-```
+- `web`: Web app experience hosted at [colighter.com](https://colighter.com)
 
-## What's inside?
+### Packages
 
-This Turborepo includes the following packages/apps:
+- `ui`: Shared React UI component library for building apps within the Colighter project
+- `eslint-config-custom`: Shared `eslint` configurations (includes `eslint-plugin-react` and `eslint-config-prettier`)
+- `tsconfig`: Shared `tsconfig.json`s used throughout the Colighter project
 
-### Apps and Packages
+## Development
 
-- `docs`: a [create-react-app](https://create-react-app.dev) app
-- `web`: another [create-react-app](https://create-react-app.dev) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-plugin-react` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Jest](https://jestjs.io) test runner for all things JavaScript
-- [Prettier](https://prettier.io) for code formatting
+- `yarn run dev` - Starts all apps and packages in development mode
+- `yarn run test` - Runs tests in all apps and packages in the project
+- `yarn run build` - Build all apps and packages in the project
+- `yarn run format` - Fixes formatting in all apps and packages in the project

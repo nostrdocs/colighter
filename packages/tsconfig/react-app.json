@@ -1,17 +1,24 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Next.js",
+  "display": "React App",
   "extends": "./base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "declaration": false,
-    "declarationMap": false,
-    "incremental": true,
-    "jsx": "preserve",
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
     "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "strict": false,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "target": "es5"
   }
 }

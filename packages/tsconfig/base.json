@@ -9,6 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "inlineSources": false,
     "isolatedModules": true,
+    "jsx": "react-jsx",
     "moduleResolution": "node",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
