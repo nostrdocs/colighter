@@ -7,6 +7,7 @@ This project includes the following apps / packages:
 ### Apps
 
 - `web`: Web app experience hosted at [colighter.com](https://colighter.com)
+- `extension`: Browser extension experience for collaboratively highlighting the web
 
 ### Packages
 
