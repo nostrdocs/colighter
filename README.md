@@ -10,6 +10,7 @@ This project includes the following apps / packages:
 
 ### Packages
 
+- `nostrfn`: Shared library for Nostr types and utils
 - `nostrcollab`: Shared library for storing and interacting with data in collaborative document formats
 - `ui`: Shared React UI component library for building apps within the Colighter project
 - `eslint-config-custom`: Shared `eslint` configurations (includes `eslint-plugin-react` and `eslint-config-prettier`)
@@ -17,7 +18,7 @@ This project includes the following apps / packages:
 
 ## Development
 
-- `yarn run dev` - Starts all apps and packages in development mode
-- `yarn run test` - Runs tests in all apps and packages in the project
-- `yarn run build` - Build all apps and packages in the project
-- `yarn run format` - Fixes formatting in all apps and packages in the project
+- `yarn dev` - Starts all apps and packages in development mode
+- `yarn test` - Tests all apps and packages in the project
+- `yarn build` - Build all apps and packages in the project
+- `yarn format` - Fixes formatting in all apps and packages in the project

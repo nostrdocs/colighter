@@ -1,6 +1,6 @@
 import { IRequest } from "@fluidframework/core-interfaces";
 import { IFluidResolvedUrl, IResolvedUrl, IUrlResolver } from "@fluidframework/driver-definitions";
-import { Relay } from "nostr-tools";
+import { Relay } from "nostrfn";
 import { NostrCollabHeader, NostrCollabRequest } from "./types";
 import { mapFluidRequestToNostrCollab } from "./utils";
 import { KIND_COLLAB } from "./constants";
