@@ -10,6 +10,7 @@ This project includes the following apps / packages:
 
 ### Packages
 
+- `nostrcollab`: Shared library for storing and interacting with data in collaborative document formats
 - `ui`: Shared React UI component library for building apps within the Colighter project
 - `eslint-config-custom`: Shared `eslint` configurations (includes `eslint-plugin-react` and `eslint-config-prettier`)
 - `tsconfig`: Shared `tsconfig.json`s used throughout the Colighter project
