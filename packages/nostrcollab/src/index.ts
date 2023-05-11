@@ -1,4 +1,4 @@
-export { NostrContainerRuntimeFactory } from "./container";
+export * from "./container";
 export { NostrCollabLoader, StaticCodeLoader } from "./loader";
 export {
   NostrRelayUrlResolver,
@@ -6,3 +6,6 @@ export {
   createNostrCreateNewRequest,
 } from "./driver";
 export { MockCollabRelay } from "./relay";
+export {
+  RouterliciousDocumentServiceFactory
+} from "@fluidframework/routerlicious-driver";
