@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Colighter",
+  "name": "Colighter Web",
   "icons": [
     {
       "src": "favicon.ico",
