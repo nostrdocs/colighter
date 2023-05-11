@@ -1,7 +1,4 @@
-import { requestFluidObject } from "@fluidframework/runtime-utils";
-import { IContainer } from "@fluidframework/container-definitions";
-import { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
-import { NostrContainerRuntimeFactory } from "nostrcollab";
+import { NostrContainerRuntimeFactory, IContainer, IContainerRuntime, requestFluidObject } from "nostrcollab";
 import { IHighlightCollection, IHighlightCollectionAppModel } from "./types";
 import { HighlightCollectionInstantiationFactory } from "./model";
 
@@ -9,11 +6,10 @@ const highlightCollectionId = "highlightCollection";
 
 /** HighlightContainerAppModel defines Fluid collab data stores for highlight collections */
 export class HighlightContainerAppModel
-  implements IHighlightCollectionAppModel
-{
+  implements IHighlightCollectionAppModel {
   public constructor(
     public readonly highlightCollection: IHighlightCollection
-  ) {}
+  ) { }
 }
 
 export class HighlightContainerRuntimeFactory extends NostrContainerRuntimeFactory<HighlightContainerAppModel> {

@@ -1,4 +1,9 @@
 {
   "extends": "tsconfig/react-app.json",
-  "include": ["src"]
+  "include": ["src", "typings", "typings"],
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+  }
 }

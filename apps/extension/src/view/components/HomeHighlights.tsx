@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { IHighlight } from "../../../types";
-import { useCollabHighlights } from "../../../utils";
+import { IHighlight } from "../../types";
+import { useCollabHighlights } from "../../utils";
 
 const Text = styled.p<{ isFirst: boolean }>`
   text-align: left;
