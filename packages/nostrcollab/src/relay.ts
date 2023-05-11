@@ -30,7 +30,7 @@ export class MockCollabRelay {
     public readonly url: string,
     public status: number,
     private readonly collabServerEndpoint: string = "http://localhost:7070"
-  ) {}
+  ) { }
 
   public connect(): Promise<void> {
     return Promise.resolve();
@@ -44,15 +44,15 @@ export class MockCollabRelay {
     return {
       sub: (filters: Filter[], opts: SubscriptionOptions) =>
         this.sub(filters, opts),
-      unsub: () => {},
+      unsub: () => { },
       on: <T extends keyof SubEvent, U extends SubEvent[T]>(
         _event: T,
         _listener: U
-      ) => {},
+      ) => { },
       off: <T extends keyof SubEvent, U extends SubEvent[T]>(
         _event: T,
         _listener: U
-      ) => {},
+      ) => { },
     };
   }
 
@@ -206,8 +206,8 @@ export class MockCollabRelay {
 
   public publish(_event: Event): Pub {
     return {
-      on: (_type: "ok" | "failed", _cb: any) => {},
-      off: (_type: "ok" | "failed", _cb: any) => {},
+      on: (_type: "ok" | "failed", _cb: any) => { },
+      off: (_type: "ok" | "failed", _cb: any) => { },
     };
   }
 

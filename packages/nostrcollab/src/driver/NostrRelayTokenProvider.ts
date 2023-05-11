@@ -14,7 +14,7 @@ export class NostrRelayTokenProvider implements ITokenProvider {
     private readonly collabRelay: Relay,
     // The host should provide a user identity. Possibbly sourced from other relays?
     private readonly nostrUser: NostrUser
-  ) {}
+  ) { }
 
   public async fetchOrdererToken(
     tenantId: string,
