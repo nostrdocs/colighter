@@ -12,3 +12,5 @@ type Nostr = {
   ): unknown;
   getPublicKey(): Promise<string>;
 };
+
+declare const chrome: any;

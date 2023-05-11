@@ -1,11 +1,11 @@
 import React from "react";
-import { HIGHLIGHT_COLOR_OPTIONS } from "../../../constants";
-import { StorageKey } from "../../../types";
 import {
   useColorSelectedColor,
   useShowHighlights,
   writeLocalStorage,
-} from "../../../utils";
+} from "../../utils";
+import { StorageKey } from "../../types";
+import { HIGHLIGHT_COLOR_OPTIONS } from "../../constants";
 
 export function HighlightPicker() {
   const [showHighlights, toggleShowHighlights] = useShowHighlights();

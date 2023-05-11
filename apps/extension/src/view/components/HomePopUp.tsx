@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { IUser } from "../../../types";
+import { IUser } from "../../types";
 
 import Colighter from "../Assets/Svg/colighter.svg";
 import Gear from "../Assets/Svg/gear.svg";

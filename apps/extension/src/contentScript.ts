@@ -1,6 +1,5 @@
-import { RouterliciousDocumentServiceFactory } from "@fluidframework/routerlicious-driver";
-import { getNostrUser } from "nostrfn";
 import {
+  RouterliciousDocumentServiceFactory,
   createNostrCreateNewRequest,
   MockCollabRelay,
   NostrCollabLoader,
@@ -8,6 +7,7 @@ import {
   NostrRelayUrlResolver,
   StaticCodeLoader,
 } from "nostrcollab";
+import { Relay, getNostrUser } from "nostrfn";
 import { DEFAULT_HIGHLIGHT_COLOR } from "./constants";
 import { HighlightContainerRuntimeFactory } from "./container";
 import { Highlight } from "./model";
@@ -250,7 +250,7 @@ const loadCollab = async (url: string): Promise<ActionResponse> => {
     "wss://mockcollabrelay",
     1,
     collabRelayUrl
-  );
+  ) as unknown as Relay;
 
   const tokenProvider = new NostrRelayTokenProvider(
     collabRelay,
@@ -311,7 +311,7 @@ const loadCollab = async (url: string): Promise<ActionResponse> => {
     });
   };
 
-  collab.on("highlightCollectionChanged", changeListener);
+  collab?.on("highlightCollectionChanged", changeListener);
 
   return { success: true };
 };

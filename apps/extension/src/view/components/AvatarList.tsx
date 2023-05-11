@@ -1,9 +1,8 @@
 import React from "react";
-import { StyledComponentPropsWithRef } from "styled-components";
-import styled from "styled-components";
+import styled, { StyledComponentPropsWithRef } from "styled-components";
 import { variant } from "styled-system";
 import { Avatar } from "./Avatar";
-import { IUser } from "../../../types";
+import { IUser } from "../../types";
 
 type Variants = "row" | "col";
 
