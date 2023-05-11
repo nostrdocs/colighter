@@ -2,6 +2,7 @@
   "name": "colighter-web",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://colighter.com",
   "scripts": {
     "start": "react-scripts start",
     "dev": "react-scripts start",
