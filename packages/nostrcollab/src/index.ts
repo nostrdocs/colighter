@@ -5,7 +5,7 @@ export {
   NostrRelayTokenProvider,
   createNostrCreateNewRequest,
 } from "./driver";
-export { MockCollabRelay } from "./relay";
+export { CollabRelayClient } from "./relay";
 export {
   RouterliciousDocumentServiceFactory
 } from "@fluidframework/routerlicious-driver";

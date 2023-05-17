@@ -14,19 +14,19 @@ import {
   create404Response,
   requestFluidObject,
 } from "@fluidframework/runtime-utils";
-import { IDetachedNostrCollab, NostrCollabMakerCallback } from "./interfaces";
+import { IDetachedNostrCollab, NostrCollabMakerCallback } from "./types";
 
-const nostrCollabUrl = "nostrcollab";
+const COLLAB_URL_MARKER = "nostrcollab";
 
 interface IModelRequest extends IRequest {
-  url: typeof nostrCollabUrl;
+  url: typeof COLLAB_URL_MARKER;
   headers: {
     containerRef: IContainer;
   };
 }
 
-const isNostrCollabRequest = (request: IRequest): request is IModelRequest =>
-  request.url === nostrCollabUrl && request.headers?.containerRef !== undefined;
+const isCollabRequest = (request: IRequest): request is IModelRequest =>
+  request.url === COLLAB_URL_MARKER && request.headers?.containerRef !== undefined;
 
 /**
  * A helper function for container authors, which generates the request handler they need to align with the
@@ -34,7 +34,7 @@ const isNostrCollabRequest = (request: IRequest): request is IModelRequest =>
  * @param NostrCollabMakerCallback - A callback that will produce the model for the container
  * @returns A request handler that can be provided to the container runtime factory
  */
-export const makeNostrCollabRequestHandler = <NostrCollab>(
+export const makeCollabRequestHandler = <NostrCollab>(
   NostrCollabMakerCallback: NostrCollabMakerCallback<NostrCollab>
 ) => {
   return async (
@@ -43,7 +43,7 @@ export const makeNostrCollabRequestHandler = <NostrCollab>(
   ): Promise<IResponse> => {
     // The model request format is for an empty path (i.e. "") and passing a reference to the container in the
     // header as containerRef.
-    if (isNostrCollabRequest(request)) {
+    if (isCollabRequest(request)) {
       const container: IContainer = request.headers.containerRef;
       const model = await NostrCollabMakerCallback(runtime, container);
       return { status: 200, mimeType: "fluid/object", value: model };
@@ -105,7 +105,7 @@ export class NostrCollabLoader<NostrCollab>
 
   private async getCollabFromContainer(container: IContainer) {
     const request: IModelRequest = {
-      url: nostrCollabUrl,
+      url: COLLAB_URL_MARKER,
       headers: { containerRef: container },
     };
     return requestFluidObject<NostrCollab>(container, request);
@@ -149,7 +149,7 @@ export class NostrCollabLoader<NostrCollab>
 }
 
 export class StaticCodeLoader implements ICodeDetailsLoader {
-  public constructor(private readonly runtimeFactory: IRuntimeFactory) {}
+  public constructor(private readonly runtimeFactory: IRuntimeFactory) { }
 
   public async load(
     details: IFluidCodeDetails
