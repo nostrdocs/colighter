@@ -1,12 +1,12 @@
 import { IRequest } from "@fluidframework/core-interfaces";
 import { DriverHeader } from "@fluidframework/driver-definitions";
 import {
-  NostrCollabHeader,
-  NostrCollabRequest,
+  CollabHeader,
+  CollabRequest,
   CreateCollabRequest,
   LoadCollabRequest,
   ShareCollabRequest,
-} from "./types";
+} from "../types";
 
 export const createNostrCreateNewRequest = (documentId?: string): IRequest => ({
   url: documentId ?? "",
@@ -21,7 +21,7 @@ export const mapFluidRequestToNostrCollab = (
   if (request.headers?.[DriverHeader.createNew]) {
     return {
       header: {
-        [NostrCollabHeader.Create]: true,
+        [CollabHeader.Create]: true,
       },
       url: request.url,
     };
@@ -29,29 +29,29 @@ export const mapFluidRequestToNostrCollab = (
 
   return {
     header: {
-      [NostrCollabHeader.Load]: true,
+      [CollabHeader.Load]: true,
     },
     url: request.url,
   };
 };
 
 export const isNostrCreateCollabRequest = (
-  request: NostrCollabRequest
+  request: CollabRequest
 ): request is CreateCollabRequest => {
-  return request.header[NostrCollabHeader.Create] && request.url !== undefined;
+  return request.header[CollabHeader.Create] && request.url !== undefined;
 };
 
 export const isNostrLoadCollabRequest = (
-  request: NostrCollabRequest
+  request: CollabRequest
 ): request is LoadCollabRequest => {
-  return request.header[NostrCollabHeader.Load] && request.url !== undefined;
+  return request.header[CollabHeader.Load] && request.url !== undefined;
 };
 
 export const isNostrShareCollabRequest = (
-  request: NostrCollabRequest
+  request: CollabRequest
 ): request is ShareCollabRequest => {
   return (
-    request.header[NostrCollabHeader.Share] &&
+    request.header[CollabHeader.Share] &&
     request.resolvedUrl !== undefined &&
     request.relativeUrl !== undefined
   );

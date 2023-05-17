@@ -10,7 +10,7 @@ import {
 } from "@fluidframework/container-runtime";
 import { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
 import { NamedFluidDataStoreRegistryEntries } from "@fluidframework/runtime-definitions";
-import { makeNostrCollabRequestHandler } from "./loader";
+import { makeCollabRequestHandler } from "./loader";
 
 export { type IContainer, IRuntimeFactory, type IContainerRuntime };
 export { requestFluidObject } from "@fluidframework/runtime-utils";
@@ -41,7 +41,7 @@ export abstract class NostrContainerRuntimeFactory<NostrCollab>
     const runtime = await ContainerRuntime.load(
       context,
       this.registryEntries,
-      makeNostrCollabRequestHandler(this.createNostrCollab.bind(this)),
+      makeCollabRequestHandler(this.createNostrCollab.bind(this)),
       this.runtimeOptions,
       undefined, // scope
       existing

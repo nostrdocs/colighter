@@ -1,18 +1,18 @@
-import { ScopeType, ITokenClaims } from "@fluidframework/protocol-definitions";
+import { ITokenClaims } from "@fluidframework/protocol-definitions";
 import {
   ITokenProvider,
   ITokenResponse,
 } from "@fluidframework/routerlicious-driver";
 import { KJUR as jsrsasign } from "jsrsasign";
-import { Relay, NostrUser } from "nostrfn";
-import { KIND_COLLAB_TOKEN } from "./constants";
+import { NostrUser } from "nostrfn";
+import { CollabRelay, CollabToken } from "../types";
 
 /** Produces authentication tokens for accessing collab docs served by a relay */
 export class NostrRelayTokenProvider implements ITokenProvider {
   public constructor(
-    // The host should provide a pre-connected Nostr collab relay
-    private readonly collabRelay: Relay,
-    // The host should provide a user identity. Possibbly sourced from other relays?
+    // The client should provide a pre-connected Nostr collab relay
+    private readonly relay: CollabRelay,
+    // The client should provide a user identity
     private readonly nostrUser: NostrUser
   ) { }
 
@@ -36,12 +36,14 @@ export class NostrRelayTokenProvider implements ITokenProvider {
     };
   }
 
+  // TODO: Move token signing into the collab relay.
+  // Clients should simply fetch and use tokens if authorized
   private async getSignedToken(
     tenantId: string,
     documentId: string | undefined,
     ver: string = "1.0"
   ): Promise<string> {
-    const collab = await this.fetchNostrCollabToken(tenantId, documentId);
+    const collab = await this.fetchCollabToken(tenantId, documentId);
     const user = {
       id: this.nostrUser.pubkey,
       name: this.nostrUser.meta["name"] || "",
@@ -62,39 +64,13 @@ export class NostrRelayTokenProvider implements ITokenProvider {
     );
   }
 
-  private async fetchNostrCollabToken(
+  private async fetchCollabToken(
     tenantId: string,
     documentId?: string
-  ): Promise<NostrCollabToken> {
-    const tenantFilter = tenantId ? [tenantId] : [];
-    const docFilter = documentId ? [documentId] : [];
-
-    let event = await this.collabRelay.get({
-      kinds: [KIND_COLLAB_TOKEN],
-      "#tenant": tenantFilter,
-      "#document": docFilter,
+  ): Promise<CollabToken> {
+    return this.relay.getAuthToken({
+      tenantId,
+      documentId
     });
-
-    if (event) {
-      try {
-        let collab: NostrCollabToken = {
-          ...JSON.parse(event.content),
-          created_at: event.created_at,
-        };
-        return collab;
-      } catch (err) {
-        return Promise.reject(err);
-      }
-    }
-
-    return Promise.reject("No collab token found");
   }
-}
-
-export interface NostrCollabToken {
-  tenantId: string;
-  documentId: string;
-  scopes: ScopeType[];
-  iat: number;
-  exp: number;
 }

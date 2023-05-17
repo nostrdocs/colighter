@@ -1,7 +1,7 @@
 import {
   RouterliciousDocumentServiceFactory,
   createNostrCreateNewRequest,
-  MockCollabRelay,
+  CollabRelayClient,
   NostrCollabLoader,
   NostrRelayTokenProvider,
   NostrRelayUrlResolver,
@@ -246,20 +246,20 @@ const trySaveHighlight = async (
 const loadCollab = async (url: string): Promise<ActionResponse> => {
   const collabRelayUrl =
     process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
-  const collabRelay = new MockCollabRelay(
+  const relayClient = new CollabRelayClient(
     "wss://mockcollabrelay",
     1,
     collabRelayUrl
-  ) as unknown as Relay;
+  );
 
   const tokenProvider = new NostrRelayTokenProvider(
-    collabRelay,
+    relayClient,
     await getNostrUser()
   );
 
   // Create a new Fluid loader, load the highlight collection
   const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
-    urlResolver: new NostrRelayUrlResolver(collabRelay),
+    urlResolver: new NostrRelayUrlResolver(relayClient),
     documentServiceFactory: new RouterliciousDocumentServiceFactory(
       tokenProvider
     ),
