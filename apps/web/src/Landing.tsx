@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Hero from "./assets/colighter.avif";
 
-export const ComingSoon: React.FC = () => {
+export const Landing: React.FC = () => {
   const [scrollPos, setScrollPos] = useState(0);
   const [showNav, setShowNav] = useState(false);
 
