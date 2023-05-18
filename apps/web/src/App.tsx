@@ -1,11 +1,11 @@
 import React from "react";
-import { ComingSoon } from "./ComingSoon";
+import { Landing } from "./Landing";
 import "./index.css";
 
 export const App = React.memo(function App() {
   return (
     <React.StrictMode>
-      <ComingSoon />
+      <Landing />
     </React.StrictMode>
   );
 });
