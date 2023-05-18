@@ -123,18 +123,17 @@ export const Landing: React.FC = () => {
       <div className="pt-24">
         <div className="container px-3 mx-auto flex flex-wrap flex-col md:flex-row items-center">
           <div className="flex flex-col w-full md:w-2/5 justify-center items-start text-center md:text-left">
-            <p className="uppercase tracking-loose w-full">
-              What business are you?
-            </p>
-            <h1 className="my-4 text-5xl font-bold leading-tight">
-              Main Hero Message to sell yourself!
+            <p className="uppercase tracking-loose w-full">Coming soon!</p>
+            <h1 className="my-4 text-4xl font-bold leading-tight">
+              Highlight, Capture, and Organize Your Digital World
             </h1>
             <p className="leading-normal text-2xl mb-8">
-              Sub-hero message, not too long and not too short. Make it just
-              right!
+              Enhance productivity with effortless highlighting. No more manual
+              struggles or messy annotations. Simplify emphasizing and
+              remembering crucial content.
             </p>
             <button className="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
-              Subscribe
+              JOIN WAITLIST
             </button>
           </div>
 
@@ -181,10 +180,10 @@ export const Landing: React.FC = () => {
         </svg>
       </div>
 
-      <section className="bg-white border-b py-8">
+      <section className="bg-white py-8">
         <div className="container max-w-5xl mx-auto m-8">
           <h2 className="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
-            Title
+            Features
           </h2>
           <div className="w-full mb-4">
             <div className="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"></div>
@@ -192,20 +191,11 @@ export const Landing: React.FC = () => {
           <div className="flex flex-wrap">
             <div className="w-5/6 sm:w-1/2 p-6">
               <h3 className="text-3xl text-gray-800 font-bold leading-none mb-3">
-                Lorem ipsum dolor sit amet
+                Effortless Highlighting
               </h3>
               <p className="text-gray-600 mb-8">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
-                at ipsum eu nunc commodo posuere et sit amet ligula.
-                <br />
-                <br />
-                Images from:
-                <a
-                  className="text-pink-500 underline"
-                  href="https://undraw.co/"
-                >
-                  undraw.co
-                </a>
+                Instantly mark text in vibrant colors with a single click,
+                creating a visual roadmap of your digital discoveries.
               </p>
             </div>
             <div className="w-full sm:w-1/2 p-6">
@@ -643,20 +633,11 @@ export const Landing: React.FC = () => {
             <div className="w-full sm:w-1/2 p-6 mt-6">
               <div className="align-middle">
                 <h3 className="text-3xl text-gray-800 font-bold leading-none mb-3">
-                  Lorem ipsum dolor sit amet
+                  Share Highlights With The World
                 </h3>
                 <p className="text-gray-600 mb-8">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Aliquam at ipsum eu nunc commodo posuere et sit amet ligula.
-                  <br />
-                  <br />
-                  Images from:
-                  <a
-                    className="text-pink-500 underline"
-                    href="https://undraw.co/"
-                  >
-                    undraw.co
-                  </a>
+                  Share your highlights effortlessly with the world, amplifying
+                  your impact and sparking engaging discussions.
                 </p>
               </div>
             </div>
@@ -664,7 +645,7 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      <section className="bg-white border-b py-8">
+      {/* <section className="bg-white border-b py-8">
         <div className="container mx-auto flex flex-wrap pt-4 pb-12">
           <h2 className="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800">
             Title
@@ -751,7 +732,7 @@ export const Landing: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* <!-- Change the colour #f8fafc to match the previous section colour --> */}
       <svg
@@ -787,16 +768,18 @@ export const Landing: React.FC = () => {
 
       <section className="container mx-auto text-center py-6 mb-12">
         <h2 className="w-full my-2 text-5xl font-bold leading-tight text-center text-white">
-          Call to Action
+          Come Join Us
         </h2>
         <div className="w-full mb-4">
           <div className="h-1 mx-auto bg-white w-1/6 opacity-25 my-0 py-0 rounded-t"></div>
         </div>
         <h3 className="my-4 text-3xl leading-tight">
-          Main Hero Message to sell yourself!
+          Elevate your reading with our text highlighter extension. Highlight,
+          capture, and share seamlessly. Experience the power of effortless
+          knowledge management. Get started now!
         </h3>
         <button className="mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
-          Action!
+          JOIN WAITLIST
         </button>
       </section>
 
@@ -809,25 +792,6 @@ export const Landing: React.FC = () => {
                 className="text-pink-600 no-underline hover:no-underline font-bold text-2xl lg:text-4xl"
                 href="#"
               >
-                {/* <!--Icon from: http://www.potlabicons.com/ --> */}
-                <svg
-                  className="h-8 fill-current inline"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512.005 512.005"
-                >
-                  <rect
-                    fill="#2a2a31"
-                    x="16.539"
-                    y="425.626"
-                    width="479.767"
-                    height="50.502"
-                    transform="matrix(1,0,0,1,0,0)"
-                  />
-                  <path
-                    className="plane-take-off"
-                    d=" M 510.7 189.151 C 505.271 168.95 484.565 156.956 464.365 162.385 L 330.156 198.367 L 155.924 35.878 L 107.19 49.008 L 211.729 230.183 L 86.232 263.767 L 36.614 224.754 L 0 234.603 L 45.957 314.27 L 65.274 347.727 L 105.802 336.869 L 240.011 300.886 L 349.726 271.469 L 483.935 235.486 C 504.134 230.057 516.129 209.352 510.7 189.151 Z "
-                  />
-                </svg>
                 COLIGHTER
               </a>
             </div>
@@ -941,12 +905,6 @@ export const Landing: React.FC = () => {
             </div>
           </div>
         </div>
-        <a
-          href="https://www.freepik.com/free-photos-vectors/background"
-          className="text-gray-500"
-        >
-          Background vector created by freepik - www.freepik.com
-        </a>
       </footer>
     </div>
   );
