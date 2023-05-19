@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "func",
+      "label": "func: host start",
+      "command": "host start",
+      "problemMatcher": "$func-node-watch",
+      "isBackground": true,
+      "dependsOn": "yarn build (functions)",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/serverless"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "yarn build (functions)",
+      "command": "yarn run build",
+      "dependsOn": "yarn clean (functions)",
+      "problemMatcher": "$tsc",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/serverless"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "yarn install (functions)",
+      "command": "yarn install",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/serverless"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "yarn prune (functions)",
+      "command": "yarn prune --production",
+      "dependsOn": "yarn build (functions)",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}/packages/serverless"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "yarn clean (functions)",
+      "command": "yarn run clean",
+      "dependsOn": "yarn install (functions)",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/serverless"
+      }
+    }
+  ]
+}
