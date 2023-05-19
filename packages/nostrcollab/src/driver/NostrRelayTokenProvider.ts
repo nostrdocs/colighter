@@ -45,7 +45,7 @@ export class NostrRelayTokenProvider implements ITokenProvider {
   ): Promise<string> {
     const collab = await this.fetchCollabToken(tenantId, documentId);
     const user = {
-      id: this.nostrUser.pubkey,
+      id: this.nostrUser.keypair.pubkey,
       name: this.nostrUser.meta['name'] || '',
     };
 
