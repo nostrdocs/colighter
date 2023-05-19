@@ -6,11 +6,11 @@ import {
   NostrRelayTokenProvider,
   NostrRelayUrlResolver,
   StaticCodeLoader,
-} from "nostrcollab";
-import { Relay, getNostrUser } from "nostrfn";
-import { DEFAULT_HIGHLIGHT_COLOR } from "./constants";
-import { HighlightContainerRuntimeFactory } from "./container";
-import { Highlight } from "./model";
+} from 'nostrcollab';
+import { Relay, getNostrUser } from 'nostrfn';
+import { DEFAULT_HIGHLIGHT_COLOR } from './constants';
+import { HighlightContainerRuntimeFactory } from './container';
+import { Highlight } from './model';
 import {
   ActionResponse,
   ColorDescription,
@@ -19,17 +19,17 @@ import {
   IHighlightCollectionAppModel,
   MessageAction,
   StorageKey,
-} from "./types";
+} from './types';
 import {
   tryReadLocalStorage,
   sha256Hash,
   tryWriteLocalStorage,
   serializeRange,
   writeLocalStorage,
-} from "./utils";
+} from './utils';
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
-const HIGHLIGHT_KEY: string = "NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F";
+const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
 let collab: IHighlightCollection | null = null;
 
 /**
@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
         if (collab) {
           outcome = {
             success: true,
-            data: "Collab already loaded",
+            data: 'Collab already loaded',
           } as ActionResponse;
           break;
         }
@@ -78,7 +78,7 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
 
         outcome = {
           success: false,
-          error: "Collab not ready",
+          error: 'Collab not ready',
         } as ActionResponse;
         break;
 
@@ -100,7 +100,7 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
           // TODO: Render submitted highlights
           outcome = {
             success: false,
-            error: "Not implemented",
+            error: 'Not implemented',
           } as ActionResponse;
           break;
         }
@@ -118,7 +118,7 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
       default:
         outcome = {
           success: false,
-          error: "Unknown message action",
+          error: 'Unknown message action',
         } as ActionResponse;
         break;
     }
@@ -134,7 +134,7 @@ const getSelectionInfo = (): {
 } => {
   const selection = window.getSelection();
   let range: Range | null = null;
-  let text = "";
+  let text = '';
 
   if (selection) {
     range = selection.getRangeAt(0);
@@ -150,19 +150,19 @@ const highlightText = async (): Promise<ActionResponse> => {
   if (selection === null || range === null) {
     return {
       success: false,
-      error: "Failed to get selection",
+      error: 'Failed to get selection',
     } as ActionResponse;
   }
 
   if (!text) {
-    return { success: false, error: "No text selected" } as ActionResponse;
+    return { success: false, error: 'No text selected' } as ActionResponse;
   }
 
   let parent = getHighlightedMark(selection);
 
   if (parent?.className !== HIGHLIGHT_KEY) {
-    let mark: HTMLElement = document.createElement("mark");
-    mark.setAttribute("style", `background-color: #${color.val}`);
+    let mark: HTMLElement = document.createElement('mark');
+    mark.setAttribute('style', `background-color: #${color.val}`);
     mark.className = HIGHLIGHT_KEY;
     let sel: Selection | null = window.getSelection();
 
@@ -176,7 +176,7 @@ const highlightText = async (): Promise<ActionResponse> => {
     }
   }
 
-  return { success: false, error: "Already highlighted" } as ActionResponse;
+  return { success: false, error: 'Already highlighted' } as ActionResponse;
 };
 
 /* Remove highlight for given selected text */
@@ -186,12 +186,12 @@ const removeHighlight = (): ActionResponse => {
   if (selection === null || range === null) {
     return {
       success: false,
-      error: "Failed to get selection",
+      error: 'Failed to get selection',
     } as ActionResponse;
   }
 
   if (!text) {
-    return { success: false, error: "No text selected" } as ActionResponse;
+    return { success: false, error: 'No text selected' } as ActionResponse;
   }
 
   let mark = getHighlightedMark(selection);
@@ -208,7 +208,7 @@ const removeHighlight = (): ActionResponse => {
 
   return {
     success: false,
-    error: "Failed to remove highlight",
+    error: 'Failed to remove highlight',
   } as ActionResponse;
 };
 
@@ -229,13 +229,13 @@ const trySaveHighlight = async (
   if (collab === null) {
     return {
       success: false,
-      error: "Collab model not ready",
+      error: 'Collab model not ready',
     } as ActionResponse;
   }
 
   try {
     const rangeSer = serializeRange(range);
-    const highlight = await Highlight.create(text, rangeSer, "0x000000");
+    const highlight = await Highlight.create(text, rangeSer, '0x000000');
     await collab.addHighlight(highlight);
     return { success: true };
   } catch (e) {
@@ -245,9 +245,9 @@ const trySaveHighlight = async (
 
 const loadCollab = async (url: string): Promise<ActionResponse> => {
   const collabRelayUrl =
-    process.env.COLLAB_RELAY_URL ?? "http://localhost:7070";
+    process.env.COLLAB_RELAY_URL ?? 'http://localhost:7070';
   const relayClient = new CollabRelayClient(
-    "wss://mockcollabrelay",
+    'wss://mockcollabrelay',
     1,
     collabRelayUrl
   );
@@ -271,7 +271,7 @@ const loadCollab = async (url: string): Promise<ActionResponse> => {
   let collabId = await tryReadLocalStorage<string>(storageKey);
 
   if (!collabId) {
-    const createResponse = await loader.createDetached("0.1.0");
+    const createResponse = await loader.createDetached('0.1.0');
     collab = createResponse.collab.highlightCollection;
     tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
   } else {
@@ -311,7 +311,7 @@ const loadCollab = async (url: string): Promise<ActionResponse> => {
     });
   };
 
-  collab?.on("highlightCollectionChanged", changeListener);
+  collab?.on('highlightCollectionChanged', changeListener);
 
   return { success: true };
 };

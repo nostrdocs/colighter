@@ -1,9 +1,9 @@
-import type { IContainer } from "@fluidframework/container-definitions";
-import type { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
-import { IFluidResolvedUrl } from "@fluidframework/driver-definitions";
-import { ScopeType } from "@fluidframework/protocol-definitions";
+import type { IContainer } from '@fluidframework/container-definitions';
+import type { IContainerRuntime } from '@fluidframework/container-runtime-definitions';
+import { IFluidResolvedUrl } from '@fluidframework/driver-definitions';
+import { ScopeType } from '@fluidframework/protocol-definitions';
 
-import { Relay } from "nostr-tools";
+import { Relay } from 'nostr-tools';
 
 export interface CollabRequest {
   header: CollabRequestHeader;
@@ -16,11 +16,11 @@ export type CollabRequestHeader = {
 
 export enum CollabHeader {
   // Creating and resolving a pointer to a new collab document
-  Create = "createCollab",
+  Create = 'createCollab',
   // Resolving a pointer to an existing collab document
-  Load = "loadCollab",
+  Load = 'loadCollab',
   // Create a shareable link to an existing collab document
-  Share = "shareCollab",
+  Share = 'shareCollab',
 }
 
 export interface CreateCollabRequest extends CollabRequest {
@@ -66,7 +66,7 @@ export interface CollabTokenKey {
   documentId?: string;
 }
 
-export const COLLAB_FILTER = "#collab";
+export const COLLAB_FILTER = '#collab';
 
 /**
  * A NostrCollab experience that is not connected to a live collab relay service.

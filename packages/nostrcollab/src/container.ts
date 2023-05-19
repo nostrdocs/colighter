@@ -3,23 +3,24 @@ import {
   IContainerContext,
   IRuntime,
   IRuntimeFactory,
-} from "@fluidframework/container-definitions";
+} from '@fluidframework/container-definitions';
 import {
   IContainerRuntimeOptions,
   ContainerRuntime,
-} from "@fluidframework/container-runtime";
-import { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
-import { NamedFluidDataStoreRegistryEntries } from "@fluidframework/runtime-definitions";
-import { makeCollabRequestHandler } from "./loader";
+} from '@fluidframework/container-runtime';
+import { IContainerRuntime } from '@fluidframework/container-runtime-definitions';
+import { NamedFluidDataStoreRegistryEntries } from '@fluidframework/runtime-definitions';
+import { makeCollabRequestHandler } from './loader';
 
 export { type IContainer, IRuntimeFactory, type IContainerRuntime };
-export { requestFluidObject } from "@fluidframework/runtime-utils";
+export { requestFluidObject } from '@fluidframework/runtime-utils';
 
 /**
  * NostrContainerRuntimeFactory is an abstract container class for building NostrCollab container experiences.
  */
 export abstract class NostrContainerRuntimeFactory<NostrCollab>
-  implements IRuntimeFactory {
+  implements IRuntimeFactory
+{
   public get IRuntimeFactory() {
     return this;
   }
@@ -31,7 +32,7 @@ export abstract class NostrContainerRuntimeFactory<NostrCollab>
   constructor(
     private readonly registryEntries: NamedFluidDataStoreRegistryEntries,
     private readonly runtimeOptions?: IContainerRuntimeOptions
-  ) { }
+  ) {}
 
   public async instantiateRuntime(
     context: IContainerContext,
@@ -72,7 +73,7 @@ export abstract class NostrContainerRuntimeFactory<NostrCollab>
    */
   protected async containerInitializingFirstTime(
     runtime: IContainerRuntime
-  ): Promise<void> { }
+  ): Promise<void> {}
 
   /**
    * Subclasses may override containerHasInitialized to perform any steps after the container has initialized.
@@ -81,5 +82,5 @@ export abstract class NostrContainerRuntimeFactory<NostrCollab>
    */
   protected async containerHasInitialized(
     runtime: IContainerRuntime
-  ): Promise<void> { }
+  ): Promise<void> {}
 }

@@ -1,22 +1,22 @@
-import React from "react";
-import styled, { StyledComponentPropsWithRef } from "styled-components";
-import { variant } from "styled-system";
-import { Avatar } from "./Avatar";
-import { IUser } from "../../types";
+import React from 'react';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { variant } from 'styled-system';
+import { Avatar } from './Avatar';
+import { IUser } from '../../types';
 
-type Variants = "row" | "col";
+type Variants = 'row' | 'col';
 
 const containerVariants = () =>
   variant({
     variants: {
       row: {
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
       },
       col: {
-        display: "flex",
-        flexDirection: "column",
+        display: 'flex',
+        flexDirection: 'column',
       },
     },
   });
@@ -40,7 +40,7 @@ const User = styled(Avatar)`
 export function AvatarList({
   avatarClassName,
   avatarSize,
-  variant = "row",
+  variant = 'row',
   users,
   maxUsers,
   ...rest

@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 import styled, {
   DefaultTheme,
   StyledComponentPropsWithRef,
-} from "styled-components";
-import { variant } from "styled-system";
+} from 'styled-components';
+import { variant } from 'styled-system';
 
-type Variants = "primary" | "secondary";
+type Variants = 'primary' | 'secondary';
 
 const buttonVariant = ({ theme }: { theme: DefaultTheme }) =>
   variant({
@@ -35,7 +35,7 @@ type ButtonProps = StyledComponentPropsWithRef<typeof StyledButton> & {
   title: string;
   variant?: Variants;
 };
-export function Button({ title, variant = "primary", ...rest }: ButtonProps) {
+export function Button({ title, variant = 'primary', ...rest }: ButtonProps) {
   return (
     <StyledButton variant={variant} {...rest}>
       {title}

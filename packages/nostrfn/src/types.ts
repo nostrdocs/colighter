@@ -1,4 +1,4 @@
-import { Event, UnsignedEvent } from "nostr-tools";
+import { Event, UnsignedEvent } from 'nostr-tools';
 
 // TODO: properly define known nip07 Nostr api
 export interface Nostr {
@@ -22,4 +22,4 @@ export interface KeyPair {
 }
 
 // Forwarded types
-export { type Relay } from "nostr-tools";
+export { type Relay } from 'nostr-tools';

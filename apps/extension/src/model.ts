@@ -1,6 +1,6 @@
-import { DataObject, DataObjectFactory } from "@fluidframework/aqueduct";
-import { IHighlight, IHighlightCollection, SerializedRange } from "./types";
-import { sha256Hash } from "./utils";
+import { DataObject, DataObjectFactory } from '@fluidframework/aqueduct';
+import { IHighlight, IHighlightCollection, SerializedRange } from './types';
+import { sha256Hash } from './utils';
 
 export class Highlight implements IHighlight {
   protected constructor(
@@ -23,7 +23,7 @@ export class HighlightCollection
   protected async initializeFirstTime() {}
 
   protected async hasInitialized() {
-    this.root.on("valueChanged", () => this.emit("highlightCollectionChanged"));
+    this.root.on('valueChanged', () => this.emit('highlightCollectionChanged'));
   }
 
   async addHighlight(highlight: Highlight): Promise<Highlight> {
@@ -36,7 +36,7 @@ export class HighlightCollection
       return Promise.resolve(this.root.delete(hashId));
     }
 
-    return Promise.reject("Highlight does not exist");
+    return Promise.reject('Highlight does not exist');
   }
 
   async getHighlight(hashId: string): Promise<Highlight | undefined> {
@@ -55,7 +55,7 @@ export class HighlightCollection
 }
 
 export const HighlightCollectionInstantiationFactory = new DataObjectFactory(
-  "highlight-collection",
+  'highlight-collection',
   HighlightCollection,
   [],
   {}

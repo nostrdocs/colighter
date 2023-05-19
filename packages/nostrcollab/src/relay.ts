@@ -1,5 +1,5 @@
-import { ScopeType } from "@fluidframework/protocol-definitions";
-import { IFluidResolvedUrl } from "@fluidframework/driver-definitions";
+import { ScopeType } from '@fluidframework/protocol-definitions';
+import { IFluidResolvedUrl } from '@fluidframework/driver-definitions';
 import {
   CountPayload,
   Event,
@@ -9,17 +9,17 @@ import {
   Relay,
   Sub,
   SubscriptionOptions,
-} from "nostr-tools";
+} from 'nostr-tools';
 import {
   isNostrCreateCollabRequest,
   isNostrLoadCollabRequest,
   isNostrShareCollabRequest,
-} from "./driver";
+} from './driver';
 import {
   CollabToken,
   CollabRequest,
   COLLAB_FILTER,
-  CollabTokenKey
+  CollabTokenKey,
 } from './types';
 
 // TODO: Use definition from #nostr-tools
@@ -37,8 +37,8 @@ type RelayEvent = {
   auth: (challenge: string) => void | Promise<void>;
 };
 
-const DEFAULT_PUBLIC_TENANT = "public-tenant";
-const DEFAULT_DOCID_WILDCARD = "*";
+const DEFAULT_PUBLIC_TENANT = 'public-tenant';
+const DEFAULT_DOCID_WILDCARD = '*';
 
 export class CollabRelayClient implements Relay {
   private authToken?: CollabToken;
@@ -46,8 +46,8 @@ export class CollabRelayClient implements Relay {
   constructor(
     public readonly url: string,
     public status: number,
-    private readonly collabServerEndpoint: string = "http://localhost:7070"
-  ) { }
+    private readonly collabServerEndpoint: string = 'http://localhost:7070'
+  ) {}
 
   public connect(): Promise<void> {
     // TODO: Establish websocket connection with relay
@@ -58,9 +58,7 @@ export class CollabRelayClient implements Relay {
     return;
   }
 
-  public getAuthToken(
-    tokenKey?: CollabTokenKey
-  ): Promise<CollabToken> {
+  public getAuthToken(tokenKey?: CollabTokenKey): Promise<CollabToken> {
     if (this.authToken) {
       return Promise.resolve(this.authToken);
     }
@@ -79,8 +77,8 @@ export class CollabRelayClient implements Relay {
 
   public auth(_event: Event): Pub {
     return {
-      on: (_type: "ok" | "failed", _cb: any) => { },
-      off: (_type: "ok" | "failed", _cb: any) => { },
+      on: (_type: 'ok' | 'failed', _cb: any) => {},
+      off: (_type: 'ok' | 'failed', _cb: any) => {},
     };
   }
 
@@ -90,18 +88,17 @@ export class CollabRelayClient implements Relay {
   ): Promise<Event | null> {
     const request = filter[COLLAB_FILTER]?.[0];
     if (request) {
-
       try {
         const req: CollabRequest = JSON.parse(request);
 
         const fluidProtocolEndpoint = this.collabServerEndpoint.replace(
           /(^\w+:|^)\/\//,
-          "fluid://"
+          'fluid://'
         );
 
         if (isNostrCreateCollabRequest(req)) {
           // Creating and resolving a pointer to a new collab document
-          const newDocumentId = req.url ?? "new";
+          const newDocumentId = req.url ?? 'new';
 
           const resolvedUrl: IFluidResolvedUrl = {
             endpoints: {
@@ -111,25 +108,25 @@ export class CollabRelayClient implements Relay {
             },
             id: req.url,
             tokens: {},
-            type: "fluid",
+            type: 'fluid',
             url: `${fluidProtocolEndpoint}/tinylicious/${newDocumentId}`,
           };
 
           return Promise.resolve({
-            id: "idid",
-            pubkey: "pubkey",
+            id: 'idid',
+            pubkey: 'pubkey',
             kind: Kind.Text,
             content: JSON.stringify(resolvedUrl),
             created_at: Math.round(new Date().getTime() / 1000),
             tags: [],
-            sig: "sig",
+            sig: 'sig',
           });
         }
 
         if (isNostrLoadCollabRequest(req)) {
           // Resolving a pointer to an existing collab document
-          const url = req.url.replace(`${this.collabServerEndpoint}/`, "");
-          const documentId = url.split("/")[0];
+          const url = req.url.replace(`${this.collabServerEndpoint}/`, '');
+          const documentId = url.split('/')[0];
           const encodedDocId = encodeURIComponent(documentId);
           const documentRelativePath = url.slice(documentId.length);
 
@@ -145,18 +142,18 @@ export class CollabRelayClient implements Relay {
             },
             id: documentId,
             tokens: {},
-            type: "fluid",
+            type: 'fluid',
             url: documentUrl,
           };
 
           return Promise.resolve({
-            id: "idid",
-            pubkey: "pubkey",
+            id: 'idid',
+            pubkey: 'pubkey',
             kind: Kind.Text,
             content: JSON.stringify(resolvedUrl),
             created_at: Math.round(new Date().getTime() / 1000),
             tags: [],
-            sig: "sig",
+            sig: 'sig',
           });
         }
 
@@ -165,19 +162,19 @@ export class CollabRelayClient implements Relay {
           const documentId = decodeURIComponent(
             req.resolvedUrl.url.replace(
               `${fluidProtocolEndpoint}/tinylicious/`,
-              ""
+              ''
             )
           );
           const absoluteUrl = `${documentId}/${req.relativeUrl}`;
 
           return Promise.resolve({
-            id: "idid",
-            pubkey: "pubkey",
+            id: 'idid',
+            pubkey: 'pubkey',
             kind: Kind.Text,
             content: JSON.stringify(absoluteUrl),
             created_at: Math.round(new Date().getTime() / 1000),
             tags: [],
-            sig: "sig",
+            sig: 'sig',
           });
         }
       } catch (e) {
@@ -190,8 +187,8 @@ export class CollabRelayClient implements Relay {
 
   public publish(_event: Event): Pub {
     return {
-      on: (_type: "ok" | "failed", _cb: any) => { },
-      off: (_type: "ok" | "failed", _cb: any) => { },
+      on: (_type: 'ok' | 'failed', _cb: any) => {},
+      off: (_type: 'ok' | 'failed', _cb: any) => {},
     };
   }
 
@@ -199,15 +196,15 @@ export class CollabRelayClient implements Relay {
     return {
       sub: (filters: Filter[], opts: SubscriptionOptions) =>
         this.sub(filters, opts),
-      unsub: () => { },
+      unsub: () => {},
       on: <T extends keyof SubEvent, U extends SubEvent[T]>(
         _event: T,
         _listener: U
-      ) => { },
+      ) => {},
       off: <T extends keyof SubEvent, U extends SubEvent[T]>(
         _event: T,
         _listener: U
-      ) => { },
+      ) => {},
     };
   }
 

@@ -1,15 +1,15 @@
-import { IRequest } from "@fluidframework/core-interfaces";
-import { DriverHeader } from "@fluidframework/driver-definitions";
+import { IRequest } from '@fluidframework/core-interfaces';
+import { DriverHeader } from '@fluidframework/driver-definitions';
 import {
   CollabHeader,
   CollabRequest,
   CreateCollabRequest,
   LoadCollabRequest,
   ShareCollabRequest,
-} from "../types";
+} from '../types';
 
 export const createNostrCreateNewRequest = (documentId?: string): IRequest => ({
-  url: documentId ?? "",
+  url: documentId ?? '',
   headers: {
     [DriverHeader.createNew]: true,
   },

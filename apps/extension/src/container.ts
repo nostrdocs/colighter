@@ -1,15 +1,21 @@
-import { NostrContainerRuntimeFactory, IContainer, IContainerRuntime, requestFluidObject } from "nostrcollab";
-import { IHighlightCollection, IHighlightCollectionAppModel } from "./types";
-import { HighlightCollectionInstantiationFactory } from "./model";
+import {
+  NostrContainerRuntimeFactory,
+  IContainer,
+  IContainerRuntime,
+  requestFluidObject,
+} from 'nostrcollab';
+import { IHighlightCollection, IHighlightCollectionAppModel } from './types';
+import { HighlightCollectionInstantiationFactory } from './model';
 
-const highlightCollectionId = "highlightCollection";
+const highlightCollectionId = 'highlightCollection';
 
 /** HighlightContainerAppModel defines Fluid collab data stores for highlight collections */
 export class HighlightContainerAppModel
-  implements IHighlightCollectionAppModel {
+  implements IHighlightCollectionAppModel
+{
   public constructor(
     public readonly highlightCollection: IHighlightCollection
-  ) { }
+  ) {}
 }
 
 export class HighlightContainerRuntimeFactory extends NostrContainerRuntimeFactory<HighlightContainerAppModel> {
@@ -23,7 +29,7 @@ export class HighlightContainerRuntimeFactory extends NostrContainerRuntimeFacto
   ): Promise<IHighlightCollectionAppModel> {
     const highlightCollection = await requestFluidObject<IHighlightCollection>(
       await runtime.getRootDataStore(highlightCollectionId),
-      ""
+      ''
     );
 
     return new HighlightContainerAppModel(highlightCollection);

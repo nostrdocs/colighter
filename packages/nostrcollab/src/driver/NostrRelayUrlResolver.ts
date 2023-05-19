@@ -1,18 +1,23 @@
-import { IRequest } from "@fluidframework/core-interfaces";
+import { IRequest } from '@fluidframework/core-interfaces';
 import {
   IFluidResolvedUrl,
   IResolvedUrl,
   IUrlResolver,
-} from "@fluidframework/driver-definitions";
-import { CollabRelay, CollabHeader, CollabRequest, COLLAB_FILTER } from "../types";
-import { mapFluidRequestToNostrCollab } from "./utils";
+} from '@fluidframework/driver-definitions';
+import {
+  CollabRelay,
+  CollabHeader,
+  CollabRequest,
+  COLLAB_FILTER,
+} from '../types';
+import { mapFluidRequestToNostrCollab } from './utils';
 
 /** NostrRelayUrlResolver relies on its relay to resolve collab urls */
 export class NostrRelayUrlResolver implements IUrlResolver {
   public constructor(
     // The host should provide a pre-connected Nostr collab relay
     private readonly collabRelay: CollabRelay
-  ) { }
+  ) {}
 
   public async resolve(request: IRequest): Promise<IResolvedUrl> {
     const noReq = mapFluidRequestToNostrCollab(request);
@@ -30,7 +35,7 @@ export class NostrRelayUrlResolver implements IUrlResolver {
       }
     }
 
-    return Promise.reject("Failed to source collab experience from relay");
+    return Promise.reject('Failed to source collab experience from relay');
   }
 
   public async getAbsoluteUrl(
@@ -53,6 +58,6 @@ export class NostrRelayUrlResolver implements IUrlResolver {
       event.content;
     }
 
-    return Promise.reject("Failed to source collab experience from relay");
+    return Promise.reject('Failed to source collab experience from relay');
   }
 }
