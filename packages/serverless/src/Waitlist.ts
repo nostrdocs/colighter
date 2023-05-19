@@ -4,7 +4,7 @@ import {
   HttpResponseInit,
   InvocationContext,
 } from '@azure/functions';
-import { uploadToStorageTables } from './utils';
+import { uploadToStorageTables, sendNostrDM } from './utils';
 
 const WaitlistTableName = 'waitlist';
 interface WaitlistHandlerRequest {
@@ -20,7 +20,7 @@ const WaitlistHandler = async (
   try {
     const { npub } = (await request.json()) as WaitlistHandlerRequest;
 
-    const res = await uploadToStorageTables(WaitlistTableName, npub);
+    let res = await uploadToStorageTables(WaitlistTableName, npub);
     if (res.status !== 200) {
       const error = res.error || `Error adding ${npub} to waitlist`;
       context.log(error);
@@ -30,9 +30,22 @@ const WaitlistHandler = async (
       };
     }
 
-    context.log(`Added ${npub} to waitlist`);
+    let progress = `Added ${npub} to waitlist`;
+    context.log(progress);
 
-    // TODO: Send Nostr DM to notify them they're on the waitlist
+    const waitlistMessage = "Highlight: You're on the waitlist! \nWe'll let you know when Colighter extension is available to start using";
+    res = await sendNostrDM(waitlistMessage, npub);
+    if (res.status !== 200) {
+      const error = res.error || `Error sending DM to ${npub}`;
+      context.log(error);
+      return {
+        status: res.status,
+        body: error,
+      };
+    }
+
+    progress = `Sent DM to ${npub}`;
+    context.log(progress);
 
     return {
       status: 200,

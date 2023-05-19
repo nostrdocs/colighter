@@ -7,13 +7,14 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf dist",
-    "prestart": "npm run clean && npm run build",
+    "prestart": "yarn run clean && yarn run build",
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
     "@azure/data-tables": "^13.2.2",
-    "@azure/functions": "^4.0.0-alpha.7"
+    "@azure/functions": "^4.0.0-alpha.7",
+    "nostrfn": "*"
   },
   "devDependencies": {
     "@types/node": "^18.x",
