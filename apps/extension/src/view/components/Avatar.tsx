@@ -1,6 +1,6 @@
-import React from "react";
-import { StyledComponentPropsWithRef } from "styled-components";
-import styled from "styled-components";
+import React from 'react';
+import { StyledComponentPropsWithRef } from 'styled-components';
+import styled from 'styled-components';
 
 const Image = styled.img`
   display: block;
@@ -30,7 +30,7 @@ type AvatarProps = StyledComponentPropsWithRef<typeof Container> & {
 export function Avatar({
   size = 24,
   source,
-  username = "user",
+  username = 'user',
   ...rest
 }: AvatarProps) {
   return (

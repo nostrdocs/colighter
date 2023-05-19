@@ -1,4 +1,4 @@
-import browser, { Tabs } from "webextension-polyfill";
+import browser, { Tabs } from 'webextension-polyfill';
 import {
   ColorDescription,
   MessageAction,
@@ -8,9 +8,9 @@ import {
   SerializedRange,
   ActionResponse,
   SucccessAcionResponse,
-} from "./types";
-import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_HIGHLIGHT_COLOR } from "./constants";
+} from './types';
+import { useCallback, useEffect, useState } from 'react';
+import { DEFAULT_HIGHLIGHT_COLOR } from './constants';
 
 export const tryReadLocalStorage = async <T,>(
   key: string
@@ -46,7 +46,7 @@ export const sendMessage = async <T,>(
 
   return {
     success: false,
-    error: "Failed to send message. Unknown tab id",
+    error: 'Failed to send message. Unknown tab id',
   } as ActionResponse;
 };
 
@@ -63,7 +63,7 @@ export const useShowHighlights = () => {
       action: MessageAction.TOGGLE_HIGHLIGHTS,
       data: showHighlights,
     }).catch((e) => {
-      console.log("Failed to send message", e);
+      console.log('Failed to send message', e);
     });
   }, []);
 
@@ -75,7 +75,7 @@ export const useShowHighlights = () => {
         toggleShowHighlights(updatedShowHighlights);
       })
       .catch((e) => {
-        console.log("Failed to read local storage", e);
+        console.log('Failed to read local storage', e);
       });
   }, []);
 
@@ -94,7 +94,7 @@ export const useColorSelectedColor = () => {
         action: MessageAction.SELECT_COLOR,
         data: selectedColor,
       }).catch((e) => {
-        console.log("Failed to set selected color", e);
+        console.log('Failed to set selected color', e);
       });
 
       // Update state and local storage
@@ -116,7 +116,7 @@ export const useColorSelectedColor = () => {
         setSelectedColor(updatedSelectedColor);
       })
       .catch((e) => {
-        console.log("Failed to read local storage", e);
+        console.log('Failed to read local storage', e);
       });
   }, []);
 
@@ -139,7 +139,7 @@ export const useCollabHighlights = () => {
         }
       })
       .catch((e) => {
-        console.error("Failed to get highlights", e);
+        console.error('Failed to get highlights', e);
       });
 
     const highlightListener = (message, _sender, _sendResponse) => {
@@ -167,10 +167,10 @@ export const sha256Hash = async (message: string): Promise<string> => {
   const encoder = new TextEncoder();
   const hashArray = Array.from(
     new Uint8Array(
-      await crypto.subtle.digest("SHA-256", encoder.encode(message))
+      await crypto.subtle.digest('SHA-256', encoder.encode(message))
     )
   );
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 };
 
 export const serializeRange = (range: Range): SerializedRange => {
@@ -196,7 +196,7 @@ const getNodePath = (node: Node): number[] => {
   while (node !== document.body) {
     const parent = node.parentNode;
     if (!parent) {
-      throw new Error("Node not found in document body");
+      throw new Error('Node not found in document body');
     }
     const index = Array.prototype.indexOf.call(parent.childNodes, node);
     path.push(index);

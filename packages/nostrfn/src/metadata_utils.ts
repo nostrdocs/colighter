@@ -1,5 +1,5 @@
-import { nip05, nip19, Event } from "nostr-tools";
-import { NostrMetadata, Relay } from "./types";
+import { nip05, nip19, Event } from 'nostr-tools';
+import { NostrMetadata, Relay } from './types';
 
 export const fetchNostrUserMetadata = async (
   pubkey: string,
@@ -14,7 +14,7 @@ export const fetchNostrUserMetadata = async (
     const sub = relay.sub([{ kinds: [0], authors: [pubkey] }]);
     done++;
 
-    sub.on("event", (event: Event) => {
+    sub.on('event', (event: Event) => {
       try {
         if (
           !metadata[pubkey] ||
@@ -33,7 +33,7 @@ export const fetchNostrUserMetadata = async (
       }
     });
 
-    sub.on("eose", () => {
+    sub.on('eose', () => {
       sub.unsub();
       done--;
 
@@ -67,7 +67,7 @@ export const fetchNIP05 = (
 };
 
 export const getNostrImage = (metadata: NostrMetadata, pubkey: string) => {
-  const picture = metadata[pubkey]["picture"];
+  const picture = metadata[pubkey]['picture'];
 
   if (picture && picture.length) {
     return picture;
@@ -80,7 +80,7 @@ export const getNostrName = (metadata: NostrMetadata, pubkey: string) => {
 
   if (meta) {
     if (meta.nip05 && meta.nip05verified) {
-      if (meta.nip05.startsWith("_@")) {
+      if (meta.nip05.startsWith('_@')) {
         return meta.nip05.slice(2);
       }
       return meta.nip05;
@@ -94,5 +94,5 @@ export const getNostrName = (metadata: NostrMetadata, pubkey: string) => {
     return `${npub.slice(0, 6)}…${npub.slice(-3)}`;
   }
 
-  return "nostrich";
+  return 'nostrich';
 };

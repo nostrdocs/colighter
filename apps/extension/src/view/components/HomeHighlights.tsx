@@ -1,7 +1,7 @@
-import React from "react";
-import styled from "styled-components";
-import { IHighlight } from "../../types";
-import { useCollabHighlights } from "../../utils";
+import React from 'react';
+import styled from 'styled-components';
+import { IHighlight } from '../../types';
+import { useCollabHighlights } from '../../utils';
 
 const Text = styled.p<{ isFirst: boolean }>`
   text-align: left;
@@ -9,7 +9,7 @@ const Text = styled.p<{ isFirst: boolean }>`
   font-style: italic;
   border-bottom: ${({ theme }) => `1px solid ${theme.palette.lightGray}`};
   border-top: ${({ isFirst, theme }) =>
-    isFirst ? `1px solid ${theme.palette.lightGray}` : ""};
+    isFirst ? `1px solid ${theme.palette.lightGray}` : ''};
 `;
 
 export function HomeHighlights() {
@@ -29,7 +29,7 @@ export function HomeHighlights() {
   );
 }
 
-type HighlightViewProps = Pick<IHighlight, "text" | "author"> & {
+type HighlightViewProps = Pick<IHighlight, 'text' | 'author'> & {
   isFirst: boolean;
 };
 

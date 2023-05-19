@@ -5,7 +5,7 @@ declare interface Window {
 
 type Nostr = {
   trackEvent(
-    signedEvent: import("nostr-tools").EventTemplate & { pubkey: string } & {
+    signedEvent: import('nostr-tools').EventTemplate & { pubkey: string } & {
       id: string;
       sig: string;
     } & { id: string } & { sig: string }

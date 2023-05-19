@@ -1,4 +1,4 @@
-import "./window_utils";
+import './window_utils';
 
 import {
   getEventHash,
@@ -7,7 +7,7 @@ import {
   Event,
   Relay,
   UnsignedEvent,
-} from "nostr-tools";
+} from 'nostr-tools';
 
 export const connectRelays = async (relays: Relay[]): Promise<boolean> => {
   const connections = await Promise.all(
@@ -42,15 +42,15 @@ export const publishNostrPrivateMessage = async (
         0,
         5
       )}… with Nostr extension. Try a different extension, or try again later.`;
-      return Promise.resolve({ type: "warning", message });
+      return Promise.resolve({ type: 'warning', message });
     }
   } else {
     if (!senderPrivkey) {
       // Could not encrypt message because we don't have a private key
       return Promise.resolve({
-        type: "error",
+        type: 'error',
         message:
-          "Missing Nostr private key. We cannot encrypt and send this message",
+          'Missing Nostr private key. We cannot encrypt and send this message',
       });
     }
 
@@ -61,7 +61,7 @@ export const publishNostrPrivateMessage = async (
     kind: 4,
     pubkey: senderPubkey,
     created_at: Math.round(Date.now() / 1000),
-    tags: [["p", receiverPubkey]],
+    tags: [['p', receiverPubkey]],
     content: ciphertext,
   };
 
@@ -81,23 +81,23 @@ export const publishNostrPrivateMessage = async (
       } catch (err: any) {
         console.error(err);
         const message = `Failed to sign request message with Nostr extension. Try a different extension, or try again later.`;
-        return Promise.resolve({ type: "error", message });
+        return Promise.resolve({ type: 'error', message });
       }
     }
   }
 
   return new Promise((resolve, reject) => {
     const publishTimeout = setTimeout(() => {
-      return reject("Timed out when attempting to send request");
+      return reject('Timed out when attempting to send request');
     }, 8000);
 
     relays.forEach((relay) => {
       const pub = relay.publish(event);
-      pub.on("ok", () => {
+      pub.on('ok', () => {
         clearTimeout(publishTimeout);
         return resolve({
-          type: "success",
-          message: "Request sent successfully",
+          type: 'success',
+          message: 'Request sent successfully',
         });
       });
     });
@@ -106,6 +106,6 @@ export const publishNostrPrivateMessage = async (
 
 // Typed outcome of a nostr api operation
 export interface PublishOutcome {
-  type: "error" | "success" | "warning" | "info";
+  type: 'error' | 'success' | 'warning' | 'info';
   message: string;
 }

@@ -5,18 +5,18 @@ import {
   IFluidCodeDetails,
   IFluidModuleWithDetails,
   IRuntimeFactory,
-} from "@fluidframework/container-definitions";
-import { ILoaderProps, Loader } from "@fluidframework/container-loader";
-import type { IContainerRuntime } from "@fluidframework/container-runtime-definitions";
-import type { IRequest, IResponse } from "@fluidframework/core-interfaces";
-import { ensureFluidResolvedUrl } from "@fluidframework/driver-utils";
+} from '@fluidframework/container-definitions';
+import { ILoaderProps, Loader } from '@fluidframework/container-loader';
+import type { IContainerRuntime } from '@fluidframework/container-runtime-definitions';
+import type { IRequest, IResponse } from '@fluidframework/core-interfaces';
+import { ensureFluidResolvedUrl } from '@fluidframework/driver-utils';
 import {
   create404Response,
   requestFluidObject,
-} from "@fluidframework/runtime-utils";
-import { IDetachedNostrCollab, NostrCollabMakerCallback } from "./types";
+} from '@fluidframework/runtime-utils';
+import { IDetachedNostrCollab, NostrCollabMakerCallback } from './types';
 
-const COLLAB_URL_MARKER = "nostrcollab";
+const COLLAB_URL_MARKER = 'nostrcollab';
 
 interface IModelRequest extends IRequest {
   url: typeof COLLAB_URL_MARKER;
@@ -26,7 +26,8 @@ interface IModelRequest extends IRequest {
 }
 
 const isCollabRequest = (request: IRequest): request is IModelRequest =>
-  request.url === COLLAB_URL_MARKER && request.headers?.containerRef !== undefined;
+  request.url === COLLAB_URL_MARKER &&
+  request.headers?.containerRef !== undefined;
 
 /**
  * A helper function for container authors, which generates the request handler they need to align with the
@@ -46,7 +47,7 @@ export const makeCollabRequestHandler = <NostrCollab>(
     if (isCollabRequest(request)) {
       const container: IContainer = request.headers.containerRef;
       const model = await NostrCollabMakerCallback(runtime, container);
-      return { status: 200, mimeType: "fluid/object", value: model };
+      return { status: 200, mimeType: 'fluid/object', value: model };
     }
     return create404Response(request);
   };
@@ -85,7 +86,7 @@ export class NostrCollabLoader<NostrCollab>
   public constructor(
     props: Pick<
       ILoaderProps,
-      "urlResolver" | "documentServiceFactory" | "codeLoader"
+      'urlResolver' | 'documentServiceFactory' | 'codeLoader'
     > & {
       generateCreateNewRequest: () => IRequest;
     }
@@ -140,7 +141,7 @@ export class NostrCollabLoader<NostrCollab>
           // for direct-link scenarios, where the user might have a direct link to a data object that was
           // just attached (i.e. the "attach" op and the "set" of the handle into some map is in the
           // trailing ops).  If we don't fully process those ops, the expected object won't be found.
-          opsBeforeReturn: "all",
+          opsBeforeReturn: 'all',
         },
       },
     });
@@ -149,7 +150,7 @@ export class NostrCollabLoader<NostrCollab>
 }
 
 export class StaticCodeLoader implements ICodeDetailsLoader {
-  public constructor(private readonly runtimeFactory: IRuntimeFactory) { }
+  public constructor(private readonly runtimeFactory: IRuntimeFactory) {}
 
   public async load(
     details: IFluidCodeDetails

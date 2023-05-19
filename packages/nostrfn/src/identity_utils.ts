@@ -1,7 +1,7 @@
-import { generatePrivateKey, getPublicKey } from "nostr-tools";
-import { KeyPair, NostrUser } from "./types";
+import { generatePrivateKey, getPublicKey } from 'nostr-tools';
+import { KeyPair, NostrUser } from './types';
 
-import "./window_utils";
+import './window_utils';
 
 /**
  * Source Nostr key pair from nip07 nostr extension, or localStorage or generate a new one
@@ -19,11 +19,11 @@ export const sourceNostrKeyPair = async (): Promise<KeyPair | null> => {
     }
   } else {
     // otherwise use a key from localStorage or generate a new one
-    let privkey = localStorage.getItem("nostrkey");
+    let privkey = localStorage.getItem('nostrkey');
 
     if (!privkey || privkey.match(/^[a-f0-9]{64}$/)) {
       privkey = generatePrivateKey();
-      localStorage.setItem("nostrkey", privkey);
+      localStorage.setItem('nostrkey', privkey);
     }
     const pubkey = getPublicKey(privkey);
 
@@ -34,7 +34,7 @@ export const sourceNostrKeyPair = async (): Promise<KeyPair | null> => {
 export const getNostrUser = async (): Promise<NostrUser> => {
   // TODO: Load nostr identity from extension or other means
   const mockNostrUser: NostrUser = {
-    pubkey: "0x1234",
+    pubkey: '0x1234',
     meta: {},
   };
 

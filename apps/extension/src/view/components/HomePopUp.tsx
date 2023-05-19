@@ -1,12 +1,12 @@
-import React from "react";
-import styled from "styled-components";
-import { IUser } from "../../types";
+import React from 'react';
+import styled from 'styled-components';
+import { IUser } from '../../types';
 
-import Colighter from "../Assets/Svg/colighter.svg";
-import Gear from "../Assets/Svg/gear.svg";
-import { AvatarList } from "./AvatarList";
-import { HighlightPicker } from "./HighlightPicker";
-import { HomeHighlights } from "./HomeHighlights";
+import Colighter from '../Assets/Svg/colighter.svg';
+import Gear from '../Assets/Svg/gear.svg';
+import { AvatarList } from './AvatarList';
+import { HighlightPicker } from './HighlightPicker';
+import { HomeHighlights } from './HomeHighlights';
 
 const Container = styled.div`
   text-align: left;
@@ -34,16 +34,16 @@ const UserHeading = styled(Heading)`
 `;
 
 const users = Array.from({ length: 10 }).map((_, i) => ({
-  userName: "user" + i,
-  imageUrl: "https://source.unsplash.com/100x100/?profile-image",
+  userName: 'user' + i,
+  imageUrl: 'https://source.unsplash.com/100x100/?profile-image',
 })) satisfies IUser[];
 
 export function HomePopUp() {
   return (
     <Container>
       <Row>
-        <img src={`${Colighter}`} alt="colighter-logo" />
-        <img src={`${Gear}`} alt="gear-icon" />
+        <img src={`${Colighter}`} alt='colighter-logo' />
+        <img src={`${Gear}`} alt='gear-icon' />
       </Row>
       <div>
         <Heading>Your Highlights</Heading>

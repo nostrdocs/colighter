@@ -1,11 +1,11 @@
-import { ITokenClaims } from "@fluidframework/protocol-definitions";
+import { ITokenClaims } from '@fluidframework/protocol-definitions';
 import {
   ITokenProvider,
   ITokenResponse,
-} from "@fluidframework/routerlicious-driver";
-import { KJUR as jsrsasign } from "jsrsasign";
-import { NostrUser } from "nostrfn";
-import { CollabRelay, CollabToken } from "../types";
+} from '@fluidframework/routerlicious-driver';
+import { KJUR as jsrsasign } from 'jsrsasign';
+import { NostrUser } from 'nostrfn';
+import { CollabRelay, CollabToken } from '../types';
 
 /** Produces authentication tokens for accessing collab docs served by a relay */
 export class NostrRelayTokenProvider implements ITokenProvider {
@@ -14,7 +14,7 @@ export class NostrRelayTokenProvider implements ITokenProvider {
     private readonly relay: CollabRelay,
     // The client should provide a user identity
     private readonly nostrUser: NostrUser
-  ) { }
+  ) {}
 
   public async fetchOrdererToken(
     tenantId: string,
@@ -41,12 +41,12 @@ export class NostrRelayTokenProvider implements ITokenProvider {
   private async getSignedToken(
     tenantId: string,
     documentId: string | undefined,
-    ver: string = "1.0"
+    ver: string = '1.0'
   ): Promise<string> {
     const collab = await this.fetchCollabToken(tenantId, documentId);
     const user = {
       id: this.nostrUser.pubkey,
-      name: this.nostrUser.meta["name"] || "",
+      name: this.nostrUser.meta['name'] || '',
     };
 
     const claims: ITokenClaims = {
@@ -55,10 +55,10 @@ export class NostrRelayTokenProvider implements ITokenProvider {
       ver,
     };
 
-    const utf8Key = { utf8: "12345" };
+    const utf8Key = { utf8: '12345' };
     return jsrsasign.jws.JWS.sign(
       null,
-      JSON.stringify({ alg: "HS256", typ: "JWT" }),
+      JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
       claims,
       utf8Key
     );
@@ -70,7 +70,7 @@ export class NostrRelayTokenProvider implements ITokenProvider {
   ): Promise<CollabToken> {
     return this.relay.getAuthToken({
       tenantId,
-      documentId
+      documentId,
     });
   }
 }

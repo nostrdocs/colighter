@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 
 export interface IHighlight {
   /** Text content of the highlight */
@@ -33,7 +33,7 @@ export interface IHighlightCollection extends EventEmitter {
   /** highlightCollectionChanged event will fire whenever the highlight collection changes.
    * Changes originate either locally or remotely
    */
-  on(event: "highlightCollectionChanged", listener: () => void): this;
+  on(event: 'highlightCollectionChanged', listener: () => void): this;
 }
 
 export interface IHighlightCollectionAppModel {
@@ -46,13 +46,13 @@ export interface ColorDescription {
 }
 
 export enum MessageAction {
-  TOGGLE_HIGHLIGHTS = "TOGGLE_HIGHLIGHTS",
-  REMOVE_HIGHLIGHTS = "REMOVE_HIGHLIGHTS",
-  RENDER_HIGHLIGHTS = "RENDER_HIGHLIGHTS",
-  SELECT_COLOR = "SELECT_COLOR",
-  LOAD_COLLAB = "LOAD_COLLAB",
-  GET_COLLAB_HIGHLIGHTS = "GET_COLLAB_HIGHLIGHTS",
-  POST_COLLAB_HIGHLIGHTS = "POST_COLLAB_HIGHLIGHTS",
+  TOGGLE_HIGHLIGHTS = 'TOGGLE_HIGHLIGHTS',
+  REMOVE_HIGHLIGHTS = 'REMOVE_HIGHLIGHTS',
+  RENDER_HIGHLIGHTS = 'RENDER_HIGHLIGHTS',
+  SELECT_COLOR = 'SELECT_COLOR',
+  LOAD_COLLAB = 'LOAD_COLLAB',
+  GET_COLLAB_HIGHLIGHTS = 'GET_COLLAB_HIGHLIGHTS',
+  POST_COLLAB_HIGHLIGHTS = 'POST_COLLAB_HIGHLIGHTS',
 }
 
 export interface ActionResponse {
@@ -74,11 +74,11 @@ export interface MessageData<T> {
 }
 
 export enum StorageKey {
-  SHOW_HIGHLIGHTS = "SHOW_HIGHLIGHTS",
-  HIGHLIGHTING_COLOR = "HIGHLIGHTING_COLOR",
-  COLOR_SELECTION = "COLOR_SELECTION",
-  COLLAB_ID = "COLLAB_ID",
-  COLLAB_HIGHLIGHTS = "COLLAB_HIGHLIGHTS",
+  SHOW_HIGHLIGHTS = 'SHOW_HIGHLIGHTS',
+  HIGHLIGHTING_COLOR = 'HIGHLIGHTING_COLOR',
+  COLOR_SELECTION = 'COLOR_SELECTION',
+  COLLAB_ID = 'COLLAB_ID',
+  COLLAB_HIGHLIGHTS = 'COLLAB_HIGHLIGHTS',
 }
 
 export interface IUser {
