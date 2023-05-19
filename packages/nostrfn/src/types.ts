@@ -1,14 +1,14 @@
 import { Event, UnsignedEvent } from 'nostr-tools';
 
-// TODO: properly define known nip07 Nostr api
-export interface Nostr {
+// TODO: properly define known nip07 NostrWindow api
+export interface NostrWindow {
   nip04: any;
   getPublicKey: () => Promise<string>;
   signEvent: (event: UnsignedEvent) => Promise<Event>;
 }
 
 export interface NostrUser {
-  pubkey: string;
+  keypair: PartialKeyPair;
   meta: NostrMetadata;
 }
 
@@ -17,6 +17,11 @@ export interface NostrMetadata {
 }
 
 export interface KeyPair {
+  privkey: string;
+  pubkey: string;
+}
+
+export interface PartialKeyPair {
   privkey: string | null;
   pubkey: string;
 }

@@ -1,5 +1,3 @@
-import './window_utils';
-
 import {
   getEventHash,
   signEvent,
@@ -7,88 +5,96 @@ import {
   Event,
   Relay,
   UnsignedEvent,
+  Kind,
 } from 'nostr-tools';
 
-export const connectRelays = async (relays: Relay[]): Promise<boolean> => {
-  const connections = await Promise.all(
-    relays.map(async (relay) => {
-      try {
-        await relay.connect();
-        return true;
-      } catch (err) {
-        console.error(err);
-        return false;
-      }
-    })
-  );
-
-  return connections.some((c) => c);
-};
-
-export const publishNostrPrivateMessage = async (
+export const browserSignDirectMessage = async (
   message: string,
-  senderPrivkey: string | null,
   senderPubkey: string,
-  receiverPubkey: string,
-  relays: Relay[]
-): Promise<PublishOutcome> => {
-  let ciphertext;
-
-  if (window.nostr) {
-    try {
-      ciphertext = await window.nostr.nip04.encrypt(receiverPubkey, message);
-    } catch (err: any) {
-      const message = `Failed to encrypt message to ${receiverPubkey.slice(
-        0,
-        5
-      )}… with Nostr extension. Try a different extension, or try again later.`;
-      return Promise.resolve({ type: 'warning', message });
-    }
-  } else {
-    if (!senderPrivkey) {
-      // Could not encrypt message because we don't have a private key
-      return Promise.resolve({
-        type: 'error',
-        message:
-          'Missing Nostr private key. We cannot encrypt and send this message',
-      });
-    }
-
-    ciphertext = await nip04.encrypt(senderPrivkey, receiverPubkey, message);
+  receiverPubkey: string
+): Promise<Event> => {
+  if (!window.nostr) {
+    const message = 'Nostr extension not found.';
+    return Promise.reject({ type: 'warning', message });
   }
 
-  const unsignedEvent: UnsignedEvent = {
-    kind: 4,
-    pubkey: senderPubkey,
-    created_at: Math.round(Date.now() / 1000),
-    tags: [['p', receiverPubkey]],
-    content: ciphertext,
-  };
+  try {
+    const ciphertext = await window.nostr.nip04
+      .encrypt(receiverPubkey, message)
+      .catch((err: unknown) => {
+        console.error(err);
+        const message = `Failed to encrypt a message to ${receiverPubkey.slice(
+          0,
+          5
+        )}… with Nostr extension`;
+        return Promise.reject({ type: 'warning', message });
+      });
 
-  let event: Event;
+    const unsignedEvent: UnsignedEvent = {
+      kind: Kind.EncryptedDirectMessage,
+      pubkey: senderPubkey,
+      created_at: Math.round(Date.now() / 1000),
+      tags: [['p', receiverPubkey]],
+      content: ciphertext,
+    };
 
-  // if we have a private key that means it was generated locally and we don't have a nip07 extension
-  if (senderPrivkey) {
-    event = {
+    const event: Event = await window.nostr.signEvent(unsignedEvent);
+
+    return Promise.resolve(event);
+  } catch (err: any) {
+    console.error(err);
+    const message = 'Failed to sign message with Nostr extension';
+    return Promise.reject({ type: 'error', message });
+  }
+};
+
+export const signDirectMessage = async (
+  message: string,
+  senderPrivkey: string,
+  senderPubkey: string,
+  receiverPubkey: string
+): Promise<Event> => {
+  try {
+    const ciphertext = await nip04
+      .encrypt(senderPrivkey, receiverPubkey, message)
+      .catch((err: unknown) => {
+        console.error(err);
+        const message = `Failed to encrypt a message to ${receiverPubkey.slice(
+          0,
+          5
+        )}…`;
+        return Promise.reject({ type: 'warning', message });
+      });
+
+    const unsignedEvent: UnsignedEvent = {
+      kind: Kind.EncryptedDirectMessage,
+      pubkey: senderPubkey,
+      created_at: Math.round(Date.now() / 1000),
+      tags: [['p', receiverPubkey]],
+      content: ciphertext,
+    };
+
+    const event: Event = {
       ...unsignedEvent,
       id: getEventHash(unsignedEvent),
       sig: signEvent(unsignedEvent, senderPrivkey),
     };
-  } else {
-    if (window.nostr) {
-      try {
-        event = await window.nostr.signEvent(unsignedEvent);
-      } catch (err: any) {
-        console.error(err);
-        const message = `Failed to sign request message with Nostr extension. Try a different extension, or try again later.`;
-        return Promise.resolve({ type: 'error', message });
-      }
-    }
-  }
 
+    return Promise.resolve(event);
+  } catch (err: any) {
+    console.error(err);
+    const message = 'Failed to sign direct message';
+    return Promise.reject({ type: 'error', message });
+  }
+};
+
+export const publishEvent = async (
+  relays: Relay[],
+  event: Event
+): Promise<PublishOutcome> => {
   return new Promise((resolve, reject) => {
     const publishTimeout = setTimeout(() => {
-      return reject('Timed out when attempting to send request');
+      return reject('Timed out when attempting to publish event');
     }, 8000);
 
     relays.forEach((relay) => {
@@ -97,7 +103,7 @@ export const publishNostrPrivateMessage = async (
         clearTimeout(publishTimeout);
         return resolve({
           type: 'success',
-          message: 'Request sent successfully',
+          message: 'Event published successfully',
         });
       });
     });

@@ -1,13 +1,20 @@
 import {
   RouterliciousDocumentServiceFactory,
   createNostrCreateNewRequest,
+  CollabRelay,
   CollabRelayClient,
   NostrCollabLoader,
   NostrRelayTokenProvider,
   NostrRelayUrlResolver,
   StaticCodeLoader,
 } from 'nostrcollab';
-import { Relay, getNostrUser } from 'nostrfn';
+import {
+  browserSourceNostrId,
+  createEphemeralNostrId,
+  fetchNostrUserMetadata,
+  NostrUser,
+  Relay,
+} from 'nostrfn';
 import { DEFAULT_HIGHLIGHT_COLOR } from './constants';
 import { HighlightContainerRuntimeFactory } from './container';
 import { Highlight } from './model';
@@ -49,7 +56,29 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
           break;
         }
 
-        outcome = await loadCollab(request.data).catch((e) => {
+        const collabRelayUrl =
+          process.env.COLLAB_RELAY_URL ?? 'http://localhost:7070';
+
+        const collabRelay = new CollabRelayClient(
+          'wss://mockcollabrelay',
+          1,
+          collabRelayUrl
+        );
+
+        const keypair =
+          (await browserSourceNostrId()) || createEphemeralNostrId();
+
+        const meta = await fetchNostrUserMetadata(
+          keypair.pubkey,
+          [collabRelay],
+          {}
+        );
+
+        outcome = await loadCollab(
+          request.data,
+          { keypair, meta },
+          collabRelay
+        ).catch((e) => {
           return (outcome = {
             success: false,
             error: e,
@@ -243,23 +272,16 @@ const trySaveHighlight = async (
   }
 };
 
-const loadCollab = async (url: string): Promise<ActionResponse> => {
-  const collabRelayUrl =
-    process.env.COLLAB_RELAY_URL ?? 'http://localhost:7070';
-  const relayClient = new CollabRelayClient(
-    'wss://mockcollabrelay',
-    1,
-    collabRelayUrl
-  );
-
-  const tokenProvider = new NostrRelayTokenProvider(
-    relayClient,
-    await getNostrUser()
-  );
+const loadCollab = async (
+  url: string,
+  user: NostrUser,
+  relay: CollabRelay
+): Promise<ActionResponse> => {
+  const tokenProvider = new NostrRelayTokenProvider(relay, user);
 
   // Create a new Fluid loader, load the highlight collection
   const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
-    urlResolver: new NostrRelayUrlResolver(relayClient),
+    urlResolver: new NostrRelayUrlResolver(relay),
     documentServiceFactory: new RouterliciousDocumentServiceFactory(
       tokenProvider
     ),
