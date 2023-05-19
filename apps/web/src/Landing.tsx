@@ -5,6 +5,7 @@ import { ReactComponent as WorldSvg } from './assets/world.svg';
 import { ReactComponent as WaveOneSvg } from './assets/waveone.svg';
 import { ReactComponent as WaveTwoSvg } from './assets/wavetwo.svg';
 import { Header } from './components/Header';
+import { WaitlistButton } from './components/WaitlistButton';
 
 export const Landing: React.FC = () => {
   const [scrollPos, setScrollPos] = useState(0);
@@ -69,9 +70,7 @@ export const Landing: React.FC = () => {
               struggles or messy annotations. Simplify emphasizing and
               remembering crucial content.
             </p>
-            <button className='mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out'>
-              GET THE EXTENSION
-            </button>
+            <WaitlistButton />
           </div>
 
           <div className='w-full md:w-3/5 py-6 text-center'>
@@ -140,9 +139,7 @@ export const Landing: React.FC = () => {
           capture, and share seamlessly. Experience the power of effortless
           knowledge management. Get started now!
         </p>
-        <button className='mx-auto lg:mx-0 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out'>
-          GET THE EXTENSION
-        </button>
+        <WaitlistButton />
       </section>
 
       {/* <!--Footer--> */}
