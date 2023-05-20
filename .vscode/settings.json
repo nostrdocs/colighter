@@ -1,9 +1,10 @@
 {
-  "azureFunctions.deploySubpath": "api",
-  "azureFunctions.postDeployTask": "npm install (functions)",
+  "azureFunctions.deploySubpath": "packages/serverless",
+  "azureFunctions.functionSubpath": "src/functions",
+  "azureFunctions.postDeployTask": "yarn install (functions)",
   "azureFunctions.projectLanguage": "TypeScript",
   "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",
   "azureFunctions.projectLanguageModel": 4,
-  "azureFunctions.preDeployTask": "npm prune (functions)"
+  "azureFunctions.preDeployTask": "yarn build (functions)"
 }

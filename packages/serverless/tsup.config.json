@@ -1,0 +1,7 @@
+{
+  "entry": [
+    "src/functions/Waitlist.ts",
+    "src/functions/Test.ts"
+  ],
+  "format": ["cjs"]
+}
