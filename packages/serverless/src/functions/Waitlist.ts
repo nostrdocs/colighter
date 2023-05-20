@@ -4,7 +4,7 @@ import {
   HttpResponseInit,
   InvocationContext,
 } from '@azure/functions';
-import { uploadToStorageTables, sendNostrDM } from './utils';
+import { uploadToStorageTables, sendNostrDM } from '../utils';
 
 const WaitlistTableName = 'waitlist';
 interface WaitlistHandlerRequest {
