@@ -8,24 +8,35 @@ import {
   SerializedRange,
   ActionResponse,
   SucccessAcionResponse,
+  IHighlightCollectionAppModel,
+  IHighlightCollection,
 } from './types';
 import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_HIGHLIGHT_COLOR } from './constants';
+import {
+  CollabRelay,
+  NostrRelayTokenProvider,
+  NostrCollabLoader,
+  NostrRelayUrlResolver,
+  RouterliciousDocumentServiceFactory,
+  StaticCodeLoader,
+  createNostrCreateNewRequest,
+} from 'nostrcollab';
+import { NostrUser } from 'nostrfn';
+import { HighlightContainerRuntimeFactory } from './container';
 
-export const tryReadLocalStorage = async <T,>(
-  key: string
-): Promise<T | undefined> => {
+const tryReadLocalStorage = async <T,>(key: string): Promise<T | undefined> => {
   const storage = await browser.storage.local.get();
   return storage[key];
 };
 
-export const readLocalStorage = async <T,>(
+const readLocalStorage = async <T,>(
   key: StorageKey
 ): Promise<T | undefined> => {
   return tryReadLocalStorage<T>(key);
 };
 
-export const tryWriteLocalStorage = async <T,>(key: string, value: T) => {
+const tryWriteLocalStorage = async <T,>(key: string, value: T) => {
   await browser.storage.local.set({ [key]: value });
 };
 
@@ -203,4 +214,37 @@ const getNodePath = (node: Node): number[] => {
     node = parent;
   }
   return path.reverse();
+};
+
+export const loadHighlightCollection = async (
+  url: string,
+  user: NostrUser,
+  relay: CollabRelay
+): Promise<IHighlightCollection> => {
+  const tokenProvider = new NostrRelayTokenProvider(relay, user);
+
+  // Create a new Fluid loader, load the highlight collection
+  const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
+    urlResolver: new NostrRelayUrlResolver(relay),
+    documentServiceFactory: new RouterliciousDocumentServiceFactory(
+      tokenProvider
+    ),
+    codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
+    generateCreateNewRequest: createNostrCreateNewRequest,
+  });
+
+  let storageKey = await sha256Hash(url);
+  let collabId = await tryReadLocalStorage<string>(storageKey);
+
+  let collab: IHighlightCollection;
+
+  if (!collabId) {
+    const createResponse = await loader.createDetached('0.1.0');
+    collab = createResponse.collab.highlightCollection;
+    tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
+  } else {
+    collab = (await loader.loadExisting(collabId)).highlightCollection;
+  }
+
+  return collab;
 };
