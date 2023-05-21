@@ -30,11 +30,13 @@ export interface IHighlightCollection extends EventEmitter {
   getHighlight(hashId: string): Promise<IHighlight | undefined>;
   getHighlights(): Promise<IHighlight[]>;
 
-  /** highlightCollectionChanged event will fire whenever the highlight collection changes.
+  /** `HighlightCollectionUpdate` event will fire whenever the highlight collection changes.
    * Changes originate either locally or remotely
    */
-  on(event: 'highlightCollectionChanged', listener: () => void): this;
+  on(event: typeof HighlightCollectionUpdate, listener: () => void): this;
 }
+
+export const HighlightCollectionUpdate = 'HighlightCollectionUpdate';
 
 export interface IHighlightCollectionAppModel {
   readonly highlightCollection: IHighlightCollection;

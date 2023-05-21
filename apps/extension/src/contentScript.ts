@@ -1,38 +1,24 @@
-import {
-  RouterliciousDocumentServiceFactory,
-  createNostrCreateNewRequest,
-  CollabRelay,
-  CollabRelayClient,
-  NostrCollabLoader,
-  NostrRelayTokenProvider,
-  NostrRelayUrlResolver,
-  StaticCodeLoader,
-} from 'nostrcollab';
+import { CollabRelayClient } from 'nostrcollab';
 import {
   browserSourceNostrId,
   createEphemeralNostrId,
   fetchNostrUserMetadata,
-  NostrUser,
-  Relay,
 } from 'nostrfn';
 import { DEFAULT_HIGHLIGHT_COLOR } from './constants';
-import { HighlightContainerRuntimeFactory } from './container';
 import { Highlight } from './model';
 import {
   ActionResponse,
   ColorDescription,
+  HighlightCollectionUpdate,
   IHighlight,
   IHighlightCollection,
-  IHighlightCollectionAppModel,
   MessageAction,
   StorageKey,
 } from './types';
 import {
-  tryReadLocalStorage,
-  sha256Hash,
-  tryWriteLocalStorage,
   serializeRange,
   writeLocalStorage,
+  loadHighlightCollection,
 } from './utils';
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
@@ -44,7 +30,9 @@ let collab: IHighlightCollection | null = null;
  */
 chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
   (async () => {
-    let outcome: ActionResponse;
+    let outcome: ActionResponse = {
+      success: false,
+    };
 
     switch (request.action) {
       case MessageAction.LOAD_COLLAB:
@@ -74,16 +62,61 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
           {}
         );
 
-        outcome = await loadCollab(
+        collab = await loadHighlightCollection(
           request.data,
           { keypair, meta },
           collabRelay
         ).catch((e) => {
-          return (outcome = {
+          outcome = {
             success: false,
             error: e,
-          } as ActionResponse);
+          } as ActionResponse;
+
+          return collab;
         });
+
+        if (collab) {
+          const highlightsChangeListener = async () => {
+            const highlights = await collab!.getHighlights();
+
+            // Request render highlights on canvas
+            chrome.runtime
+              .sendMessage({
+                action: MessageAction.RENDER_HIGHLIGHTS,
+                data: highlights,
+              })
+              .catch((e) => {
+                console.error(e);
+              });
+
+            // Request render of highlights on popup UI
+            chrome.runtime
+              .sendMessage({
+                action: MessageAction.POST_COLLAB_HIGHLIGHTS,
+                data: highlights,
+              })
+              .catch((e) => {
+                console.error(e);
+              });
+
+            // Write highlights to local storage for when the popup is closed
+            await writeLocalStorage<IHighlight[]>(
+              StorageKey.COLLAB_HIGHLIGHTS,
+              highlights
+            ).catch((e) => {
+              console.error(e);
+            });
+          };
+
+          // Set up listener for changes to the highlight collection
+          collab.on(HighlightCollectionUpdate, highlightsChangeListener);
+
+          outcome = {
+            success: true,
+          } as ActionResponse;
+          break;
+        }
+
         break;
 
       case MessageAction.GET_COLLAB_HIGHLIGHTS:
@@ -270,70 +303,4 @@ const trySaveHighlight = async (
   } catch (e) {
     return { success: false, error: e } as ActionResponse;
   }
-};
-
-const loadCollab = async (
-  url: string,
-  user: NostrUser,
-  relay: CollabRelay
-): Promise<ActionResponse> => {
-  const tokenProvider = new NostrRelayTokenProvider(relay, user);
-
-  // Create a new Fluid loader, load the highlight collection
-  const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
-    urlResolver: new NostrRelayUrlResolver(relay),
-    documentServiceFactory: new RouterliciousDocumentServiceFactory(
-      tokenProvider
-    ),
-    codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
-    generateCreateNewRequest: createNostrCreateNewRequest,
-  });
-
-  let storageKey = await sha256Hash(url);
-  let collabId = await tryReadLocalStorage<string>(storageKey);
-
-  if (!collabId) {
-    const createResponse = await loader.createDetached('0.1.0');
-    collab = createResponse.collab.highlightCollection;
-    tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
-  } else {
-    collab = (await loader.loadExisting(collabId)).highlightCollection;
-  }
-
-  // Listen for changes to the highlight collection
-  const changeListener = async () => {
-    const highlights = await collab!.getHighlights();
-
-    // Request render highlights on canvas
-    chrome.runtime
-      .sendMessage({
-        action: MessageAction.RENDER_HIGHLIGHTS,
-        data: highlights,
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-
-    // Request render of highlights on popup UI
-    chrome.runtime
-      .sendMessage({
-        action: MessageAction.POST_COLLAB_HIGHLIGHTS,
-        data: highlights,
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-
-    // Write highlights to local storage for when the popup is closed
-    await writeLocalStorage<IHighlight[]>(
-      StorageKey.COLLAB_HIGHLIGHTS,
-      highlights
-    ).catch((e) => {
-      console.error(e);
-    });
-  };
-
-  collab?.on('highlightCollectionChanged', changeListener);
-
-  return { success: true };
 };
