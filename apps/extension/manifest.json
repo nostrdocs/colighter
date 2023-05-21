@@ -1,60 +1,60 @@
 {
-	"manifest_version": 3,
-	"name": "Colighter",
-	"description": "A chrome extension for highlighting web resources, while collaborating over Nostr",
-	"version": "0.0.1",
-	"author": "Nostrdocs Developers",
-	"action": {
-		"default_popup": "dist/index.html"
-	},
-	"content_scripts": [
-		{
-			"matches": ["<all_urls>"],
-			"js": ["dist/contentScript.bundle.js"],
-			"all_frames": true
-		}
-	],
-	"background": {
-		"service_worker": "dist/background.bundle.js",
-		"type": "module"
-	},
-	"options_page": "dist/index.html",
-	"commands": {
-		"create-highlight": {
-			"suggested_key": {
-				"default": "Alt+H",
-				"mac": "MacCtrl+H"
-			},
-			"description": "Highlight selected text"
-		},
-		"toggle-highlighter-cursor": {
-			"description": "Toggle the highlighter cursor"
-		},
-		"change-color-to-yellow": {
-			"description": "Change highlighter color to yellow"
-		},
-		"change-color-to-cyan": {
-			"description": "Change highlighter color to blue"
-		},
-		"change-color-to-lime": {
-			"description": "Change highlighter color to green"
-		},
-		"change-color-to-magenta": {
-			"description": "Change highlighter color to pink"
-		},
-		"change-color-to-dark": {
-			"description": "Change highlighter color to dark"
-		}
-	},
-	"permissions": [
-		"commands",
-		"contextMenus",
-		"scripting",
-		"storage",
-		"tabs",
-		"webNavigation",
-		"webRequest",
-		"activeTab"
-	],
-	"host_permissions": ["<all_urls>"]
+  "manifest_version": 3,
+  "name": "Colighter",
+  "description": "A chrome extension for highlighting web resources, while collaborating over Nostr",
+  "version": "0.0.1",
+  "author": "Nostrdocs Developers",
+  "action": {
+    "default_popup": "build/index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["build/contentscript.bundle.js"],
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "build/background.bundle.js",
+    "type": "module"
+  },
+  "options_page": "build/index.html",
+  "commands": {
+    "create-highlight": {
+      "suggested_key": {
+        "default": "Alt+H",
+        "mac": "MacCtrl+H"
+      },
+      "description": "Highlight selected text"
+    },
+    "toggle-highlighter-cursor": {
+      "description": "Toggle the highlighter cursor"
+    },
+    "change-color-to-yellow": {
+      "description": "Change highlighter color to yellow"
+    },
+    "change-color-to-cyan": {
+      "description": "Change highlighter color to blue"
+    },
+    "change-color-to-lime": {
+      "description": "Change highlighter color to green"
+    },
+    "change-color-to-magenta": {
+      "description": "Change highlighter color to pink"
+    },
+    "change-color-to-dark": {
+      "description": "Change highlighter color to dark"
+    }
+  },
+  "permissions": [
+    "commands",
+    "contextMenus",
+    "scripting",
+    "storage",
+    "tabs",
+    "webNavigation",
+    "webRequest",
+    "activeTab"
+  ],
+  "host_permissions": ["<all_urls>"]
 }
