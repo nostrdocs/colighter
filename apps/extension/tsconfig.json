@@ -1,9 +1,17 @@
 {
-  "extends": "tsconfig/react-app.json",
+  "extends": "tsconfig/base.json",
   "include": ["src", "typings"],
   "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "outDir": "build",
+    "jsx": "react",
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "inlineSources": true,
     "noImplicitAny": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "incremental": true,
+    "pretty": true,
+    "lib": ["ES2017", "ES2018.Promise", "DOM", "DOM.Iterable"]
   }
 }
