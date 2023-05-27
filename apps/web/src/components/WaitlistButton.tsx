@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-// @ts-expect-error error
 import { browserSourceNostrId, createEphemeralNostrId } from 'nostrfn';
 
 export const WaitlistButton: React.FC = () => {
