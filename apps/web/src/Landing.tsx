@@ -25,13 +25,10 @@ export const Landing: React.FC = () => {
 
   useEffect(() => {
     const header = document.getElementById('header');
-    const navAction = document.getElementById('navAction');
     const toToggle = document.querySelectorAll('.toggleColour');
 
     if (scrollPos > 10) {
       header?.classList.add('bg-white', 'shadow');
-      navAction?.classList.remove('bg-white', 'text-gray-800');
-      navAction?.classList.add('gradient', 'text-white');
 
       for (let i = 0; i < toToggle.length; i++) {
         toToggle[i].classList.add('text-gray-800');
@@ -39,8 +36,6 @@ export const Landing: React.FC = () => {
       }
     } else {
       header?.classList.remove('bg-white', 'shadow');
-      navAction?.classList.remove('gradient', 'text-white');
-      navAction?.classList.add('bg-white', 'text-gray-800');
 
       for (let i = 0; i < toToggle.length; i++) {
         toToggle[i].classList.add('text-white');
