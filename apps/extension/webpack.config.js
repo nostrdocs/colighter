@@ -15,6 +15,14 @@ module.exports = (env) => {
       },
       resolve: {
         extensions: ['.ts', '.tsx', '.js'],
+        fallback: {
+          crypto: require.resolve('crypto-browserify'),
+          stream: require.resolve('stream-browserify'),
+          os: false,
+          tty: false,
+          util: false,
+          perf_hooks: false,
+        },
       },
       module: {
         rules: [

@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { IUser } from '../../types';
 
-import Colighter from '../Assets/Svg/colighter.svg';
-import Gear from '../Assets/Svg/gear.svg';
+import Colighter from '../assets/colighter.svg';
+import Gear from '../assets/gear.svg';
 import { AvatarList } from './AvatarList';
 import { HighlightPicker } from './HighlightPicker';
 import { HomeHighlights } from './HomeHighlights';
