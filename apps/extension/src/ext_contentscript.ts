@@ -44,8 +44,8 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
           break;
         }
 
-        const collabRelayUrl =
-          process.env.COLLAB_RELAY_URL ?? 'http://localhost:7070';
+        // TODO: Support user configured collab relay
+        const collabRelayUrl = 'https://colighter.nostrdocs.com/';
 
         const collabRelay = new CollabRelayClient(
           'wss://mockcollabrelay',
