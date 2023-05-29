@@ -19,6 +19,7 @@
   "@fluidframework/driver-utils": "^1.3.6",
   "@fluidframework/protocol-definitions": "^1.2.0",
   "@fluidframework/routerlicious-driver": "^1.3.6",
+  "@fluidframework/common-utils": "^1.1.1",
   "@fluidframework/runtime-utils": "^1.3.6",
   "fluid-framework": "^1.3.0",
   "jsrsasign": "^10.8.6",
