@@ -122,11 +122,12 @@ export const Landing: React.FC = () => {
           <div className='flex flex-wrap items-center'>
             <div className='flex flex-col w-5/6 gap-3 p-6 sm:w-1/2'>
               <h3 className='text-3xl font-bold leading-none text-gray-800'>
-                Effortless Highlighting
+                Explore and Discuss Highlights with Others
               </h3>
               <p className='text-gray-600'>
-                Instantly mark text in vibrant colors with a single click,
-                creating a visual roadmap of your digital discoveries.
+                Follow friends and thought leaders as they navigate the web.
+                Discuss ideas that you find most important. Deepen your learning
+                with others’ insights.
               </p>
             </div>
             <div className='w-full p-6 sm:w-1/2'>
