@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["build/contentscript.bundle.js"],
+      "js": ["build/colighter.bundle.js"],
       "all_frames": true
     }
   ],
@@ -29,21 +29,6 @@
     },
     "toggle-highlighter-cursor": {
       "description": "Toggle the highlighter cursor"
-    },
-    "change-color-to-yellow": {
-      "description": "Change highlighter color to yellow"
-    },
-    "change-color-to-cyan": {
-      "description": "Change highlighter color to blue"
-    },
-    "change-color-to-lime": {
-      "description": "Change highlighter color to green"
-    },
-    "change-color-to-magenta": {
-      "description": "Change highlighter color to pink"
-    },
-    "change-color-to-dark": {
-      "description": "Change highlighter color to dark"
     }
   },
   "permissions": [

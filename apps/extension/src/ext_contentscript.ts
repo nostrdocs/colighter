@@ -10,26 +10,37 @@ import {
   ActionResponse,
   ColorDescription,
   HighlightCollectionUpdate,
-  IHighlight,
   IHighlightCollection,
   MessageAction,
-  StorageKey,
 } from './types';
-import {
-  serializeRange,
-  writeLocalStorage,
-  loadHighlightCollection,
-} from './utils';
+import { serializeRange, loadHighlightCollection, sendMessage } from './utils';
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
 const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
 let collab: IHighlightCollection | null = null;
 
+// TODO: Support user configured collab relay
+const collabRelayUrl = 'http://localhost:7070';
+
+const collabRelay = new CollabRelayClient(
+  'wss://mockcollabrelay',
+  1,
+  collabRelayUrl
+);
+
+const keypair = (await browserSourceNostrId()) || createEphemeralNostrId();
+
+const meta = await fetchNostrUserMetadata(keypair.pubkey, [collabRelay], {});
+
 /**
  * Listen for highlight mesages and take actions that render highlights on the page
  */
-chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
-  (async () => {
+chrome.runtime.onMessage.addListener(
+  async (
+    request: any,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (res: ActionResponse) => void
+  ) => {
     let outcome: ActionResponse = {
       success: false,
     };
@@ -43,24 +54,6 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
           } as ActionResponse;
           break;
         }
-
-        // TODO: Support user configured collab relay
-        const collabRelayUrl = 'https://colighter.nostrdocs.com/';
-
-        const collabRelay = new CollabRelayClient(
-          'wss://mockcollabrelay',
-          1,
-          collabRelayUrl
-        );
-
-        const keypair =
-          (await browserSourceNostrId()) || createEphemeralNostrId();
-
-        const meta = await fetchNostrUserMetadata(
-          keypair.pubkey,
-          [collabRelay],
-          {}
-        );
 
         collab = await loadHighlightCollection(
           request.data,
@@ -98,14 +91,6 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
               .catch((e) => {
                 console.error(e);
               });
-
-            // Write highlights to local storage for when the popup is closed
-            await writeLocalStorage<IHighlight[]>(
-              StorageKey.COLLAB_HIGHLIGHTS,
-              highlights
-            ).catch((e) => {
-              console.error(e);
-            });
           };
 
           // Set up listener for changes to the highlight collection
@@ -136,6 +121,12 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
               } as ActionResponse);
             });
           break;
+        } else {
+          // Trigger collab load
+          sendMessage({
+            action: MessageAction.LOAD_COLLAB,
+            data: sender.tab?.url || '',
+          });
         }
 
         outcome = {
@@ -152,10 +143,12 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
         }
         outcome = { success: true };
         break;
+
       case MessageAction.SELECT_COLOR:
         color = request.data;
         outcome = { success: true };
         break;
+
       case MessageAction.RENDER_HIGHLIGHTS:
         if (request.data) {
           // We don't know how to render collab highlights yet
@@ -174,9 +167,11 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
           } as ActionResponse);
         });
         break;
+
       case MessageAction.REMOVE_HIGHLIGHTS:
         outcome = removeHighlight();
         break;
+
       default:
         outcome = {
           success: false,
@@ -186,8 +181,8 @@ chrome.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
     }
 
     sendResponse(outcome);
-  })();
-});
+  }
+);
 
 const getSelectionInfo = (): {
   selection: Selection | null;
