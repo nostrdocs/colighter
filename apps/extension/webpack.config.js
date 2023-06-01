@@ -11,17 +11,16 @@ module.exports = (env) => {
       entry: {
         extension: './src/view/index.tsx',
         background: './src/ext_background.ts',
-        contentscript: './src/ext_contentscript.ts',
+        colighter: './src/ext_contentscript.ts',
       },
       resolve: {
         extensions: ['.ts', '.tsx', '.js'],
         fallback: {
           crypto: require.resolve('crypto-browserify'),
           stream: require.resolve('stream-browserify'),
-          os: false,
-          tty: false,
+          os: require.resolve('os-browserify/browser'),
+          tty: require.resolve('tty-browserify'),
           util: false,
-          perf_hooks: false,
         },
       },
       module: {
@@ -63,6 +62,9 @@ module.exports = (env) => {
         }),
         new HtmlWebpackPlugin({
           template: './public/index.html',
+          chunks: ['extension'],
+          scriptLoading: 'defer',
+          inject: 'head',
         }),
       ],
     },

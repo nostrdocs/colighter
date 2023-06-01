@@ -234,17 +234,19 @@ export const loadHighlightCollection = async (
   });
 
   let storageKey = await sha256Hash(url);
-  let collabId = await tryReadLocalStorage<string>(storageKey);
 
-  let collab: IHighlightCollection;
+  try {
+    let collabId = await tryReadLocalStorage<string>(storageKey);
+    if (collabId) {
+      let collab = await loader.loadExisting(collabId);
+      return collab.highlightCollection;
+    }
 
-  if (!collabId) {
+    throw new Error('No collab id found in local storage');
+  } catch {
     const createResponse = await loader.createDetached('0.1.0');
-    collab = createResponse.collab.highlightCollection;
+    let collab = createResponse.collab.highlightCollection;
     tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
-  } else {
-    collab = (await loader.loadExisting(collabId)).highlightCollection;
+    return collab;
   }
-
-  return collab;
 };
