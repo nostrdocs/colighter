@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "webpack --env prod --env clean",
-    "dev": "concurrently \"webpack --env clean\" \"yarn:devserver\"",
+    "dev": "concurrently \"webpack -w --env clean\" \"yarn:devserver\"",
     "devserver": "npx @nostrdocs/tinycollab@latest",
     "test": "concurrently -g -k \"yarn:devserver\" \"jest\"",
     "lint": "eslint \"src/**/*.ts*\"",
