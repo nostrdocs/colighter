@@ -13,15 +13,13 @@ import {
   createEphemeralNostrId,
   fetchNostrUserMetadata,
 } from 'nostrfn';
+import { ActionResponse, MessageAction } from './types';
 import {
-  ActionResponse,
-  ColorDescription,
-  MessageAction,
-  DEFAULT_HIGHLIGHT_COLOR,
-} from './types';
-import { sendMessage, tryReadLocalStorage, tryWriteLocalStorage } from './utils';
+  sendMessage,
+  tryReadLocalStorage,
+  tryWriteLocalStorage,
+} from './utils';
 
-let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
 const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
 let collab: IHighlightCollection | null = null;
 
@@ -70,12 +68,13 @@ chrome.runtime.onMessage.addListener(
         let knownCollabId = await tryReadLocalStorage<string>(storageKey);
 
         try {
-          const { collabModel, collabId } = await loadCollabModel<IHighlightCollectionAppModel>(
-            { keypair, meta },
-            collabRelay,
-            new HighlightContainerRuntimeFactory(),
-            knownCollabId
-          )
+          const { collabModel, collabId } =
+            await loadCollabModel<IHighlightCollectionAppModel>(
+              { keypair, meta },
+              collabRelay,
+              new HighlightContainerRuntimeFactory(),
+              knownCollabId
+            );
 
           collab = collabModel.highlightCollection;
           await tryWriteLocalStorage<string>(storageKey, collabId);
@@ -86,7 +85,7 @@ chrome.runtime.onMessage.addListener(
           } as ActionResponse;
 
           return collab;
-        };
+        }
 
         if (collab) {
           const highlightsChangeListener = async () => {
@@ -164,11 +163,6 @@ chrome.runtime.onMessage.addListener(
         outcome = { success: true };
         break;
 
-      case MessageAction.SELECT_COLOR:
-        color = request.data;
-        outcome = { success: true };
-        break;
-
       case MessageAction.RENDER_HIGHLIGHTS:
         if (request.data) {
           // We don't know how to render collab highlights yet
@@ -239,7 +233,7 @@ const highlightText = async (): Promise<ActionResponse> => {
 
   if (parent?.className !== HIGHLIGHT_KEY) {
     let mark: HTMLElement = document.createElement('mark');
-    mark.setAttribute('style', `background-color: #${color.val}`);
+    mark.setAttribute('style', `background-color: #CE97FB`);
     mark.className = HIGHLIGHT_KEY;
     let sel: Selection | null = window.getSelection();
 
