@@ -14,7 +14,18 @@ import {
   create404Response,
   requestFluidObject,
 } from '@fluidframework/runtime-utils';
-import { IDetachedNostrCollab, NostrCollabMakerCallback } from './types';
+import {
+  CollabRelay,
+  IDetachedNostrCollab,
+  NostrCollabMakerCallback,
+} from './types';
+import { NostrUser } from 'nostrfn';
+import {
+  NostrRelayTokenProvider,
+  NostrRelayUrlResolver,
+  createNostrCreateNewRequest,
+} from './driver';
+import { RouterliciousDocumentServiceFactory } from '@fluidframework/routerlicious-driver';
 
 const COLLAB_URL_MARKER = 'nostrcollab';
 
@@ -161,3 +172,35 @@ export class StaticCodeLoader implements ICodeDetailsLoader {
     };
   }
 }
+
+export const loadCollabModel = async <T>(
+  user: NostrUser,
+  relay: CollabRelay,
+  runtimeFactoy: IRuntimeFactory,
+  collabId: string | undefined
+): Promise<{ collabModel: T; collabId: string }> => {
+  const tokenProvider = new NostrRelayTokenProvider(relay, user);
+
+  // Create a new Fluid loader, load the highlight collection
+  const loader = new NostrCollabLoader<T>({
+    urlResolver: new NostrRelayUrlResolver(relay),
+    documentServiceFactory: new RouterliciousDocumentServiceFactory(
+      tokenProvider
+    ),
+    codeLoader: new StaticCodeLoader(runtimeFactoy),
+    generateCreateNewRequest: createNostrCreateNewRequest,
+  });
+
+  if (!collabId) {
+    // Create new collab
+    const createResponse = await loader.createDetached('0.1.0');
+    const collabModel = createResponse.collab;
+    const collabId = await createResponse.attach();
+
+    return { collabModel, collabId };
+  }
+
+  // Load existing collab
+  const collabModel = await loader.loadExisting(collabId);
+  return { collabModel, collabId };
+};

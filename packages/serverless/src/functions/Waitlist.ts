@@ -33,7 +33,8 @@ const WaitlistHandler = async (
     let progress = `Added ${npub} to waitlist`;
     context.log(progress);
 
-    const waitlistMessage = "Highlight: You're on the waitlist! \nWe'll let you know when Colighter extension is available to start using";
+    const waitlistMessage =
+      "Highlight: You're on the waitlist! \nWe'll let you know when Colighter extension is available to start using";
     res = await sendNostrDM(waitlistMessage, npub);
     if (res.status !== 200) {
       const error = res.error || `Error sending DM to ${npub}`;

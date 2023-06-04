@@ -1,5 +1,11 @@
 import { TableClient } from '@azure/data-tables';
-import { signDirectMessage, publishEvent, initRelays, connectRelays, createEphemeralNostrId } from 'nostrfn';
+import {
+  signDirectMessage,
+  publishEvent,
+  initRelays,
+  connectRelays,
+  createEphemeralNostrId,
+} from 'nostrfn';
 
 interface Response {
   status: number;
@@ -42,16 +48,25 @@ export const uploadToStorageTables = async (
   }
 };
 
-export const sendNostrDM = async (message: string, npub: string): Promise<Response> => {
+export const sendNostrDM = async (
+  message: string,
+  npub: string
+): Promise<Response> => {
   // const colighterPrivkey = process.env.COLIGHTER_PRIVKEY;
   // const colighterPubkey = process.env.COLIGHTER_PUBKEY;
 
   try {
     // Ideally we shouls source the Colighter key pair from the environment variables
     // But for now we'll just generate a new ephemeral key pair and send the DM from that
-    const { privkey: colighterPrivkey, pubkey: colighterPubkey } = await createEphemeralNostrId();
+    const { privkey: colighterPrivkey, pubkey: colighterPubkey } =
+      await createEphemeralNostrId();
 
-    const event = await signDirectMessage(message, colighterPrivkey, colighterPubkey, npub);
+    const event = await signDirectMessage(
+      message,
+      colighterPrivkey,
+      colighterPubkey,
+      npub
+    );
 
     const publishRelays = initRelays(['wss://nostrdocs.com']);
     if (await connectRelays(publishRelays)) {

@@ -11,6 +11,7 @@ This project includes the following apps / packages:
 
 ### Packages
 
+- `colighter`: A collab first highlight experience powered by nostr
 - `nostrfn`: Shared library for Nostr types and utils
 - `nostrcollab`: Shared library for storing and interacting with data in collaborative document formats
 - `ui`: Shared React UI component library for building apps within the Colighter project

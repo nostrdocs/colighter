@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IHighlight } from '../../types';
+import { IHighlight } from 'colighter';
 import { useCollabHighlights } from '../../utils';
 
 const Text = styled.p<{ isFirst: boolean }>`

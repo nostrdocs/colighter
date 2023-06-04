@@ -1,4 +1,4 @@
-import { Relay, relayInit } from "nostr-tools";
+import { Relay, relayInit } from 'nostr-tools';
 
 export const initRelays = (urls: string[]): Relay[] => {
   return urls.map((url) => relayInit(url));

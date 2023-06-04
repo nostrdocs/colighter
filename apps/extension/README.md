@@ -1,6 +1,6 @@
 # Colighter Extension
 
-Browser extension for colighter, currently only supports chromium browsers
+Browser extension view for colighter, currently only supports chromium browsers
 
 ## Development
 

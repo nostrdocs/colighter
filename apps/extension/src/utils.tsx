@@ -1,31 +1,17 @@
+import { useCallback, useEffect, useState } from 'react';
 import browser, { Tabs } from 'webextension-polyfill';
+import { IHighlight } from 'colighter';
 import {
   ColorDescription,
   MessageAction,
   MessageData,
   StorageKey,
-  IHighlight,
-  SerializedRange,
   ActionResponse,
   SucccessAcionResponse,
-  IHighlightCollectionAppModel,
-  IHighlightCollection,
+  DEFAULT_HIGHLIGHT_COLOR,
 } from './types';
-import { useCallback, useEffect, useState } from 'react';
-import { DEFAULT_HIGHLIGHT_COLOR } from './constants';
-import {
-  CollabRelay,
-  NostrRelayTokenProvider,
-  NostrCollabLoader,
-  NostrRelayUrlResolver,
-  RouterliciousDocumentServiceFactory,
-  StaticCodeLoader,
-  createNostrCreateNewRequest,
-} from 'nostrcollab';
-import { NostrUser } from 'nostrfn';
-import { HighlightContainerRuntimeFactory } from './container';
 
-const tryReadLocalStorage = async <T,>(key: string): Promise<T | undefined> => {
+export const tryReadLocalStorage = async <T,>(key: string): Promise<T | undefined> => {
   const storage = await browser.storage.local.get();
   return storage[key];
 };
@@ -36,7 +22,7 @@ const readLocalStorage = async <T,>(
   return tryReadLocalStorage<T>(key);
 };
 
-const tryWriteLocalStorage = async <T,>(key: string, value: T) => {
+export const tryWriteLocalStorage = async <T,>(key: string, value: T) => {
   await browser.storage.local.set({ [key]: value });
 };
 
@@ -172,81 +158,4 @@ export const useCollabHighlights = () => {
   }, []);
 
   return [highlights, setHighlights] as const;
-};
-
-export const sha256Hash = async (message: string): Promise<string> => {
-  const encoder = new TextEncoder();
-  const hashArray = Array.from(
-    new Uint8Array(
-      await crypto.subtle.digest('SHA-256', encoder.encode(message))
-    )
-  );
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-};
-
-export const serializeRange = (range: Range): SerializedRange => {
-  const startContainer = range.startContainer;
-  const endContainer = range.endContainer;
-
-  const startOffset = range.startOffset;
-  const endOffset = range.endOffset;
-
-  const startPath = getNodePath(startContainer);
-  const endPath = getNodePath(endContainer);
-
-  return {
-    startPath,
-    endPath,
-    startOffset,
-    endOffset,
-  };
-};
-
-const getNodePath = (node: Node): number[] => {
-  const path: number[] = [];
-  while (node !== document.body) {
-    const parent = node.parentNode;
-    if (!parent) {
-      throw new Error('Node not found in document body');
-    }
-    const index = Array.prototype.indexOf.call(parent.childNodes, node);
-    path.push(index);
-    node = parent;
-  }
-  return path.reverse();
-};
-
-export const loadHighlightCollection = async (
-  url: string,
-  user: NostrUser,
-  relay: CollabRelay
-): Promise<IHighlightCollection> => {
-  const tokenProvider = new NostrRelayTokenProvider(relay, user);
-
-  // Create a new Fluid loader, load the highlight collection
-  const loader = new NostrCollabLoader<IHighlightCollectionAppModel>({
-    urlResolver: new NostrRelayUrlResolver(relay),
-    documentServiceFactory: new RouterliciousDocumentServiceFactory(
-      tokenProvider
-    ),
-    codeLoader: new StaticCodeLoader(new HighlightContainerRuntimeFactory()),
-    generateCreateNewRequest: createNostrCreateNewRequest,
-  });
-
-  let storageKey = await sha256Hash(url);
-
-  try {
-    let collabId = await tryReadLocalStorage<string>(storageKey);
-    if (collabId) {
-      let collab = await loader.loadExisting(collabId);
-      return collab.highlightCollection;
-    }
-
-    throw new Error('No collab id found in local storage');
-  } catch {
-    const createResponse = await loader.createDetached('0.1.0');
-    let collab = createResponse.collab.highlightCollection;
-    tryWriteLocalStorage<string>(storageKey, await createResponse.attach());
-    return collab;
-  }
 };

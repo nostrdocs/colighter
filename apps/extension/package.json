@@ -15,6 +15,7 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "framer-motion": "^10.12.9",
+    "colighter": "*",
     "nostrcollab": "*",
     "nostrfn": "*",
     "react": "^18.2.0",

@@ -1,47 +1,3 @@
-import { EventEmitter } from 'events';
-
-export interface IHighlight {
-  /** Text content of the highlight */
-  text: string;
-  /** Author of the highlight,
-   * This could be the pubkey identifier of the author
-   */
-  author: string;
-  /** Range of the highlight
-   * This is a serialized representation of the range
-   */
-  range: SerializedRange;
-  /** Unique hash identifier of the highlight
-   *  Possibly create this by hashing concat of author + text
-   */
-  hashId: string;
-}
-
-export type SerializedRange = {
-  startPath: number[];
-  endPath: number[];
-  startOffset: number;
-  endOffset: number;
-};
-
-export interface IHighlightCollection extends EventEmitter {
-  addHighlight(highlight: IHighlight): Promise<IHighlight>;
-  removeHighlight(hashId: string): Promise<boolean>;
-  getHighlight(hashId: string): Promise<IHighlight | undefined>;
-  getHighlights(): Promise<IHighlight[]>;
-
-  /** `HighlightCollectionUpdate` event will fire whenever the highlight collection changes.
-   * Changes originate either locally or remotely
-   */
-  on(event: typeof HighlightCollectionUpdate, listener: () => void): this;
-}
-
-export const HighlightCollectionUpdate = 'HighlightCollectionUpdate';
-
-export interface IHighlightCollectionAppModel {
-  readonly highlightCollection: IHighlightCollection;
-}
-
 export interface ColorDescription {
   name: string;
   val: string;
@@ -87,3 +43,13 @@ export interface IUser {
   userName: string;
   imageUrl: string;
 }
+
+export const HIGHLIGHT_COLOR_OPTIONS: ColorDescription[] = [
+  { name: 'red', val: 'FAA99D' },
+  { name: 'yellow', val: 'FDDF7E' },
+  { name: 'green', val: 'CCE29C' },
+  { name: 'blue', val: '67EBFA' },
+  { name: 'purple', val: 'CE97FB' },
+];
+
+export const DEFAULT_HIGHLIGHT_COLOR = HIGHLIGHT_COLOR_OPTIONS[0];
