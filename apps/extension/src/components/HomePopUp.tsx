@@ -1,12 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IUser } from '../../types';
+import { IUser } from '../types';
+import { AvatarList } from './AvatarList';
+import { HomeHighlights } from './HomeHighlights';
 
 import Colighter from '../assets/colighter.svg';
 import Gear from '../assets/gear.svg';
-import { AvatarList } from './AvatarList';
-import { HighlightPicker } from './HighlightPicker';
-import { HomeHighlights } from './HomeHighlights';
 
 const Container = styled.div`
   text-align: left;
@@ -53,7 +52,6 @@ export function HomePopUp() {
         <UserHeading>2 people have highlighted this page</UserHeading>
         <AvatarList avatarSize={48} maxUsers={2} users={users} />
       </div>
-      <HighlightPicker />
     </Container>
   );
 }

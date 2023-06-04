@@ -2,16 +2,16 @@ import { useCallback, useEffect, useState } from 'react';
 import browser, { Tabs } from 'webextension-polyfill';
 import { IHighlight } from 'colighter';
 import {
-  ColorDescription,
   MessageAction,
   MessageData,
   StorageKey,
   ActionResponse,
   SucccessAcionResponse,
-  DEFAULT_HIGHLIGHT_COLOR,
 } from './types';
 
-export const tryReadLocalStorage = async <T,>(key: string): Promise<T | undefined> => {
+export const tryReadLocalStorage = async <T,>(
+  key: string
+): Promise<T | undefined> => {
   const storage = await browser.storage.local.get();
   return storage[key];
 };
@@ -77,47 +77,6 @@ export const useShowHighlights = () => {
   }, []);
 
   return [showHighlights, toggleShowHighlights] as const;
-};
-
-export const useColorSelectedColor = () => {
-  const [selectedColor, setSelectedColor] = useState<ColorDescription>(
-    DEFAULT_HIGHLIGHT_COLOR
-  );
-
-  const updateSelectedColor = useCallback(
-    async (selectedColor: ColorDescription) => {
-      // Send message for render action by content script
-      await sendMessage<ColorDescription>({
-        action: MessageAction.SELECT_COLOR,
-        data: selectedColor,
-      }).catch((e) => {
-        console.log('Failed to set selected color', e);
-      });
-
-      // Update state and local storage
-      writeLocalStorage<ColorDescription>(
-        StorageKey.COLOR_SELECTION,
-        selectedColor
-      );
-
-      setSelectedColor(selectedColor);
-    },
-    []
-  );
-
-  useEffect(() => {
-    readLocalStorage<ColorDescription>(StorageKey.COLOR_SELECTION)
-      .then((storedSelectedColor) => {
-        // Update state
-        const updatedSelectedColor = storedSelectedColor || selectedColor;
-        setSelectedColor(updatedSelectedColor);
-      })
-      .catch((e) => {
-        console.log('Failed to read local storage', e);
-      });
-  }, []);
-
-  return [selectedColor, updateSelectedColor] as const;
 };
 
 export const useCollabHighlights = () => {

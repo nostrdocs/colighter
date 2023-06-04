@@ -1,13 +1,11 @@
 import React from 'react';
-import styled, {
-  DefaultTheme,
-  StyledComponentPropsWithRef,
-} from 'styled-components';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { variant } from 'styled-system';
+import { Theme } from '../theme';
 
 type Variants = 'primary' | 'secondary';
 
-const buttonVariant = ({ theme }: { theme: DefaultTheme }) =>
+const buttonVariant = ({ theme }: { theme: Theme }) =>
   variant({
     variants: {
       primary: {

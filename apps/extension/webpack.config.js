@@ -9,9 +9,9 @@ module.exports = (env) => {
   return merge(
     {
       entry: {
-        extension: './src/view/index.tsx',
-        background: './src/ext_background.ts',
-        colighter: './src/ext_contentscript.ts',
+        extension: './src/index.tsx',
+        background: './src/background.ts',
+        colighter: './src/contentscript.ts',
       },
       resolve: {
         extensions: ['.ts', '.tsx', '.js'],
