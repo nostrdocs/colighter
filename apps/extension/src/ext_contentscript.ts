@@ -33,6 +33,11 @@ const keypair = (await browserSourceNostrId()) || createEphemeralNostrId();
 const meta = await fetchNostrUserMetadata(keypair.pubkey, [collabRelay], {});
 
 /**
+ * Sends a message to background script to confirm if loaded tabs have content script
+ */
+chrome.runtime.sendMessage({ action: 'content_script_loaded' });
+
+/**
  * Listen for highlight mesages and take actions that render highlights on the page
  */
 chrome.runtime.onMessage.addListener(

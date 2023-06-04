@@ -1,6 +1,6 @@
 import { MessageAction } from './types';
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
   chrome.contextMenus.create({
     id: 'create-highlight',
     title: 'Create Highlight',
@@ -12,6 +12,33 @@ chrome.runtime.onInstalled.addListener(() => {
     title: 'Remove Highlight',
     contexts: ['selection'],
   });
+
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: 'https://colighter.com/' });
+  }
+
+  if (details.reason === 'install' || details.reason === 'update') {
+    chrome.tabs.query({ currentWindow: true }, function (tabs) {
+      for (let tab of tabs) {
+        if (!tab.id || !tab.url) return;
+        try {
+          if (!tab.url.startsWith('chrome://')) {
+            chrome.scripting.executeScript(
+              {
+                target: { tabId: tab.id },
+                files: ['build/colighter.bundle.js'],
+              },
+              () => {
+                loadCollab(tab.id);
+              }
+            );
+          }
+        } catch (err) {
+          console.log('Failed to inject content script', err);
+        }
+      }
+    });
+  }
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -49,9 +76,14 @@ chrome.commands.onCommand.addListener((command, tab) => {
   }
 });
 
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  // Load collab whenever on fully loaded tabs
-  if (changeInfo.status === 'complete') {
+chrome.tabs.onUpdated.addListener((tabId) => loadCollab(tabId));
+
+chrome.tabs.onActivated.addListener(({ tabId }) => loadCollab(tabId));
+
+async function loadCollab(tabId: number | undefined) {
+  if (tabId === undefined) return;
+  const tab = await chrome.tabs.get(tabId);
+  if (tab.status === 'complete') {
     chrome.tabs
       .sendMessage(tabId, {
         action: MessageAction.LOAD_COLLAB,
@@ -61,4 +93,4 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         console.log(err);
       });
   }
-});
+}
