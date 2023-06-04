@@ -1,5 +1,13 @@
 import { MessageAction } from './types';
 
+let loadedTabs = new Set();
+
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (message.action === 'content_script_loaded') {
+    loadedTabs.add(sender.tab?.id);
+  }
+});
+
 chrome.runtime.onInstalled.addListener((details) => {
   chrome.contextMenus.create({
     id: 'create-highlight',
@@ -22,7 +30,8 @@ chrome.runtime.onInstalled.addListener((details) => {
       for (let tab of tabs) {
         if (!tab.id || !tab.url) return;
         try {
-          if (!tab.url.startsWith('chrome://')) {
+          // check if tab is not a chrome:// tab and if it has loaded the content script
+          if (!tab.url.startsWith('chrome://') && loadedTabs.has(tab.id)) {
             chrome.scripting.executeScript(
               {
                 target: { tabId: tab.id },
