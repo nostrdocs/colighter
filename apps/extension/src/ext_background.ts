@@ -31,7 +31,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         if (!tab.id || !tab.url) return;
         try {
           // check if tab is not a chrome:// tab and if it has loaded the content script
-          if (!tab.url.startsWith('chrome://') && loadedTabs.has(tab.id)) {
+          if (!tab.url.startsWith('chrome://')) {
             chrome.scripting.executeScript(
               {
                 target: { tabId: tab.id },
