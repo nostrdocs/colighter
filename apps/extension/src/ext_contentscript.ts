@@ -1,19 +1,25 @@
-import { CollabRelayClient } from 'nostrcollab';
+import {
+  Highlight,
+  HighlightCollectionUpdate,
+  IHighlightCollection,
+  IHighlightCollectionAppModel,
+  HighlightContainerRuntimeFactory,
+  serializeRange,
+  sha256Hash,
+} from 'colighter';
+import { CollabRelayClient, loadCollabModel } from 'nostrcollab';
 import {
   browserSourceNostrId,
   createEphemeralNostrId,
   fetchNostrUserMetadata,
 } from 'nostrfn';
-import { DEFAULT_HIGHLIGHT_COLOR } from './constants';
-import { Highlight } from './model';
 import {
   ActionResponse,
   ColorDescription,
-  HighlightCollectionUpdate,
-  IHighlightCollection,
   MessageAction,
+  DEFAULT_HIGHLIGHT_COLOR,
 } from './types';
-import { serializeRange, loadHighlightCollection, sendMessage } from './utils';
+import { sendMessage, tryReadLocalStorage, tryWriteLocalStorage } from './utils';
 
 let color: ColorDescription = DEFAULT_HIGHLIGHT_COLOR;
 const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
@@ -60,18 +66,27 @@ chrome.runtime.onMessage.addListener(
           break;
         }
 
-        collab = await loadHighlightCollection(
-          request.data,
-          { keypair, meta },
-          collabRelay
-        ).catch((e) => {
+        let storageKey = await sha256Hash(request.data);
+        let knownCollabId = await tryReadLocalStorage<string>(storageKey);
+
+        try {
+          const { collabModel, collabId } = await loadCollabModel<IHighlightCollectionAppModel>(
+            { keypair, meta },
+            collabRelay,
+            new HighlightContainerRuntimeFactory(),
+            knownCollabId
+          )
+
+          collab = collabModel.highlightCollection;
+          await tryWriteLocalStorage<string>(storageKey, collabId);
+        } catch (e) {
           outcome = {
             success: false,
             error: e,
           } as ActionResponse;
 
           return collab;
-        });
+        };
 
         if (collab) {
           const highlightsChangeListener = async () => {

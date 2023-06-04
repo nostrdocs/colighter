@@ -4,8 +4,7 @@ import {
   useShowHighlights,
   writeLocalStorage,
 } from '../../utils';
-import { StorageKey } from '../../types';
-import { HIGHLIGHT_COLOR_OPTIONS } from '../../constants';
+import { StorageKey, HIGHLIGHT_COLOR_OPTIONS } from '../../types';
 
 export function HighlightPicker() {
   const [showHighlights, toggleShowHighlights] = useShowHighlights();
