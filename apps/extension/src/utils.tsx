@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import browser, { Tabs } from 'webextension-polyfill';
+import chrome, { Tabs } from 'webextension-polyfill';
 import { IHighlight } from 'colighter';
 import {
   MessageAction,
@@ -12,7 +12,7 @@ import {
 export const tryReadLocalStorage = async <T,>(
   key: string
 ): Promise<T | undefined> => {
-  const storage = await browser.storage.local.get();
+  const storage = await chrome.storage.local.get();
   return storage[key];
 };
 
@@ -23,7 +23,7 @@ const readLocalStorage = async <T,>(
 };
 
 export const tryWriteLocalStorage = async <T,>(key: string, value: T) => {
-  await browser.storage.local.set({ [key]: value });
+  await chrome.storage.local.set({ [key]: value });
 };
 
 export const writeLocalStorage = async <T,>(key: StorageKey, value: T) => {
@@ -34,11 +34,11 @@ export const sendMessage = async <T,>(
   data: MessageData<T>
 ): Promise<ActionResponse> => {
   const queryOptions = { active: true, currentWindow: true };
-  const tabs: Tabs.Tab[] = await browser.tabs.query(queryOptions);
+  const tabs: Tabs.Tab[] = await chrome.tabs.query(queryOptions);
   const currentTabId = tabs[0]?.id;
 
   if (currentTabId !== undefined) {
-    return browser.tabs.sendMessage(currentTabId, data);
+    return chrome.tabs.sendMessage(currentTabId, data);
   }
 
   return {
