@@ -1,48 +1,35 @@
 import React from 'react';
-import styled from 'styled-components';
-
-import { Button } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Image } from '@chakra-ui/react';
 
 import Colighter from '../assets/colighter.svg';
 import Gear from '../assets/gear.svg';
 import { useSidebar } from '../context/context';
+import { theme } from '../theme';
 import { openSidebar } from '../utils/Event';
 import { Highlights } from './Highlights';
-
-const Container = styled.div`
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 16px;
-  border: ${({ theme }) => `1px solid ${theme.palette.lightGray}`};
-  border-radius: 12px;
-  width: 400px;
-  gap: 30px;
-`;
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-const Heading = styled.h5`
-  font-weight: 500;
-  margin: 0;
-  margin-bottom: 12px;
-`;
 
 export function Popup() {
   const { toggleSidebar } = useSidebar();
   return (
-    <Container>
-      <Row>
-        <img src={`${Colighter}`} alt='colighter-logo' />
-        <img src={`${Gear}`} alt='gear-icon' />
-      </Row>
-      <div>
-        <Heading>Your Highlights</Heading>
+    <Flex
+      overflow='hidden'
+      gap={30}
+      width={400}
+      borderRadius={12}
+      flexDir='column'
+      border={`1px solid ${theme.palette.lightGray}`}
+      p='16px'
+    >
+      <Flex justifyContent='space-between'>
+        <Image src={`${Colighter}`} alt='colighter-logo' />
+        <Image src={`${Gear}`} alt='gear-icon' />
+      </Flex>
+      <Box>
+        <Heading as='h5' fontWeight='500' m={0} mb='12px'>
+          Your Highlights
+        </Heading>
         <Highlights />
-      </div>
+      </Box>
       <Button
         variant='popup'
         onClick={() => {
@@ -52,6 +39,6 @@ export function Popup() {
       >
         Open sidebar to see your highlights
       </Button>
-    </Container>
+    </Flex>
   );
 }
