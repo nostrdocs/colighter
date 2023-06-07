@@ -1,5 +1,4 @@
 export { Avatar } from './Avatar';
-export { AvatarList } from './AvatarList';
-export { HomeHighlights } from './HomeHighlights';
-export { HomePopUp } from './HomePopUp';
+export { Highlights } from './Highlights';
+export { Popup } from './Popup';
 export { Sidebar } from './Sidebar';
