@@ -1,11 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import { IUser } from '../types';
-import { AvatarList } from './AvatarList';
-import { HomeHighlights } from './HomeHighlights';
+
+import { Button } from '@chakra-ui/react';
 
 import Colighter from '../assets/colighter.svg';
 import Gear from '../assets/gear.svg';
+import { useSidebar } from '../context/context';
+import { IUser } from '../types';
+import { openSidebar } from '../utils/Event';
+import { AvatarList } from './AvatarList';
+import { HomeHighlights } from './HomeHighlights';
 
 const Container = styled.div`
   text-align: left;
@@ -38,6 +42,7 @@ const users = Array.from({ length: 10 }).map((_, i) => ({
 })) satisfies IUser[];
 
 export function HomePopUp() {
+  const { toggleSidebar } = useSidebar();
   return (
     <Container>
       <Row>
@@ -52,6 +57,15 @@ export function HomePopUp() {
         <UserHeading>2 people have highlighted this page</UserHeading>
         <AvatarList avatarSize={48} maxUsers={2} users={users} />
       </div>
+      <Button
+        variant='popup'
+        onClick={() => {
+          openSidebar();
+          toggleSidebar();
+        }}
+      >
+        Open sidebar to see your highlights
+      </Button>
     </Container>
   );
 }

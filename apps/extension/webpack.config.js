@@ -12,6 +12,7 @@ module.exports = (env) => {
         extension: './src/index.tsx',
         background: './src/background.ts',
         colighter: './src/contentscript.ts',
+        sidebar: './src/sidebar.tsx',
       },
       resolve: {
         extensions: ['.ts', '.tsx', '.js'],
@@ -62,9 +63,17 @@ module.exports = (env) => {
         }),
         new HtmlWebpackPlugin({
           template: './public/index.html',
+          filename: 'index.html',
           chunks: ['extension'],
           scriptLoading: 'defer',
           inject: 'head',
+        }),
+        new HtmlWebpackPlugin({
+          template: './public/sidebar.html',
+          filename: 'sidebar.html',
+          chunks: ['sidebar'],
+          scriptLoading: 'defer',
+          inject: 'body',
         }),
       ],
     },

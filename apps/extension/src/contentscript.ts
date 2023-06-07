@@ -13,12 +13,10 @@ import {
   createEphemeralNostrId,
   fetchNostrUserMetadata,
 } from 'nostrfn';
-import { ActionResponse, MessageAction } from './types';
-import {
-  sendMessage,
-  tryReadLocalStorage,
-  tryWriteLocalStorage,
-} from './utils';
+import { ActionResponse, MessageAction, MessageData } from './types';
+import { tryReadLocalStorage, tryWriteLocalStorage } from './utils/Storage';
+import { sendMessage } from './utils/Messaging';
+import { injectSidebar } from './utils/InjectScript';
 
 const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
 let collab: IHighlightCollection | null = null;
@@ -46,7 +44,7 @@ chrome.runtime.sendMessage({ action: 'content_script_loaded' });
  */
 chrome.runtime.onMessage.addListener(
   async (
-    request: any,
+    request: MessageData<any>,
     sender: chrome.runtime.MessageSender,
     sendResponse: (res: ActionResponse) => void
   ) => {
@@ -185,6 +183,19 @@ chrome.runtime.onMessage.addListener(
       case MessageAction.REMOVE_HIGHLIGHTS:
         outcome = removeHighlight();
         break;
+
+      case MessageAction.OPEN_SIDEBAR:
+        injectSidebar();
+        return (outcome = {
+          success: true,
+        } as ActionResponse);
+
+      case MessageAction.CLOSE_SIDEBAR:
+        const sidebarIframe = document.getElementById('colighter-sidebar');
+        sidebarIframe?.parentNode?.removeChild(sidebarIframe);
+        return (outcome = {
+          success: true,
+        } as ActionResponse);
 
       default:
         outcome = {
