@@ -1,5 +1,6 @@
 import React from 'react';
-import { closeSidebar } from '../utils/Event';
+import { handleSidebar } from '../utils/Event';
+import { MessageAction } from '../types';
 
 type SidebarContextType = {
   isOpen: boolean;
@@ -29,7 +30,7 @@ export const SidebarProvider = ({
   }, []);
 
   const closeIframeSidebar = React.useCallback(() => {
-    closeSidebar();
+    handleSidebar(MessageAction.CLOSE_SIDEBAR);
   }, []);
 
   return (
