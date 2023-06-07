@@ -98,16 +98,6 @@ chrome.runtime.onMessage.addListener(
               .catch((e) => {
                 console.error(e);
               });
-
-            // Request render of highlights on popup UI
-            chrome.runtime
-              .sendMessage({
-                action: MessageAction.POST_COLLAB_HIGHLIGHTS,
-                data: highlights,
-              })
-              .catch((e) => {
-                console.error(e);
-              });
           };
 
           // Set up listener for changes to the highlight collection
