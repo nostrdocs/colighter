@@ -2,7 +2,6 @@ import { IHighlight } from 'colighter';
 import { useState, useEffect } from 'react';
 import {
   MessageAction,
-  MessageData,
   ActionResponse,
   SucccessAcionResponse,
 } from '../types';
@@ -12,7 +11,8 @@ export const useCollabHighlights = () => {
   const [highlights, setHighlights] = useState<IHighlight[]>([]);
 
   useEffect(() => {
-    // Request for collab highlights
+    const pollHighlights = () => {
+      // Request for collab highlights
     sendMessage<null>({
       action: MessageAction.GET_COLLAB_HIGHLIGHTS,
       data: null,
@@ -26,28 +26,15 @@ export const useCollabHighlights = () => {
       .catch((e) => {
         console.error('Failed to get highlights', e);
       });
-
-    const highlightListener = (
-      message: MessageData<IHighlight[]>,
-      _sender: any,
-      _sendResponse: any
-    ) => {
-      if (
-        message.action !== MessageAction.POST_COLLAB_HIGHLIGHTS ||
-        !message.data
-      ) {
-        return;
-      }
-
-      setHighlights(message.data as IHighlight[]);
     };
 
-    chrome.runtime.onMessage.addListener(highlightListener);
+    pollHighlights();
+    const timer = setInterval(pollHighlights, 1000);
 
     return () => {
-      chrome.runtime.onMessage.removeListener(highlightListener);
+      clearInterval(timer);
     };
   }, []);
 
-  return [highlights, setHighlights] as const;
+  return [highlights] as const;
 };
