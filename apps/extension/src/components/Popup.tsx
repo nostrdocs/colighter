@@ -6,10 +6,8 @@ import { Button } from '@chakra-ui/react';
 import Colighter from '../assets/colighter.svg';
 import Gear from '../assets/gear.svg';
 import { useSidebar } from '../context/context';
-import { IUser } from '../types';
 import { openSidebar } from '../utils/Event';
-import { AvatarList } from './AvatarList';
-import { HomeHighlights } from './HomeHighlights';
+import { Highlights } from './Highlights';
 
 const Container = styled.div`
   text-align: left;
@@ -32,16 +30,8 @@ const Heading = styled.h5`
   margin: 0;
   margin-bottom: 12px;
 `;
-const UserHeading = styled(Heading)`
-  font-size: 2rem;
-`;
 
-const users = Array.from({ length: 10 }).map((_, i) => ({
-  userName: 'user' + i,
-  imageUrl: 'https://source.unsplash.com/100x100/?profile-image',
-})) satisfies IUser[];
-
-export function HomePopUp() {
+export function Popup() {
   const { toggleSidebar } = useSidebar();
   return (
     <Container>
@@ -51,11 +41,7 @@ export function HomePopUp() {
       </Row>
       <div>
         <Heading>Your Highlights</Heading>
-        <HomeHighlights />
-      </div>
-      <div>
-        <UserHeading>2 people have highlighted this page</UserHeading>
-        <AvatarList avatarSize={48} maxUsers={2} users={users} />
+        <Highlights />
       </div>
       <Button
         variant='popup'

@@ -17,7 +17,7 @@ import {
 
 import Colighter from '../assets/colighter.svg';
 import { useSidebar } from '../context/context';
-import { HomeHighlights } from './HomeHighlights';
+import { Highlights } from './Highlights';
 import { theme } from '../theme';
 
 const defaultSelection = {
@@ -89,7 +89,7 @@ export function Sidebar() {
                 height='1px'
                 bg={`${theme.palette.lightGray}}`}
               ></Box>
-              <HomeHighlights />
+              <Highlights />
             </Box>
           </DrawerBody>
 

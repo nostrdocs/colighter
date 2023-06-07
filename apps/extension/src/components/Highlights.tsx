@@ -6,7 +6,7 @@ import { Avatar, AvatarGroup, Box, Text } from '@chakra-ui/react';
 import { useCollabHighlights } from '../hooks/useCollabHighlights';
 import { theme } from '../theme';
 
-export function HomeHighlights() {
+export function Highlights() {
   const [highlights] = useCollabHighlights();
 
   return (
