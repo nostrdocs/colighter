@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { IUser } from '../types';
 import { AvatarList } from './AvatarList';
 import { HomeHighlights } from './HomeHighlights';
-
 import Colighter from '../assets/colighter.svg';
 import Gear from '../assets/gear.svg';
+import { PartialKeyPair, browserSourceNostrId} from 'nostrfn';
 
 const Container = styled.div`
   text-align: left;
@@ -38,14 +38,27 @@ const users = Array.from({ length: 10 }).map((_, i) => ({
 })) satisfies IUser[];
 
 export function HomePopUp() {
+  const [nostrId, setNostrId] = useState< PartialKeyPair | null>(null);
+
+  const handleCreateNostrId = useCallback(async () => {
+    const nostrId = await browserSourceNostrId();
+    setNostrId(nostrId);
+    console.log(nostrId);
+  }, []);
+
+
   return (
     <Container>
       <Row>
         <img src={`${Colighter}`} alt='colighter-logo' />
-        <img src={`${Gear}`} alt='gear-icon' />
+        <img src={`${Gear}`} alt='settings'/>
+        {/* create a login button that will call the nostr extension and then create a nostrId */}
+        <button onClick={handleCreateNostrId}>Create NostrId</button>
+        
       </Row>
       <div>
         <Heading>Your Highlights</Heading>
+        <div>Your npub is: {nostrId ? nostrId.pubkey.toString() : 'N/A'}</div>
         <HomeHighlights />
       </div>
       <div>
