@@ -23,10 +23,10 @@ export const browserSourceNostrId =
       }
     } else {
       // otherwise use a key from localStorage or generate a new one
-      let privkey = localStorage.getItem(STORAGE_PRIVKEY);
+      const privkey = localStorage.getItem(STORAGE_PRIVKEY);
 
       if (!privkey || privkey.match(/^[a-f0-9]{64}$/)) {
-        let { privkey, pubkey } = createEphemeralNostrId();
+        const { privkey, pubkey } = createEphemeralNostrId();
 
         localStorage.setItem(STORAGE_PRIVKEY, privkey);
         return Promise.resolve({ privkey, pubkey });
