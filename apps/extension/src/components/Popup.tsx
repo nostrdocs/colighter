@@ -4,10 +4,11 @@ import { Box, Button, Flex, Heading, Image } from '@chakra-ui/react';
 import Colighter from '../assets/colighter.svg';
 import Gear from '../assets/gear.svg';
 import { useSidebar } from '../context/context';
+import { handleSidebar } from '../utils/Event';
 import { theme } from '../theme';
-import { openSidebar } from '../utils/Event';
 import { Highlights } from './Highlights';
 import { PartialKeyPair, browserSourceNostrId } from 'nostrfn';
+import { MessageAction } from '../types';
 
 export function Popup() {
   const { toggleSidebar } = useSidebar();
@@ -58,7 +59,7 @@ export function Popup() {
       <Button
         variant='popup'
         onClick={() => {
-          openSidebar();
+          handleSidebar(MessageAction.OPEN_SIDEBAR);
           toggleSidebar();
         }}
       >
