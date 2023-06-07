@@ -39,7 +39,7 @@ type HighlightViewProps = Pick<IHighlight, 'text' | 'author'>;
 
 const HighlightView = ({ text }: HighlightViewProps) => {
   return (
-    <Box border={`1px solid ${theme.palette.lightGray}`} borderRadius='7px'>
+    <Box mb="4" border={`1px solid ${theme.palette.lightGray}`} borderRadius='7px'>
       <Text textAlign='left' padding='12px' fontStyle='italic'>
         {text}
       </Text>

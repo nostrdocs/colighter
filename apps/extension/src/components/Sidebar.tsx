@@ -5,7 +5,6 @@ import {
   Button,
   Drawer,
   DrawerBody,
-  DrawerCloseButton,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -16,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 
 import Colighter from '../assets/colighter.svg';
+import Gear from '../assets/gear.svg';
 import { useSidebar } from '../context/context';
 import { Highlights } from './Highlights';
 import { theme } from '../theme';
@@ -56,9 +56,17 @@ export function Sidebar() {
       >
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton variant={'primary'} />
-          <DrawerHeader>
+          <DrawerHeader
+            display='flex'
+            justifyContent='space-between'
+            alignItems='center'
+          >
             <Image src={`${Colighter}`} alt='colighter-logo' />
+            <Image
+              onClick={() => console.log('settings')}
+              src={`${Gear}`}
+              alt='settings-icon'
+            />
           </DrawerHeader>
 
           <DrawerBody>
