@@ -31,6 +31,12 @@
       "description": "Toggle the highlighter cursor"
     }
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["build/sidebar.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],  
   "permissions": [
     "commands",
     "contextMenus",

@@ -5,6 +5,8 @@ export enum MessageAction {
   LOAD_COLLAB = 'LOAD_COLLAB',
   GET_COLLAB_HIGHLIGHTS = 'GET_COLLAB_HIGHLIGHTS',
   POST_COLLAB_HIGHLIGHTS = 'POST_COLLAB_HIGHLIGHTS',
+  OPEN_SIDEBAR = 'OPEN_SIDEBAR',
+  CLOSE_SIDEBAR = 'CLOSE_SIDEBAR',
 }
 
 export interface ActionResponse {
@@ -22,7 +24,7 @@ export interface ErrorActionResponse extends ActionResponse {
 
 export interface MessageData<T> {
   action: MessageAction;
-  data: T;
+  data?: T;
 }
 
 export enum StorageKey {
