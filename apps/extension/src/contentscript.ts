@@ -4,8 +4,8 @@ import {
   IHighlightCollection,
   IHighlightCollectionAppModel,
   HighlightContainerRuntimeFactory,
-  serializeRange,
   sha256Hash,
+  ISerializedRange,
 } from 'colighter';
 import { CollabRelayClient, loadCollabModel } from 'nostrcollab';
 import {
@@ -15,10 +15,16 @@ import {
 } from 'nostrfn';
 import { ActionResponse, MessageAction, MessageData } from './types';
 import { tryReadLocalStorage, tryWriteLocalStorage } from './utils/Storage';
-import { sendMessage } from './utils/Messaging';
 import { injectSidebar } from './utils/InjectScript';
+import {
+  // createSelectionAtRange,
+  hackyDeserializeRange,
+  getSelectionInfo,
+  highlightText,
+  removeHighlight,
+  serializeRange,
+} from './utils/Highlighting';
 
-const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
 let collab: IHighlightCollection | null = null;
 
 // TODO: Support user configured collab relay
@@ -45,7 +51,7 @@ chrome.runtime.sendMessage({ action: 'content_script_loaded' });
 chrome.runtime.onMessage.addListener(
   async (
     request: MessageData<any>,
-    sender: chrome.runtime.MessageSender,
+    _sender: chrome.runtime.MessageSender,
     sendResponse: (res: ActionResponse) => void
   ) => {
     let outcome: ActionResponse = {
@@ -90,18 +96,12 @@ chrome.runtime.onMessage.addListener(
             const highlights = await collab!.getHighlights();
 
             // Request render highlights on canvas
-            chrome.runtime
-              .sendMessage({
-                action: MessageAction.RENDER_HIGHLIGHTS,
-                data: highlights,
-              })
-              .catch((e) => {
-                console.error(e);
-              });
+            await renderHighlightsOnCanvas(highlights);
           };
 
           // Set up listener for changes to the highlight collection
           collab.on(HighlightCollectionUpdate, highlightsChangeListener);
+          await highlightsChangeListener();
 
           outcome = {
             success: true,
@@ -128,12 +128,6 @@ chrome.runtime.onMessage.addListener(
               } as ActionResponse);
             });
           break;
-        } else {
-          // Trigger collab load
-          sendMessage({
-            action: MessageAction.LOAD_COLLAB,
-            data: sender.tab?.url || '',
-          });
         }
 
         outcome = {
@@ -151,27 +145,32 @@ chrome.runtime.onMessage.addListener(
         outcome = { success: true };
         break;
 
-      case MessageAction.RENDER_HIGHLIGHTS:
-        if (request.data) {
-          // We don't know how to render collab highlights yet
-          // TODO: Render submitted highlights
+      case MessageAction.CREATE_HIGHLIGHT:
+        try {
+          const { selection, range, text } = await getSelectionInfo();
+          await highlightText(selection, range, text);
+
+          const rangeStr = serializeRange(range);
+          return trySaveHighlight(rangeStr, text);
+        } catch (e) {
           outcome = {
             success: false,
-            error: 'Not implemented',
-          } as ActionResponse;
-          break;
-        }
-
-        outcome = await highlightText().catch((e) => {
-          return (outcome = {
-            success: false,
             error: e,
-          } as ActionResponse);
-        });
+          } as ActionResponse;
+        }
         break;
 
       case MessageAction.REMOVE_HIGHLIGHTS:
-        outcome = removeHighlight();
+        await removeHighlight()
+          .then((res) => {
+            return res;
+          })
+          .catch((e) => {
+            return (outcome = {
+              success: false,
+              error: e,
+            } as ActionResponse);
+          });
         break;
 
       case MessageAction.OPEN_SIDEBAR:
@@ -199,103 +198,27 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-const getSelectionInfo = (): {
-  selection: Selection | null;
-  range: Range | null;
-  text: string;
-} => {
-  const selection = window.getSelection();
-  let range: Range | null = null;
-  let text = '';
+const renderHighlightsOnCanvas = async (highlights: Highlight[]) => {
+  const selection = document.getSelection();
 
-  if (selection) {
-    range = selection.getRangeAt(0);
-    text = range.toString();
-  }
-  return { selection, range, text };
-};
-
-/* Highlight given selection */
-const highlightText = async (): Promise<ActionResponse> => {
-  const { selection, range, text } = getSelectionInfo();
-
-  if (selection === null || range === null) {
-    return {
-      success: false,
-      error: 'Failed to get selection',
-    } as ActionResponse;
+  if (!selection) {
+    return;
   }
 
-  if (!text) {
-    return { success: false, error: 'No text selected' } as ActionResponse;
-  }
-
-  let parent = getHighlightedMark(selection);
-
-  if (parent?.className !== HIGHLIGHT_KEY) {
-    let mark: HTMLElement = document.createElement('mark');
-    mark.setAttribute('style', `background-color: #CE97FB`);
-    mark.className = HIGHLIGHT_KEY;
-    let sel: Selection | null = window.getSelection();
-
-    if (sel?.rangeCount) {
-      let range: Range = sel.getRangeAt(0).cloneRange();
-      range.surroundContents(mark);
-      sel.removeAllRanges();
-      sel.addRange(range);
-
-      return await trySaveHighlight(range, text);
+  highlights.forEach(async ({ range: rangeStr, text }) => {
+    try {
+      const range = hackyDeserializeRange(rangeStr, text);
+      selection.addRange(range);
+      await highlightText(selection, range, text);
+      selection.removeRange(range);
+    } catch (e) {
+      console.error(e);
     }
-  }
-
-  return { success: false, error: 'Already highlighted' } as ActionResponse;
-};
-
-/* Remove highlight for given selected text */
-const removeHighlight = (): ActionResponse => {
-  const { selection, range, text } = getSelectionInfo();
-
-  if (selection === null || range === null) {
-    return {
-      success: false,
-      error: 'Failed to get selection',
-    } as ActionResponse;
-  }
-
-  if (!text) {
-    return { success: false, error: 'No text selected' } as ActionResponse;
-  }
-
-  let mark = getHighlightedMark(selection);
-
-  if (mark?.className === HIGHLIGHT_KEY) {
-    let parent: Node | null = mark.parentNode;
-    let text: Text | null = document.createTextNode(mark.innerHTML);
-
-    parent?.insertBefore(text, mark);
-    mark.remove();
-
-    return { success: true };
-  }
-
-  return {
-    success: false,
-    error: 'Failed to remove highlight',
-  } as ActionResponse;
-};
-
-/* Get parent element from selected text */
-const getHighlightedMark = (selection: Selection): HTMLElement | null => {
-  let parent: HTMLElement | null = null;
-  parent = selection.getRangeAt(0).commonAncestorContainer as HTMLElement;
-  if (parent.nodeType !== 1) {
-    parent = parent.parentNode as HTMLElement;
-  }
-  return parent;
+  });
 };
 
 const trySaveHighlight = async (
-  range: Range,
+  range: ISerializedRange,
   text: string
 ): Promise<ActionResponse> => {
   if (collab === null) {
@@ -306,8 +229,7 @@ const trySaveHighlight = async (
   }
 
   try {
-    const rangeSer = serializeRange(range);
-    const highlight = await Highlight.create(text, rangeSer, '0x000000');
+    const highlight = await Highlight.create(text, range, '0x000000');
     await collab.addHighlight(highlight);
     return { success: true };
   } catch (e) {

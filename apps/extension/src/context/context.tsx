@@ -31,7 +31,7 @@ export const SidebarProvider = ({
   const closeIframeSidebar = React.useCallback(() => {
     closeSidebar();
   }, []);
-  
+
   return (
     <SidebarContext.Provider
       value={{ isOpen, toggleSidebar, closeIframeSidebar }}

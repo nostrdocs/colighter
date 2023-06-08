@@ -49,7 +49,7 @@ export const chakraTheme = extendTheme({
             boxShadow:
               '0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)',
             transform: 'scale(0.98)',
-            border: 'none'
+            border: 'none',
           },
         },
         halfPrimary: {
@@ -64,7 +64,7 @@ export const chakraTheme = extendTheme({
             boxShadow:
               '0 0 1px 2px rgba(88, 144, 255, .75), 0 1px 1px rgba(0, 0, 0, .15)',
             transform: 'scale(0.98)',
-            border: 'none'
+            border: 'none',
           },
         },
         primary: {
