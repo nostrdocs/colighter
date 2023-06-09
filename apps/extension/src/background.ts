@@ -56,7 +56,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
   if (info.menuItemId === 'create-highlight') {
     chrome.tabs
-      .sendMessage(tabId, { action: MessageAction.RENDER_HIGHLIGHTS })
+      .sendMessage(tabId, { action: MessageAction.CREATE_HIGHLIGHT })
       .catch((err) => {
         console.log(err);
       });
@@ -78,7 +78,7 @@ chrome.commands.onCommand.addListener((command, tab) => {
   if (command === 'create-highlight') {
     tab.id !== undefined &&
       chrome.tabs
-        .sendMessage(tab.id, { action: MessageAction.RENDER_HIGHLIGHTS })
+        .sendMessage(tab.id, { action: MessageAction.CREATE_HIGHLIGHT })
         .catch((err) => {
           console.log(err);
         });
