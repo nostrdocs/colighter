@@ -13,6 +13,7 @@ module.exports = (env) => {
         background: './src/background.ts',
         colighter: './src/contentscript.ts',
         sidebar: './src/sidebar.tsx',
+        options: './src/options.tsx',
       },
       resolve: {
         extensions: ['.ts', '.tsx', '.js'],
@@ -74,6 +75,13 @@ module.exports = (env) => {
           chunks: ['sidebar'],
           scriptLoading: 'defer',
           inject: 'body',
+        }),
+        new HtmlWebpackPlugin({
+          template: './public/options.html',
+          filename: 'options.html',
+          chunks: ['options'],
+          scriptLoading: 'defer',
+          inject: 'head',
         }),
       ],
     },

@@ -5,6 +5,7 @@ export enum MessageAction {
   GET_HIGHLIGHTS = 'GET_HIGHLIGHTS',
   OPEN_SIDEBAR = 'OPEN_SIDEBAR',
   CLOSE_SIDEBAR = 'CLOSE_SIDEBAR',
+  OPEN_OPTIONS_PAGE = 'OPEN_OPTIONS_PAGE',
 }
 
 export interface ActionResponse {

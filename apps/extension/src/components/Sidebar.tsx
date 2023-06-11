@@ -19,6 +19,7 @@ import Gear from '../assets/gear.svg';
 import { useSidebar } from '../context/context';
 import { Highlights } from './Highlights';
 import { theme } from '../theme';
+import { openExtensionSettings } from '../utils/Event';
 
 const defaultSelection = {
   ALL_HIGHLIGHTS: true,
@@ -63,7 +64,8 @@ export function Sidebar() {
           >
             <Image src={`${Colighter}`} alt='colighter-logo' />
             <Image
-              onClick={() => console.log('settings')}
+              cursor='pointer'
+              onClick={openExtensionSettings}
               src={`${Gear}`}
               alt='settings-icon'
             />

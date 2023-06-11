@@ -140,6 +140,29 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
+  document.addEventListener('keydown', (event) => {
+    const keys = shortcut.split('+');
+
+    let ctrlPressed = keys.includes('Ctrl') ? event.ctrlKey : true;
+    let altPressed = keys.includes('Alt') ? event.altKey : true;
+    let shiftPressed = keys.includes('Shift') ? event.shiftKey : true;
+    let keyIsCorrect = keys.includes(event.key.toUpperCase());
+
+    if (ctrlPressed && altPressed && shiftPressed && keyIsCorrect) {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        const activeTab = tabs[0];
+        if (activeTab.id) {
+          chrome.tabs.sendMessage(activeTab.id, {
+            action: MessageAction.CREATE_HIGHLIGHT,
+          });
+          return;
+        }
+      });
+    }
+  });
+});
+
 // const renderHighlightsOnCanvas = async (highlights: Highlight[]) => {
 //   const selection = document.getSelection();
 

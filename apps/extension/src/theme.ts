@@ -25,6 +25,9 @@ export const chakraTheme = extendTheme({
         outline: 'none',
         border: '0',
         padding: '10px',
+        _focus: {
+          outline: 'none',
+        },
       },
       variants: {
         popup: {

@@ -86,6 +86,11 @@ chrome.commands.onCommand.addListener((command, tab) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId) => loadHighlights(tabId));
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === MessageAction.OPEN_OPTIONS_PAGE) {
+    chrome.runtime.openOptionsPage();
+  }
+});
 
 chrome.tabs.onActivated.addListener(({ tabId }) => loadHighlights(tabId));
 
