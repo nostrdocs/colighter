@@ -18,7 +18,7 @@
     "service_worker": "build/background.bundle.js",
     "type": "module"
   },
-  "options_page": "build/index.html",
+  "options_page": "build/options.html",
   "commands": {
     "create-highlight": {
       "suggested_key": {
@@ -33,7 +33,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["build/sidebar.html"],
+      "resources": ["build/sidebar.html", "build/options.bundle.js"],
       "matches": ["<all_urls>"]
     }
   ],  

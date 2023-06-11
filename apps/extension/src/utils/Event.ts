@@ -13,7 +13,8 @@ export function handleSidebar(action: MessageAction) {
   });
 }
 
-export function openSettings() {
-  chrome.runtime.openOptionsPage();
-  window.close();
+export function openExtensionSettings() {
+  chrome.runtime.sendMessage({
+    action: MessageAction.OPEN_OPTIONS_PAGE,
+  });
 }
