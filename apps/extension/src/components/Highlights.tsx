@@ -1,9 +1,9 @@
-import { IHighlight } from 'colighter';
 import React from 'react';
 
 import { Avatar, AvatarGroup, Box, Text } from '@chakra-ui/react';
 
 import { useNostrHighlights } from '../hooks/useNostrHighlights';
+import { IHighlight } from '../types';
 import { theme } from '../theme';
 
 export function Highlights() {

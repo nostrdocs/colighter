@@ -1,6 +1,10 @@
-import { IHighlight } from 'colighter';
 import { useState, useEffect } from 'react';
-import { MessageAction, ActionResponse, SucccessAcionResponse } from '../types';
+import {
+  IHighlight,
+  MessageAction,
+  ActionResponse,
+  SucccessAcionResponse,
+} from '../types';
 import { sendMessage } from '../utils/Messaging';
 
 export const useNostrHighlights = () => {
@@ -14,7 +18,7 @@ export const useNostrHighlights = () => {
         data: null,
       })
         .then((outcome: ActionResponse) => {
-          if (outcome.success) {
+          if (outcome?.success) {
             const data = (outcome as SucccessAcionResponse).data;
             setHighlights(data as IHighlight[]);
           }
@@ -25,7 +29,7 @@ export const useNostrHighlights = () => {
     };
 
     pollHighlights();
-    const timer = setInterval(pollHighlights, 1000);
+    const timer = setInterval(pollHighlights, 10000);
 
     return () => {
       clearInterval(timer);

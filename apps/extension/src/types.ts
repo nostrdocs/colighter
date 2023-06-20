@@ -29,3 +29,27 @@ export interface IUser {
   userName: string;
   imageUrl: string;
 }
+
+export type ISerializedRange = {
+  startPath: number[];
+  endPath: number[];
+  startOffset: number;
+  endOffset: number;
+};
+
+export interface IHighlight {
+  /** Text content of the highlight */
+  text: string;
+  /** Author of the highlight,
+   * This could be the pubkey identifier of the author
+   */
+  author: string;
+  /** Range of the highlight
+   * This is a serialized representation of the range
+   */
+  range: ISerializedRange;
+  /** Unique hash identifier of the highlight
+   *  Possibly create this by hashing concat of author + text
+   */
+  hashId: string;
+}
