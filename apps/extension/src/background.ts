@@ -38,7 +38,7 @@ chrome.runtime.onInstalled.addListener((details) => {
                 files: ['build/colighter.bundle.js'],
               },
               () => {
-                loadCollab(tab.id);
+                loadHighlights(tab.id);
               }
             );
           }
@@ -85,11 +85,11 @@ chrome.commands.onCommand.addListener((command, tab) => {
   }
 });
 
-chrome.tabs.onUpdated.addListener((tabId) => loadCollab(tabId));
+chrome.tabs.onUpdated.addListener((tabId) => loadHighlights(tabId));
 
-chrome.tabs.onActivated.addListener(({ tabId }) => loadCollab(tabId));
+chrome.tabs.onActivated.addListener(({ tabId }) => loadHighlights(tabId));
 
-async function loadCollab(tabId: number | undefined) {
+async function loadHighlights(tabId: number | undefined) {
   if (tabId === undefined) return;
   const tab = await chrome.tabs.get(tabId);
   if (tab.status === 'complete') {

@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "build": "webpack --env prod --env clean",
-    "dev": "concurrently \"webpack -w --env clean\" \"yarn:devserver\"",
-    "devserver": "npx @nostrdocs/tinycollab@latest",
+    "dev": "webpack -w --env clean",
     "test": "concurrently -g -k \"yarn:devserver\" \"jest\"",
     "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf build"
@@ -15,10 +14,8 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@nostr-dev-kit/ndk": "^0.5.11",
-    "colighter": "*",
     "framer-motion": "^10.12.9",
-    "nostr-tools": "^1.12.0",
-    "nostrcollab": "*",
+    "nostr-tools": "^1.11.2",
     "nostrfn": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

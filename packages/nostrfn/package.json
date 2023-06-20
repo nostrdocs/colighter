@@ -13,7 +13,7 @@
   "lint": "eslint \"src/**/*.ts*\""
  },
  "dependencies": {
-  "nostr-tools": "^1.10.1"
+  "nostr-tools": "^1.11.2"
  },
  "devDependencies": {
   "@types/jsrsasign": "^10.5.8",

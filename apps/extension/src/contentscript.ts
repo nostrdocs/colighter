@@ -1,6 +1,10 @@
-import { sha256Hash, ISerializedRange, IHighlight } from 'colighter';
-import { ActionResponse, MessageAction, MessageData } from './types';
-import { tryReadLocalStorage, tryWriteLocalStorage } from './utils/Storage';
+import {
+  ISerializedRange,
+  IHighlight,
+  ActionResponse,
+  MessageAction,
+  MessageData,
+} from './types';
 import { injectSidebar } from './utils/InjectScript';
 import {
   getSelectionInfo,
@@ -26,7 +30,7 @@ const ndk = new NDK({
  */
 chrome.runtime.sendMessage({ action: 'content_script_loaded' });
 
-let storageKey = '';
+let highlights: IHighlight[] = [];
 
 /**
  * Listen for highlight mesages and take actions that render highlights on the page
@@ -47,52 +51,36 @@ chrome.runtime.onMessage.addListener(
 
         const pageUrl = request.data;
 
-        const highlightFilter = { kinds: [KIND_HIGHLIGHT] }; // tags: [["r", pageUrl]]
+        const highlightFilter = {
+          kinds: [KIND_HIGHLIGHT],
+          tags: [['r', pageUrl]],
+        };
 
-        const highlights: IHighlight[] = [
-          ...(await ndk.fetchEvents(highlightFilter)),
-        ].map((event: NDKEvent) => {
-          return {
-            text: event.content,
-            author: event.pubkey,
-            range: { startPath: [], endPath: [], startOffset: 0, endOffset: 0 },
-            hashId: event.id,
-          };
-        });
-
-        storageKey = await sha256Hash(pageUrl);
-        await tryWriteLocalStorage<string>(
-          storageKey,
-          JSON.stringify(highlights)
+        // TODO: Subscibe to highlight events
+        highlights = [...(await ndk.fetchEvents(highlightFilter))].map(
+          (event: NDKEvent) => {
+            return {
+              text: event.content,
+              author: event.pubkey,
+              range: {
+                startPath: [],
+                endPath: [],
+                startOffset: 0,
+                endOffset: 0,
+              },
+              hashId: event.id,
+            };
+          }
         );
-
-        // Request render highlights on canvas
-        // await renderHighlightsOnCanvas(highlights);
-
         break;
 
       case MessageAction.GET_HIGHLIGHTS:
-        let knownHighlights = await tryReadLocalStorage<string>(storageKey);
+        console.log(highlights);
 
-        try {
-          if (!knownHighlights) {
-            throw 'No known highlights';
-          }
-
-          const highlights = JSON.parse(knownHighlights) as IHighlight[];
-          console.log(highlights);
-          // await renderHighlightsOnCanvas(highlights);
-          outcome = {
-            success: true,
-            data: highlights,
-          } as ActionResponse;
-        } catch (e) {
-          outcome = {
-            success: false,
-            error: e,
-          } as ActionResponse;
-        }
-
+        outcome = {
+          success: true,
+          data: highlights,
+        } as ActionResponse;
         break;
 
       case MessageAction.CREATE_HIGHLIGHT:
@@ -180,4 +168,3 @@ const trySaveHighlight = async (
   //   return { success: false, error: e } as ActionResponse;
   // }
 };
-storageKey;
