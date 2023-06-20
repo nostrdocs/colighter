@@ -95,7 +95,7 @@ async function loadCollab(tabId: number | undefined) {
   if (tab.status === 'complete') {
     chrome.tabs
       .sendMessage(tabId, {
-        action: MessageAction.LOAD_COLLAB,
+        action: MessageAction.LOAD_HIGHLIGHTS,
         data: tab.url || '',
       })
       .catch((err) => {
