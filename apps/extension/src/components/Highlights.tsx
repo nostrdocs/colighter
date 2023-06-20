@@ -3,11 +3,11 @@ import React from 'react';
 
 import { Avatar, AvatarGroup, Box, Text } from '@chakra-ui/react';
 
-import { useCollabHighlights } from '../hooks/useCollabHighlights';
+import { useNostrHighlights } from '../hooks/useNostrHighlights';
 import { theme } from '../theme';
 
 export function Highlights() {
-  const [highlights] = useCollabHighlights();
+  const [highlights] = useNostrHighlights();
 
   return (
     <>
