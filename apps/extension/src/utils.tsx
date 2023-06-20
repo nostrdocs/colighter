@@ -100,7 +100,7 @@ export const useCollabHighlights = () => {
 
     const highlightListener = (message, _sender, _sendResponse) => {
       if (
-        message.action !== MessageAction.POST_COLLAB_HIGHLIGHTS ||
+        message.action !== MessageAction.GET_COLLAB_HIGHLIGHTS ||
         !message.data
       ) {
         return;
