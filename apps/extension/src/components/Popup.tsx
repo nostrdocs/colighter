@@ -7,11 +7,11 @@ import { useSidebar } from '../context/context';
 import { theme } from '../theme';
 import { openSidebar } from '../utils/Event';
 import { Highlights } from './Highlights';
-import { PartialKeyPair, browserSourceNostrId} from 'nostrfn';
+import { PartialKeyPair, browserSourceNostrId } from 'nostrfn';
 
 export function Popup() {
   const { toggleSidebar } = useSidebar();
-  const [nostrId, setNostrId] = useState< PartialKeyPair | null>(null);
+  const [nostrId, setNostrId] = useState<PartialKeyPair | null>(null);
   const [showCreateButton, setShowCreateButton] = useState<boolean>(true);
 
   const handleCreateNostrId = useCallback(async () => {
@@ -32,7 +32,6 @@ export function Popup() {
     }
   }, []);
 
-
   return (
     <Flex
       overflow='hidden'
@@ -51,7 +50,7 @@ export function Popup() {
         ) : null}
       </Flex>
       <Box>
-      <div>Your npub is: {nostrId ? nostrId.pubkey.toString() : 'N/A'}</div>
+        <div>Your npub is: {nostrId ? nostrId.pubkey.toString() : 'N/A'}</div>
         <Heading as='h5' fontWeight='500' m={0} mb='12px'>
           Your Highlights
         </Heading>
