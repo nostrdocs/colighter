@@ -6,7 +6,6 @@ import { ReactComponent as WorldSvg } from './assets/world.svg';
 import { ReactComponent as WaveOneSvg } from './assets/waveone.svg';
 import { ReactComponent as WaveTwoSvg } from './assets/wavetwo.svg';
 import { Header } from './components/Header';
-import { WaitlistButton } from './components/WaitlistButton';
 
 export const Landing: React.FC = () => {
   const [scrollPos, setScrollPos] = useState(0);
@@ -65,7 +64,7 @@ export const Landing: React.FC = () => {
               struggles or messy annotations. Simplify emphasizing and
               remembering crucial content.
             </p>
-            <WaitlistButton />
+            <ComingSoon />
           </div>
           <div className='flex justify-end w-full text-center md:w-3/5'>
             <img
@@ -152,8 +151,16 @@ export const Landing: React.FC = () => {
           capture, and share seamlessly. Experience the power of effortless
           knowledge management. Get started now!
         </p>
-        <WaitlistButton />
+        <ComingSoon />
       </section>
     </div>
+  );
+};
+
+export const ComingSoon: React.FC = () => {
+  return (
+    <p className='px-8 py-4 mx-auto my-6 font-bold text-gray-800 bg-white shadow-lg lg:mx-0 focus:shadow-outline'>
+      COMING SOON
+    </p>
   );
 };
