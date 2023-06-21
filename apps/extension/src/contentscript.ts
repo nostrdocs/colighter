@@ -57,7 +57,11 @@ chrome.runtime.onMessage.addListener(
         };
 
         // TODO: Subscibe to highlight events
-        highlights = [...(await ndk.fetchEvents(highlightFilter))].map(
+        highlights = [...(await ndk.fetchEvents(highlightFilter))].filter((event: NDKEvent) => {
+          const eventHasContent = event.content && event.content.length > 0;
+          const eventLinksUrl = event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
+          return eventHasContent && eventLinksUrl;
+        }).map(
           (event: NDKEvent) => {
             return {
               text: event.content,
