@@ -14,7 +14,7 @@ export const addRelay = (url: string): void => {
 };
 
 export const getRelays = (): string[] => {
-    // TODO: Fetch relays from a db or something
+  // TODO: Fetch relays from a db or something
   let storedRelays = localStorage.getItem('relays');
   relays = storedRelays ? JSON.parse(storedRelays) : defaultRelays;
   return [...relays];

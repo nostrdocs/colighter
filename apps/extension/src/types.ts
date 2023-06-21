@@ -39,6 +39,8 @@ export type ISerializedRange = {
 };
 
 export interface IHighlight {
+  /** Unique identifier of the highlight */
+  id: string;
   /** Text content of the highlight */
   text: string;
   /** Author of the highlight,
@@ -46,11 +48,7 @@ export interface IHighlight {
    */
   author: string;
   /** Range of the highlight
-   * This is a serialized representation of the range
+   * This is a JSON serialized representation of the range
    */
-  range: ISerializedRange;
-  /** Unique hash identifier of the highlight
-   *  Possibly create this by hashing concat of author + text
-   */
-  hashId: string;
+  range?: string;
 }

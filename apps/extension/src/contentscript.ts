@@ -12,8 +12,11 @@ import {
   removeHighlight,
   serializeRange,
 } from './utils/Highlighting';
-import NDK, { NDKEvent } from '@nostr-dev-kit/ndk';
+import NDK, { NDKNip07Signer, NDKEvent } from '@nostr-dev-kit/ndk';
 import { getRelays } from './utils/Relay';
+
+// Enable Nip07 Nostr Provider
+import './nostrprovider';
 
 const KIND_HIGHLIGHT = 9802;
 
@@ -21,6 +24,7 @@ const KIND_HIGHLIGHT = 9802;
 const relayUrls = getRelays();
 const ndk = new NDK({
   explicitRelayUrls: relayUrls,
+  signer: new NDKNip07Signer(),
 });
 
 /**
@@ -45,7 +49,7 @@ chrome.runtime.onMessage.addListener(
 
     switch (request.action) {
       case MessageAction.LOAD_HIGHLIGHTS:
-        await ndk.connect();
+        await ndk.connect(); // TODO: improve relay connections management
 
         const pageUrl = request.data;
 
@@ -55,25 +59,14 @@ chrome.runtime.onMessage.addListener(
         };
 
         // TODO: Subscibe to highlight events
-        highlights = [...(await ndk.fetchEvents(highlightFilter))].filter((event: NDKEvent) => {
-          const eventHasContent = event.content && event.content.length > 0;
-          const eventLinksUrl = event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
-          return eventHasContent && eventLinksUrl;
-        }).map(
-          (event: NDKEvent) => {
-            return {
-              text: event.content,
-              author: event.pubkey,
-              range: {
-                startPath: [],
-                endPath: [],
-                startOffset: 0,
-                endOffset: 0,
-              },
-              hashId: event.id,
-            };
-          }
-        );
+        highlights = [...(await ndk.fetchEvents(highlightFilter))]
+          .filter((event: NDKEvent) => {
+            const eventHasContent = event.content && event.content.length > 0;
+            const eventLinksUrl =
+              event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
+            return eventHasContent && eventLinksUrl;
+          })
+          .map(eventToHighlight);
         break;
 
       case MessageAction.GET_HIGHLIGHTS:
@@ -91,7 +84,9 @@ chrome.runtime.onMessage.addListener(
           await highlightText(selection, range, text);
 
           const rangeStr = serializeRange(range);
-          return trySaveHighlight(rangeStr, text);
+          await ndk.connect(); // TODO: improve relay connections management
+
+          return tryPublishHighlight(rangeStr, text, ndk);
         } catch (e) {
           outcome = {
             success: false,
@@ -141,7 +136,7 @@ chrome.runtime.onMessage.addListener(
 // TODO: Fetch shortcut from extension config
 // TODO: sync shortcut message with background script
 chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
-  console.log({shortcut})
+  console.log({ shortcut });
   document.addEventListener('keydown', (event) => {
     const keys = shortcut.split('+');
 
@@ -154,7 +149,7 @@ chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         const activeTab = tabs[0];
         if (activeTab.id) {
-          console.log('shortcut', keyIsCorrect)
+          console.log('shortcut', keyIsCorrect);
           chrome.tabs.sendMessage(activeTab.id, {
             action: MessageAction.CREATE_HIGHLIGHT,
           });
@@ -184,16 +179,39 @@ chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
 //   });
 // };
 
-const trySaveHighlight = async (
+const tryPublishHighlight = async (
   range: ISerializedRange,
-  text: string
+  text: string,
+  ndk: NDK
 ): Promise<ActionResponse> => {
-  throw 'Not implemented';
-  // try {
-  //   const highlight = await Highlight.create(text, range, '0x000000');
-  //   await collab.addHighlight(highlight);
-  //   return { success: true };
-  // } catch (e) {
-  //   return { success: false, error: e } as ActionResponse;
-  // }
+  try {
+    const event = new NDKEvent(ndk);
+    event.content = text;
+    event.kind = KIND_HIGHLIGHT;
+    event.tags = [
+      ['r', window.location.href],
+      ['range', JSON.stringify(range)],
+    ];
+
+    // TODO: Publish event to Nostr
+    // await event.publish();
+
+    // TODO: Should we wait for the event to come from nostr subscription?
+    highlights.push(eventToHighlight(event));
+
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e } as ActionResponse;
+  }
+};
+
+const eventToHighlight = (event: NDKEvent): IHighlight => {
+  const range = event.tags.find((tag) => tag[0] === 'range')?.[1];
+
+  return {
+    text: event.content,
+    author: event.pubkey,
+    id: event.id,
+    range,
+  };
 };

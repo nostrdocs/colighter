@@ -19,22 +19,13 @@ export function Highlights({ showRecentOnly }: HighlightsProps) {
     <>
       {highlightsToShow.map((highlight) => (
         <>
-          <HighlightView
-            text={highlight.text}
-            author={highlight.author}
-            hashId={highlight.hashId}
-            key={highlight.hashId}
-          />
+          <HighlightView {...highlight} key={highlight.id} />
         </>
       ))}
       {
         <AvatarGroup mt={4} size='md' max={3}>
-          {highlights.map(({ author, hashId }) => (
-            <Avatar
-              name={author}
-              src='https://bit.ly/code-beast'
-              key={hashId}
-            />
+          {highlights.map(({ author, id }) => (
+            <Avatar name={author} src='https://bit.ly/code-beast' key={id} />
           ))}
         </AvatarGroup>
       }
@@ -42,12 +33,12 @@ export function Highlights({ showRecentOnly }: HighlightsProps) {
   );
 }
 
-type HighlightViewProps = Pick<IHighlight, 'text' | 'author' | 'hashId'>;
+type HighlightViewProps = Pick<IHighlight, 'text' | 'author' | 'id'>;
 
-const HighlightView = ({ text, hashId }: HighlightViewProps) => {
+const HighlightView = ({ text, id }: HighlightViewProps) => {
   return (
     <Box
-      key={hashId}
+      key={id}
       mb='4'
       border={`1px solid ${theme.palette.lightGray}`}
       borderRadius='7px'
