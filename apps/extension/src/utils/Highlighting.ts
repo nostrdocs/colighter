@@ -64,7 +64,7 @@ export const highlightCurrentSelection = async (
   selectedText: RangySelection;
   serializedRange: string;
 }> => {
-  // highlighter.highlightSelection('highlight');
+  highlighter.highlightSelection('highlight');
   const selectedText = rangy.getSelection();
   const serializedRange = highlighter.serialize();
 
