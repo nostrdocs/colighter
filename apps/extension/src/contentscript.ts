@@ -1,24 +1,25 @@
+import NDK, { NDKNip07Signer } from '@nostr-dev-kit/ndk';
 import {
-  ISerializedRange,
-  IHighlight,
   ActionResponse,
+  IHighlight,
   MessageAction,
   MessageData,
 } from './types';
 import { injectSidebar } from './utils/InjectScript';
-import {
-  getSelectionInfo,
-  highlightText,
-  removeHighlight,
-  serializeRange,
-} from './utils/Highlighting';
-import NDK, { NDKNip07Signer, NDKEvent } from '@nostr-dev-kit/ndk';
 import { getRelays } from './utils/Relay';
 
 // Enable Nip07 Nostr Provider
 import './nostrprovider';
 
-const KIND_HIGHLIGHT = 9802;
+import {
+  getHighlighter,
+  highlightCurrentSelection,
+  removeCurrentSelectionHighlight,
+} from './utils/Highlighting';
+
+// const KIND_HIGHLIGHT = 9802;
+
+const STORAGE_KEY = 'some-highlights';
 
 // TODO: Fetch relay urls from extension config
 const relayUrls = getRelays();
@@ -47,26 +48,27 @@ chrome.runtime.onMessage.addListener(
       success: false,
     };
 
+    const highlighter = getHighlighter();
+
     switch (request.action) {
       case MessageAction.LOAD_HIGHLIGHTS:
-        await ndk.connect(); // TODO: improve relay connections management
+        // await ndk.connect(); // TODO: improve relay connections management
+        const item = localStorage.getItem(STORAGE_KEY);
 
-        const pageUrl = request.data;
+        if (item) highlighter.deserialize(item);
+        // await ndk.connect();
 
-        const highlightFilter = {
-          kinds: [KIND_HIGHLIGHT],
-          tags: [['r', pageUrl]],
-        };
+        // const pageUrl = request.data;
 
         // TODO: Subscibe to highlight events
-        highlights = [...(await ndk.fetchEvents(highlightFilter))]
-          .filter((event: NDKEvent) => {
-            const eventHasContent = event.content && event.content.length > 0;
-            const eventLinksUrl =
-              event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
-            return eventHasContent && eventLinksUrl;
-          })
-          .map(eventToHighlight);
+        // highlights = [...(await ndk.fetchEvents(highlightFilter))]
+        //   .filter((event: NDKEvent) => {
+        //     const eventHasContent = event.content && event.content.length > 0;
+        //     const eventLinksUrl =
+        //       event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
+        //     return eventHasContent && eventLinksUrl;
+        //   })
+        //   .map(eventToHighlight);
         break;
 
       case MessageAction.GET_HIGHLIGHTS:
@@ -80,13 +82,16 @@ chrome.runtime.onMessage.addListener(
 
       case MessageAction.CREATE_HIGHLIGHT:
         try {
-          const { selection, range, text } = await getSelectionInfo();
-          await highlightText(selection, range, text);
+          const { serializedRange, selectedText } =
+            await highlightCurrentSelection(highlighter);
 
-          const rangeStr = serializeRange(range);
           await ndk.connect(); // TODO: improve relay connections management
 
-          return tryPublishHighlight(rangeStr, text, ndk);
+          return tryPublishHighlight(
+            serializedRange,
+            selectedText.toString(),
+            ndk
+          );
         } catch (e) {
           outcome = {
             success: false,
@@ -96,7 +101,7 @@ chrome.runtime.onMessage.addListener(
         break;
 
       case MessageAction.REMOVE_HIGHLIGHTS:
-        await removeHighlight()
+        await removeCurrentSelectionHighlight(highlighter)
           .then((res) => {
             return res;
           })
@@ -179,25 +184,27 @@ chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
 //   });
 // };
 
+// TODO: Remove and use actual implementation
 const tryPublishHighlight = async (
-  range: ISerializedRange,
+  rangeString: string,
   text: string,
   ndk: NDK
 ): Promise<ActionResponse> => {
   try {
-    const event = new NDKEvent(ndk);
-    event.content = text;
-    event.kind = KIND_HIGHLIGHT;
-    event.tags = [
-      ['r', window.location.href],
-      ['range', JSON.stringify(range)],
-    ];
+    localStorage.setItem(STORAGE_KEY, rangeString);
+    // const event = new NDKEvent(ndk);
+    // event.content = text;
+    // event.kind = KIND_HIGHLIGHT;
+    // event.tags = [
+    //   ['r', window.location.href],
+    //   ['range', JSON.stringify(range)],
+    // ];
 
-    // TODO: Publish event to Nostr
-    // await event.publish();
+    // // TODO: Publish event to Nostr
+    // // await event.publish();
 
-    // TODO: Should we wait for the event to come from nostr subscription?
-    highlights.push(eventToHighlight(event));
+    // // TODO: Should we wait for the event to come from nostr subscription?
+    // highlights.push(eventToHighlight(event));
 
     return { success: true };
   } catch (e) {
@@ -205,13 +212,13 @@ const tryPublishHighlight = async (
   }
 };
 
-const eventToHighlight = (event: NDKEvent): IHighlight => {
-  const range = event.tags.find((tag) => tag[0] === 'range')?.[1];
+// const eventToHighlight = (event: NDKEvent): IHighlight => {
+//   const range = event.tags.find((tag) => tag[0] === 'range')?.[1];
 
-  return {
-    text: event.content,
-    author: event.pubkey,
-    id: event.id,
-    range,
-  };
-};
+//   return {
+//     text: event.content,
+//     author: event.pubkey,
+//     id: event.id,
+//     range,
+//   };
+// };

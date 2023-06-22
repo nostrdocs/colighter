@@ -1,15 +1,33 @@
 import { ActionResponse, ISerializedRange } from '../types';
 
-const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
+import rangy from 'rangy';
+import 'rangy/lib/rangy-classapplier';
+import 'rangy/lib/rangy-highlighter';
+
+// const HIGHLIGHT_KEY: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
+
+/** Gets the highlighter instance */
+export const getHighlighter = () => {
+  const styleElement = document.createElement('style');
+  // TODO: Use background color based on user settings
+  const cssStyles = '.highlight { background-color: #CE97FB; }';
+  styleElement.textContent = cssStyles;
+  document.head.appendChild(styleElement);
+
+  const highlighter = rangy.createHighlighter();
+  highlighter.addClassApplier(rangy.createClassApplier('highlight'));
+
+  return highlighter;
+};
 
 /* Get selection info from window selection object */
 export const getSelectionInfo = async (): Promise<{
   selection: Selection;
-  range: Range;
+  range: RangyRange;
   text: string;
 }> => {
-  const selection = window.getSelection();
-  let range: Range | null = null;
+  const selection = rangy.getSelection();
+  let range: RangyRange | null = null;
   let text = '';
 
   if (selection) {
@@ -28,8 +46,9 @@ export const getSelectionInfo = async (): Promise<{
   return Promise.resolve({ selection, range, text });
 };
 
-export const createSelectionAtRange = (range: Range): Selection => {
-  const selection = document.getSelection();
+export const createSelectionAtRange = (range: RangyRange): RangySelection => {
+  const selection = rangy.getSelection();
+
   if (!selection) {
     throw new Error('Failed to create selection');
   }
@@ -39,69 +58,41 @@ export const createSelectionAtRange = (range: Range): Selection => {
 };
 
 /* Highlight given selection */
-export const highlightText = async (
-  selection: Selection,
-  range: Range,
-  text: string
-): Promise<{ text: string; range: Range }> => {
-  let parent = getHighlightedMark(range);
+export const highlightCurrentSelection = async (
+  highlighter: Highlighter
+): Promise<{
+  selectedText: RangySelection;
+  serializedRange: string;
+}> => {
+  // highlighter.highlightSelection('highlight');
+  const selectedText = rangy.getSelection();
+  const serializedRange = highlighter.serialize();
 
-  if (parent?.className !== HIGHLIGHT_KEY) {
-    let mark: HTMLElement = document.createElement('mark');
-    mark.setAttribute('style', `background-color: #CE97FB`);
-    mark.className = HIGHLIGHT_KEY;
+  // highlighter.deserialize(serializedRange);
+  rangy.getSelection().removeAllRanges();
 
-    range.surroundContents(mark);
-  } else {
-    console.log('Already highlighted');
-  }
-
-  selection.removeRange(range);
-
-  return Promise.resolve({ text, range });
-};
-
-/* Get parent element from selected text */
-const getHighlightedMark = (range: Range): HTMLElement | null => {
-  let parent: HTMLElement | null = null;
-  parent = range.commonAncestorContainer as HTMLElement;
-  if (parent.nodeType !== 1) {
-    parent = parent.parentNode as HTMLElement;
-  }
-  return parent;
+  return Promise.resolve({ selectedText, serializedRange });
 };
 
 /* Remove highlight for given selected text */
-export const removeHighlight = async (): Promise<ActionResponse> => {
-  // const { selection, range, text } = await getSelectionInfo();
+export const removeCurrentSelectionHighlight = async (
+  highlighter: Highlighter
+): Promise<ActionResponse> => {
+  const { selection, range, text } = await getSelectionInfo();
 
-  // if (selection === null || range === null) {
-  //   return {
-  //     success: false,
-  //     error: 'Failed to get selection',
-  //   } as ActionResponse;
-  // }
+  if (selection === null || range === null) {
+    return {
+      success: false,
+      error: 'Failed to get selection',
+    } as ActionResponse;
+  }
 
-  // if (!text) {
-  //   return { success: false, error: 'No text selected' } as ActionResponse;
-  // }
+  if (!text) {
+    return { success: false, error: 'No text selected' } as ActionResponse;
+  }
 
-  // let mark = getHighlightedMark(selection);
-
-  // if (mark && mark?.className === HIGHLIGHT_KEY) {
-  //   let parent: Node | null = mark.parentNode;
-  //   let text: Text | null = document.createTextNode(mark.innerHTML);
-
-  //   parent?.insertBefore(text, mark);
-  //   mark.remove();
-
-  //   return { success: true };
-  // }
-
-  return {
-    success: false,
-    error: 'Failed to remove highlight',
-  } as ActionResponse;
+  highlighter.unhighlightSelection();
+  return { success: true };
 };
 
 export const serializeRange = (range: Range): ISerializedRange => {
