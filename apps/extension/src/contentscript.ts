@@ -13,16 +13,14 @@ import {
   serializeRange,
 } from './utils/Highlighting';
 import NDK, { NDKEvent } from '@nostr-dev-kit/ndk';
+import { getRelays } from './utils/Relay';
 
 const KIND_HIGHLIGHT = 9802;
 
 // TODO: Fetch relay urls from extension config
+const relayUrls = getRelays();
 const ndk = new NDK({
-  explicitRelayUrls: [
-    'wss://relay.nostrdocs.com',
-    'wss://relay.f7z.io',
-    'wss://nos.lol',
-  ],
+  explicitRelayUrls: relayUrls,
 });
 
 /**
@@ -140,7 +138,10 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+// TODO: Fetch shortcut from extension config
+// TODO: sync shortcut message with background script
 chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
+  console.log({shortcut})
   document.addEventListener('keydown', (event) => {
     const keys = shortcut.split('+');
 
@@ -153,6 +154,7 @@ chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         const activeTab = tabs[0];
         if (activeTab.id) {
+          console.log('shortcut', keyIsCorrect)
           chrome.tabs.sendMessage(activeTab.id, {
             action: MessageAction.CREATE_HIGHLIGHT,
           });

@@ -7,11 +7,14 @@ import { ChakraProvider } from '@chakra-ui/react';
 
 import { Popup } from './components';
 import { chakraTheme } from './theme';
+import { SettingsProvider } from './context/settingsContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 const Extension = React.memo(Popup);
 root.render(
   <ChakraProvider theme={chakraTheme}>
-    <Extension />
+    <SettingsProvider>
+      <Extension />
+    </SettingsProvider>
   </ChakraProvider>
 );

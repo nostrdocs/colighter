@@ -16,7 +16,7 @@ import {
 
 import Colighter from '../assets/colighter.svg';
 import Gear from '../assets/gear.svg';
-import { useSidebar } from '../context/context';
+import { useSidebar } from '../context/sidebarContext';
 import { Highlights } from './Highlights';
 import { theme } from '../theme';
 import { openExtensionSettings } from '../utils/Event';

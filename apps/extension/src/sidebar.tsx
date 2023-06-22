@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 
 import { Sidebar } from './components/Sidebar';
-import { SidebarProvider, useSidebar } from './context/context';
+import { SidebarProvider, useSidebar } from './context/sidebarContext';
 import { chakraTheme } from './theme';
 import { MessageAction } from './types';
 

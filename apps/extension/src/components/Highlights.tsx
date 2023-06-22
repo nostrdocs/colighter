@@ -6,16 +6,23 @@ import { useNostrHighlights } from '../hooks/useNostrHighlights';
 import { IHighlight } from '../types';
 import { theme } from '../theme';
 
-export function Highlights() {
+type HighlightsProps = {
+  showRecentOnly?: boolean;
+};
+
+export function Highlights({ showRecentOnly }: HighlightsProps) {
   const [highlights] = useNostrHighlights();
+
+  const highlightsToShow = showRecentOnly ? highlights.slice(0, 1) : highlights;
 
   return (
     <>
-      {highlights.map((highlight) => (
+      {highlightsToShow.map((highlight) => (
         <>
           <HighlightView
             text={highlight.text}
             author={highlight.author}
+            hashId={highlight.hashId}
             key={highlight.hashId}
           />
         </>
@@ -35,11 +42,12 @@ export function Highlights() {
   );
 }
 
-type HighlightViewProps = Pick<IHighlight, 'text' | 'author'>;
+type HighlightViewProps = Pick<IHighlight, 'text' | 'author' | 'hashId'>;
 
-const HighlightView = ({ text }: HighlightViewProps) => {
+const HighlightView = ({ text, hashId }: HighlightViewProps) => {
   return (
     <Box
+      key={hashId}
       mb='4'
       border={`1px solid ${theme.palette.lightGray}`}
       borderRadius='7px'
