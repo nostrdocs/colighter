@@ -3455,6 +3455,11 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.4.tgz#cd667bcfdd025213aafb7ca5915a932590acdcdc"
   integrity sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==
 
+"@types/rangy@^0.0.35":
+  version "0.0.35"
+  resolved "https://registry.yarnpkg.com/@types/rangy/-/rangy-0.0.35.tgz#db39bb9f39922b5305cfe8c42494c1b003a32131"
+  integrity sha512-YSHmgZeBJnHozxRmG46xl5xZ+kKM7rUSEmMBTwGGsWjiToMK5rP/+AU4yduMQbickOEc+YqIlH4fqeTx03Crsg==
+
 "@types/react-dom@<18.0.0":
   version "17.0.20"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.20.tgz#e0c8901469d732b36d8473b40b679ad899da1b53"
@@ -10061,6 +10066,11 @@ range-parser@^1.2.1, range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
+
+rangy@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/rangy/-/rangy-1.3.1.tgz#fa117e136e618ed82d91bcf938c7ceeb936aad1d"
+  integrity sha512-gfo1FOzdvcrcCR+wf0XMKPJBD3p2nHUw2wvNtuKsaHoI2dXQ9vH2QIpSQMV+mWLvKSqPfDNThhlyK8UN1hJijw==
 
 raw-body@2.5.1:
   version "2.5.1"
