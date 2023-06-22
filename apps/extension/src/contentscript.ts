@@ -1,4 +1,4 @@
-import NDK, { NDKNip07Signer } from '@nostr-dev-kit/ndk';
+import NDK, { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
 import {
   ActionResponse,
   IHighlight,
@@ -17,9 +17,7 @@ import {
   removeCurrentSelectionHighlight,
 } from './utils/Highlighting';
 
-// const KIND_HIGHLIGHT = 9802;
-
-const STORAGE_KEY = 'some-highlights';
+const KIND_HIGHLIGHT = 9802;
 
 // TODO: Fetch relay urls from extension config
 const relayUrls = getRelays();
@@ -34,6 +32,7 @@ const ndk = new NDK({
 chrome.runtime.sendMessage({ action: 'content_script_loaded' });
 
 let highlights: IHighlight[] = [];
+let highlighter: Highlighter | null = null;
 
 /**
  * Listen for highlight mesages and take actions that render highlights on the page
@@ -44,31 +43,35 @@ chrome.runtime.onMessage.addListener(
     _sender: chrome.runtime.MessageSender,
     sendResponse: (res: ActionResponse) => void
   ) => {
+    if (!highlighter) {
+      highlighter = getHighlighter();
+    }
+
     let outcome: ActionResponse = {
       success: false,
     };
 
-    const highlighter = getHighlighter();
-
     switch (request.action) {
       case MessageAction.LOAD_HIGHLIGHTS:
-        // await ndk.connect(); // TODO: improve relay connections management
-        const item = localStorage.getItem(STORAGE_KEY);
+        await ndk.connect();
 
-        if (item) highlighter.deserialize(item);
-        // await ndk.connect();
+        const pageUrl = request.data;
 
-        // const pageUrl = request.data;
+        const highlightFilter = {
+          kinds: [KIND_HIGHLIGHT],
+          tags: [['r', pageUrl]],
+        };
 
         // TODO: Subscibe to highlight events
-        // highlights = [...(await ndk.fetchEvents(highlightFilter))]
-        //   .filter((event: NDKEvent) => {
-        //     const eventHasContent = event.content && event.content.length > 0;
-        //     const eventLinksUrl =
-        //       event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
-        //     return eventHasContent && eventLinksUrl;
-        //   })
-        //   .map(eventToHighlight);
+        highlights = [...(await ndk.fetchEvents(highlightFilter))]
+          .filter((event: NDKEvent) => {
+            const eventHasContent = event.content && event.content.length > 0;
+            const eventLinksUrl =
+              event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
+            return eventHasContent && eventLinksUrl;
+          })
+          .map(eventToHighlight)
+          .map(renderHighlight);
         break;
 
       case MessageAction.GET_HIGHLIGHTS:
@@ -165,46 +168,25 @@ chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
   });
 });
 
-// const renderHighlightsOnCanvas = async (highlights: Highlight[]) => {
-//   const selection = document.getSelection();
-
-//   if (!selection) {
-//     return;
-//   }
-
-//   highlights.forEach(async ({ range: rangeStr, text }) => {
-//     try {
-//       const range = hackyDeserializeRange(rangeStr, text);
-//       selection.addRange(range);
-//       await highlightText(selection, range, text);
-//       selection.removeRange(range);
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   });
-// };
-
-// TODO: Remove and use actual implementation
 const tryPublishHighlight = async (
-  rangeString: string,
+  range: string,
   text: string,
   ndk: NDK
 ): Promise<ActionResponse> => {
   try {
-    localStorage.setItem(STORAGE_KEY, rangeString);
-    // const event = new NDKEvent(ndk);
-    // event.content = text;
-    // event.kind = KIND_HIGHLIGHT;
-    // event.tags = [
-    //   ['r', window.location.href],
-    //   ['range', JSON.stringify(range)],
-    // ];
+    const event = new NDKEvent(ndk);
+    event.content = text;
+    event.kind = KIND_HIGHLIGHT;
+    event.tags = [
+      ['r', window.location.href],
+      ['range', range],
+    ];
 
-    // // TODO: Publish event to Nostr
-    // // await event.publish();
+    // TODO: Publish event to Nostr
+    // await event.publish();
 
-    // // TODO: Should we wait for the event to come from nostr subscription?
-    // highlights.push(eventToHighlight(event));
+    // TODO: Should we wait for the event to come from nostr subscription?
+    highlights.push(eventToHighlight(event));
 
     return { success: true };
   } catch (e) {
@@ -212,13 +194,22 @@ const tryPublishHighlight = async (
   }
 };
 
-// const eventToHighlight = (event: NDKEvent): IHighlight => {
-//   const range = event.tags.find((tag) => tag[0] === 'range')?.[1];
+const eventToHighlight = (event: NDKEvent): IHighlight => {
+  const range = event.tags.find((tag) => tag[0] === 'range')?.[1];
 
-//   return {
-//     text: event.content,
-//     author: event.pubkey,
-//     id: event.id,
-//     range,
-//   };
-// };
+  return {
+    text: event.content,
+    author: event.pubkey,
+    id: event.id,
+    range,
+  };
+};
+
+const renderHighlight = (highlight: IHighlight) => {
+  if (highlight.range) {
+    // Render highlight on page
+    highlighter?.deserialize(highlight.range);
+  }
+
+  return highlight;
+};
