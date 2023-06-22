@@ -9,7 +9,7 @@ import { useSettings } from '../context/settingsContext';
 import { useSidebar } from '../context/sidebarContext';
 import { theme } from '../theme';
 import { MessageAction } from '../types';
-import { handleSidebar } from '../utils/Event';
+import { handleSidebar, openExtensionSettings } from '../utils/Event';
 import { Highlights } from './Highlights';
 
 export function Popup() {
@@ -51,7 +51,12 @@ export function Popup() {
     >
       <Flex justifyContent='space-between'>
         <Image src={`${Colighter}`} alt='colighter-logo' />
-        <Image src={`${Gear}`} alt='gear-icon' />
+        <Image
+          src={`${Gear}`}
+          alt='gear-icon'
+          onClick={openExtensionSettings}
+          cursor='pointer'
+        />
       </Flex>
       <Box>
         <Text fontSize='20px'>
