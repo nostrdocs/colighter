@@ -6,6 +6,7 @@ interface Highlighter {
   );
   unhighlightSelection(selection?: RangySelection);
   serialize(options?: {}): string;
+  deserialize(serialized: string): void;
   removeAllHighlights();
   serialize(selection: RangySelection);
 }
