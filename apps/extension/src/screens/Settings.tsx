@@ -10,18 +10,15 @@ import {
 } from '@chakra-ui/react';
 
 import { NavButton } from '../components/NavButton';
-import { tryReadLocalStorage } from '../utils/Storage';
-import { SettingsSelection, SettingsSelectionType } from './types';
 import { Account } from '../components/Settings/Account';
 import { General } from '../components/Settings/General';
-
-const pub_key =
-  'npub1w484qhetytrccarzneq9rffksyrwtkdvmc3h032ejauxxpqryffq40lvz2';
-const priv_key =
-  'npvt1w484qhetytrccarzneq9rffksyrwtkdvmc3h032ejauxxpqryffq40lvz2';
+import { useSettings } from '../context/settingsContext';
+import { tryReadLocalStorage } from '../utils/Storage';
+import { SettingsSelection, SettingsSelectionType } from './types';
 
 export function Settings() {
   const { colorMode } = useColorMode();
+  const { settings } = useSettings();
   const [currentSelection, setCurrentSelection] = useState<SettingsSelection>(
     SettingsSelectionType.GENERAL
   );
@@ -89,11 +86,11 @@ export function Settings() {
         >
           {currentSelection === SettingsSelectionType.GENERAL && (
             <Flex flexDirection='column' h='100%'>
-                <General />
+              <General />
             </Flex>
           )}
           {currentSelection === SettingsSelectionType.ACCOUNT && (
-            <Account priv_key={priv_key} pub_key={pub_key} />
+            <Account nostrId={settings.nostrId} relays={settings.relays} />
           )}
           {currentSelection === SettingsSelectionType.NOTIFICATIONS && (
             <Flex flexDirection='column' h='100%'>

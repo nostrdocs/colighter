@@ -1,3 +1,4 @@
+import { PartialKeyPair } from 'nostrfn';
 import React from 'react';
 
 import { CheckCircleIcon, CopyIcon } from '@chakra-ui/icons';
@@ -11,23 +12,17 @@ import {
   TableContainer,
   Tbody,
   Td,
+  Text,
   Tr,
   useToast,
 } from '@chakra-ui/react';
 
-const relays = [
-  'wss://eden.nostr.land',
-  'wss://nostr.milou.lol',
-  'wss://puravida.nostr.land',
-  'wss://relay.nostr.com.au',
-];
-
 type AccountProps = {
-  pub_key: string;
-  priv_key: string;
+  nostrId: PartialKeyPair;
+  relays: string[];
 };
 
-export function Account({ pub_key, priv_key }: AccountProps) {
+export function Account({ nostrId, relays }: AccountProps) {
   const toast = useToast();
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
@@ -59,49 +54,45 @@ export function Account({ pub_key, priv_key }: AccountProps) {
           <Tbody>
             <Tr display='flex' alignItems='center' justifyContent='center'>
               <Td py='20px'>Public key</Td>
-              <Td
-                width='100%'
-                minWidth='520px'
-                py='20px'
-                textAlign='center'
-                fontWeight={500}
-                fontSize={16}
-              >
-                {pub_key}
+              <Td width='100%' py='20px' minWidth={''}>
+                <Text
+                  width={'100%'}
+                  textAlign={'left'}
+                  fontWeight={500}
+                  fontSize={16}
+                >
+                  {nostrId.pubkey}
+                </Text>
               </Td>
               <IconButton
                 aria-label='Copy'
                 icon={<CopyIcon />}
                 color='primary'
-                size='200px'
-                width={'100%'}
                 variant='ghost'
                 onClick={() => {
-                  copyToClipboard(pub_key);
+                  copyToClipboard(nostrId.pubkey);
                 }}
               />
             </Tr>
             <Tr display='flex' alignItems='center' justifyContent='center'>
               <Td py='20px'>Private key</Td>
-              <Td
-                width={'100%'}
-                minWidth='520px'
-                py='20px'
-                textAlign='center'
-                fontWeight={500}
-                fontSize={30}
-              >
-                ************
+              <Td width={'100%'} minWidth='' py='20px'>
+                <Text
+                  width={'100%'}
+                  textAlign={'left'}
+                  fontWeight={500}
+                  fontSize={20}
+                >
+                  ************
+                </Text>
               </Td>
               <IconButton
                 aria-label='Copy'
                 icon={<CopyIcon />}
-                size='200px'
-                width='100%'
                 color='primary'
                 variant='ghost'
                 onClick={() => {
-                  copyToClipboard(priv_key);
+                  copyToClipboard(nostrId.privkey ? nostrId.privkey : '');
                 }}
               />
             </Tr>
@@ -109,7 +100,7 @@ export function Account({ pub_key, priv_key }: AccountProps) {
               display={'flex'}
               alignItems={'center'}
               justifyContent={'stretch'}
-              columnGap={'40px'}
+              columnGap={'36px'}
             >
               <Td py='20px' borderBottom={0}>
                 Relays
