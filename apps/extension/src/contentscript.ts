@@ -92,7 +92,7 @@ chrome.runtime.onMessage.addListener(
 
           return tryPublishHighlight(
             serializedRange,
-            selectedText.toString(),
+            selectedText,
             ndk
           );
         } catch (e) {

@@ -35,11 +35,11 @@ export const createSelectionAtRange = (range: RangyRange): RangySelection => {
 export const highlightCurrentSelection = async (
   highlighter: Highlighter
 ): Promise<{
-  selectedText: RangySelection;
+  selectedText: string;
   serializedRange: string;
 }> => {
   highlighter.highlightSelection(HIGHLIGHT_MARKER);
-  const selectedText = rangy.getSelection();
+  const selectedText = rangy.getSelection().toString();
   const serializedRange = highlighter.serialize();
 
   rangy.getSelection().removeAllRanges();
