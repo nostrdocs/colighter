@@ -4,16 +4,18 @@ import rangy from 'rangy';
 import 'rangy/lib/rangy-classapplier';
 import 'rangy/lib/rangy-highlighter';
 
+const HIGHLIGHT_MARKER: string = 'NPKryv4iXxihMRg2gxRkTfFhwXmNmX9F';
+
 /** Gets the highlighter instance */
 export const getHighlighter = () => {
   const styleElement = document.createElement('style');
   // TODO: Use background color based on user settings
-  const cssStyles = '.highlight { background-color: #CE97FB; }';
+  const cssStyles = `.${HIGHLIGHT_MARKER} { background-color: #CE97FB; }`;
   styleElement.textContent = cssStyles;
   document.head.appendChild(styleElement);
 
   const highlighter = rangy.createHighlighter();
-  highlighter.addClassApplier(rangy.createClassApplier('highlight'));
+  highlighter.addClassApplier(rangy.createClassApplier(HIGHLIGHT_MARKER));
 
   return highlighter;
 };
@@ -36,7 +38,7 @@ export const highlightCurrentSelection = async (
   selectedText: RangySelection;
   serializedRange: string;
 }> => {
-  highlighter.highlightSelection('highlight');
+  highlighter.highlightSelection(HIGHLIGHT_MARKER);
   const selectedText = rangy.getSelection();
   const serializedRange = highlighter.serialize();
 
