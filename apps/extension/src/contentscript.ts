@@ -70,13 +70,10 @@ chrome.runtime.onMessage.addListener(
               event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
             return eventHasContent && eventLinksUrl;
           })
-          .map(eventToHighlight)
-          .map(renderHighlight);
+          .map(eventToHighlight);
         break;
 
       case MessageAction.GET_HIGHLIGHTS:
-        console.log(highlights);
-
         outcome = {
           success: true,
           data: highlights,
@@ -144,7 +141,6 @@ chrome.runtime.onMessage.addListener(
 // TODO: Fetch shortcut from extension config
 // TODO: sync shortcut message with background script
 chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
-  console.log({ shortcut });
   document.addEventListener('keydown', (event) => {
     const keys = shortcut.split('+');
 
@@ -179,11 +175,10 @@ const tryPublishHighlight = async (
     event.kind = KIND_HIGHLIGHT;
     event.tags = [
       ['r', window.location.href],
-      ['range', range],
+      ['range', range, "colighter"],
     ];
 
-    // TODO: Publish event to Nostr
-    // await event.publish();
+    await event.publish();
 
     // TODO: Should we wait for the event to come from nostr subscription?
     highlights.push(eventToHighlight(event));
@@ -197,19 +192,19 @@ const tryPublishHighlight = async (
 const eventToHighlight = (event: NDKEvent): IHighlight => {
   const range = event.tags.find((tag) => tag[0] === 'range')?.[1];
 
+  if (range) {
+    try {
+      // Render highlight on page
+      highlighter?.deserialize(range);
+    } catch (e) {
+      console.error('Failed to deserialize highlight range', e);
+    }
+  }
+
   return {
     text: event.content,
     author: event.pubkey,
     id: event.id,
     range,
   };
-};
-
-const renderHighlight = (highlight: IHighlight) => {
-  if (highlight.range) {
-    // Render highlight on page
-    highlighter?.deserialize(highlight.range);
-  }
-
-  return highlight;
 };
