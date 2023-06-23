@@ -1,52 +1,37 @@
-import {
-  nip04,
-  getSignature,
-  generatePrivateKey,
-  getPublicKey,
-} from 'nostr-tools';
+import { nip04, getSignature } from 'nostr-tools';
+import { Settings } from './utils/Storage';
 
 class NostrProvider {
-  private privkey: string;
-  private pubkey: string;
-
-  constructor() {
-    // TODO: Persist keys safely
-    // TODO: Let user configure a key from some UI, like settings page
-    this.privkey = generatePrivateKey();
-    this.pubkey = getPublicKey(this.privkey);
-  }
+  constructor(private readonly settings = new Settings()) {}
 
   // nip07.getPublicKey
   public async getPublicKey() {
-    if (this.pubkey) return this.pubkey;
-
-    // TODO: Show some error message to user. Prompt them to configure NipO7 parts of extension
+    const { pubkey } = await this.settings.getNostrIdentity();
+    return pubkey;
   }
 
   // nip07.signEvent
   public async signEvent(event) {
-    return getSignature(event, this.privkey);
+    const { privkey } = await this.settings.getNostrIdentity();
+    event.sig = getSignature(event, privkey);
+    return event;
   }
 
   // nip07.getRelays
-  public async getRelays(): Promise<string[]> {
-    // TODO: Return user configured relays
-    // TODO: Let user configure relays from some UI, like settings page
-    return Promise.resolve([
-      'wss://relay.nostrdocs.com',
-      'wss://relay.f7z.io',
-      'wss://nos.lol',
-    ]);
+  public async getRelays() {
+    return this.settings.getRelays();
   }
 
   // nip04.encrypt
   async encrypt(peer, plaintext) {
-    return nip04.encrypt(this.privkey, peer, plaintext);
+    const { privkey } = await this.settings.getNostrIdentity();
+    return nip04.encrypt(privkey, peer, plaintext);
   }
 
   // nip04.decrypt
   async decrypt(peer, ciphertext) {
-    return nip04.decrypt(this.privkey, peer, ciphertext);
+    const { privkey } = await this.settings.getNostrIdentity();
+    return nip04.decrypt(privkey, peer, ciphertext);
   }
 
   public nip04 = {

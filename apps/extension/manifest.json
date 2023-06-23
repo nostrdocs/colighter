@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Colighter",
-  "description": "A chrome extension for highlighting web resources, while collaborating over Nostr",
+  "description": "A chrome extension for highlighting web resources over Nostr",
   "version": "0.0.1",
   "author": "Nostrdocs Developers",
   "action": {

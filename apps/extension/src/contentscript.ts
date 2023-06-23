@@ -6,25 +6,32 @@ import {
   MessageData,
 } from './types';
 import { injectSidebar } from './utils/InjectScript';
-import { getRelays } from './utils/Relay';
-
-// Enable Nip07 Nostr Provider
-import './nostrprovider';
-
 import {
   getHighlighter,
   highlightCurrentSelection,
   removeCurrentSelectionHighlight,
 } from './utils/Highlighting';
+import { Settings } from './utils/Storage';
+
+// Enable Nip07 Nostr Provider
+import './nostrprovider';
 
 const KIND_HIGHLIGHT = 9802;
 
-// TODO: Fetch relay urls from extension config
-const relayUrls = getRelays();
-const ndk = new NDK({
-  explicitRelayUrls: relayUrls,
-  signer: new NDKNip07Signer(),
-});
+const settings = new Settings();
+let ndk: NDK | null = null;
+
+const initializeNDK = async () => {
+  {
+    const newNdk = new NDK({
+      explicitRelayUrls: await settings.getRelays(),
+      signer: new NDKNip07Signer(),
+    });
+
+    await newNdk.connect();
+    return newNdk;
+  }
+};
 
 /**
  * Sends a message to background script to confirm if loaded tabs have content script
@@ -51,10 +58,10 @@ chrome.runtime.onMessage.addListener(
       success: false,
     };
 
+    ndk = ndk || (await initializeNDK());
+
     switch (request.action) {
       case MessageAction.LOAD_HIGHLIGHTS:
-        await ndk.connect();
-
         const pageUrl = request.data;
 
         const highlightFilter = {
@@ -85,13 +92,7 @@ chrome.runtime.onMessage.addListener(
           const { serializedRange, selectedText } =
             await highlightCurrentSelection(highlighter);
 
-          await ndk.connect(); // TODO: improve relay connections management
-
-          return tryPublishHighlight(
-            serializedRange,
-            selectedText,
-            ndk
-          );
+          return tryPublishHighlight(serializedRange, selectedText, ndk);
         } catch (e) {
           outcome = {
             success: false,
@@ -175,7 +176,7 @@ const tryPublishHighlight = async (
     event.kind = KIND_HIGHLIGHT;
     event.tags = [
       ['r', window.location.href],
-      ['range', range, "colighter"],
+      ['range', range, 'colighter'],
     ];
 
     await event.publish();

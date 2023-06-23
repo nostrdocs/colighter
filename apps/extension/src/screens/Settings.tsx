@@ -12,13 +12,11 @@ import {
 import { NavButton } from '../components/NavButton';
 import { Account } from '../components/Settings/Account';
 import { General } from '../components/Settings/General';
-import { useSettings } from '../context/settingsContext';
 import { tryReadLocalStorage } from '../utils/Storage';
 import { SettingsSelection, SettingsSelectionType } from './types';
 
 export function Settings() {
   const { colorMode } = useColorMode();
-  const { settings } = useSettings();
   const [currentSelection, setCurrentSelection] = useState<SettingsSelection>(
     SettingsSelectionType.GENERAL
   );
@@ -89,9 +87,7 @@ export function Settings() {
               <General />
             </Flex>
           )}
-          {currentSelection === SettingsSelectionType.ACCOUNT && (
-            <Account nostrId={settings.nostrId} relays={settings.relays} />
-          )}
+          {currentSelection === SettingsSelectionType.ACCOUNT && <Account />}
           {currentSelection === SettingsSelectionType.NOTIFICATIONS && (
             <Flex flexDirection='column' h='100%'>
               Coming Soon!

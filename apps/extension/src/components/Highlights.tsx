@@ -18,9 +18,7 @@ export function Highlights({ showRecentOnly }: HighlightsProps) {
   return (
     <>
       {highlightsToShow.map((highlight) => (
-        <>
-          <HighlightView {...highlight} key={highlight.id} />
-        </>
+        <HighlightView {...highlight} key={highlight.id} />
       ))}
       {
         <AvatarGroup mt={4} size='md' max={3}>
