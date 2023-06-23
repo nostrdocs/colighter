@@ -1,5 +1,4 @@
-import { PartialKeyPair } from 'nostrfn';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { CheckCircleIcon, CopyIcon } from '@chakra-ui/icons';
 import {
@@ -16,13 +15,38 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
+import { useSettings } from '../../context/settingsContext';
 
-type AccountProps = {
-  nostrId: PartialKeyPair;
-  relays: string[];
-};
+export function Account() {
+  const { settings } = useSettings();
 
-export function Account({ nostrId, relays }: AccountProps) {
+  const [nostrId, setNostrId] = useState<{
+    privkey: string;
+    pubkey: string;
+  } | null>(null);
+  const [relays, setRelays] = useState<string[]>([]);
+
+  useEffect(() => {
+    settings
+      .getNostrIdentity()
+      .then((id) => {
+        setNostrId(id);
+      })
+      .catch((err) => {
+        // Show error message
+        console.log(err);
+      });
+
+    settings
+      .getRelays()
+      .then((relays) => {
+        setRelays(relays);
+      })
+      .catch((err) => {
+        // Show error message
+        console.log(err);
+      });
+  }, [settings]);
   const toast = useToast();
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
@@ -61,18 +85,20 @@ export function Account({ nostrId, relays }: AccountProps) {
                   fontWeight={500}
                   fontSize={16}
                 >
-                  {nostrId.pubkey}
+                  {nostrId?.pubkey}
                 </Text>
               </Td>
-              <IconButton
-                aria-label='Copy'
-                icon={<CopyIcon />}
-                color='primary'
-                variant='ghost'
-                onClick={() => {
-                  copyToClipboard(nostrId.pubkey);
-                }}
-              />
+              {nostrId && (
+                <IconButton
+                  aria-label='Copy'
+                  icon={<CopyIcon />}
+                  color='primary'
+                  variant='ghost'
+                  onClick={() => {
+                    copyToClipboard(nostrId.pubkey);
+                  }}
+                />
+              )}
             </Tr>
             <Tr display='flex' alignItems='center' justifyContent='center'>
               <Td py='20px'>Private key</Td>
@@ -86,15 +112,17 @@ export function Account({ nostrId, relays }: AccountProps) {
                   ************
                 </Text>
               </Td>
-              <IconButton
-                aria-label='Copy'
-                icon={<CopyIcon />}
-                color='primary'
-                variant='ghost'
-                onClick={() => {
-                  copyToClipboard(nostrId.privkey ? nostrId.privkey : '');
-                }}
-              />
+              {nostrId && (
+                <IconButton
+                  aria-label='Copy'
+                  icon={<CopyIcon />}
+                  color='primary'
+                  variant='ghost'
+                  onClick={() => {
+                    copyToClipboard(nostrId.privkey);
+                  }}
+                />
+              )}
             </Tr>
             <Tr
               display={'flex'}

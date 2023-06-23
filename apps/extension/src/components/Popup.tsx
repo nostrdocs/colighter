@@ -1,5 +1,4 @@
-import { browserSourceNostrId, PartialKeyPair } from 'nostrfn';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
 
@@ -14,31 +13,17 @@ import { Highlights } from './Highlights';
 
 export function Popup() {
   const { toggleSidebar } = useSidebar();
-  const { settings, updateSettings } = useSettings();
-  const [nostrId, setNostrId] = useState<PartialKeyPair | null>(null);
+  const { settings } = useSettings();
+  const [nostrId, setNostrId] = useState<{
+    privkey: string;
+    pubkey: string;
+  } | null>(null);
 
   const handleCreateNostrId = useCallback(async () => {
-    const newNostrId = await browserSourceNostrId();
-    if (!newNostrId) return;
-    localStorage.setItem('nostrKeys', JSON.stringify(newNostrId));
-    setNostrId(newNostrId);
-    updateSettings({
-      ...settings,
-      nostrId: {
-        privkey: newNostrId.privkey,
-        pubkey: newNostrId.pubkey,
-      },
-    });
-  }, [settings, updateSettings]);
+    setNostrId(await settings.getNostrIdentity());
+  }, [settings]);
 
-  useEffect(() => {
-    const storedNostrKeys = localStorage.getItem('nostrKeys');
-    if (storedNostrKeys) {
-      const parsedKeys = JSON.parse(storedNostrKeys);
-      setNostrId(parsedKeys);
-    }
-  }, []);
-
+  // TODO: Allow users to bring their own Nostr ID, save this via `settings.saveNostrIdentity`
   return (
     <Flex
       overflow='hidden'
