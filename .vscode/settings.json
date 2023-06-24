@@ -6,8 +6,5 @@
   "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",
   "azureFunctions.projectLanguageModel": 4,
-  "azureFunctions.preDeployTask": "yarn build (functions)",
-  "cSpell.words": [
-    "Chakra"
-  ]
+  "azureFunctions.preDeployTask": "yarn build (functions)"
 }

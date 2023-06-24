@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
 
@@ -23,13 +23,6 @@ export function Popup() {
     setNostrId(await settings.getNostrIdentity());
   }, [settings]);
 
-  useEffect(()=>{
-    const getNostrIdentity = async()=>{
-      const NostrId = await settings.getNostrIdentity()
-      setNostrId(NostrId)
-    } 
-    getNostrIdentity()
-  },[settings])
   // TODO: Allow users to bring their own Nostr ID, save this via `settings.saveNostrIdentity`
   return (
     <Flex
