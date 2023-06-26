@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Avatar, AvatarGroup, Box, Text } from '@chakra-ui/react';
 
 import { useNostrHighlights } from '../hooks/useNostrHighlights';
@@ -12,9 +11,10 @@ type HighlightsProps = {
 
 export function Highlights({ showRecentOnly }: HighlightsProps) {
   const [highlights] = useNostrHighlights();
-
-  const highlightsToShow = showRecentOnly ? highlights.slice(0, 1) : highlights;
-
+const highlightsWithText = highlights.filter(highlight => highlight.text)
+  const highlightsToShow =  showRecentOnly ?
+  highlightsWithText.slice(0, 1) :highlightsWithText ;
+  
   return (
     <>
       {highlightsToShow.map((highlight) => (

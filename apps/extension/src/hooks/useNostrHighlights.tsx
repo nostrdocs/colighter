@@ -20,7 +20,13 @@ export const useNostrHighlights = () => {
         .then((outcome: ActionResponse) => {
           if (outcome?.success) {
             const data = (outcome as SucccessAcionResponse).data;
-            setHighlights(data as IHighlight[]);
+            // Check if every highlight has a text property before setting
+            const isAllDataWithText = data.every(highlight => highlight?.text)
+            if(isAllDataWithText && data.length > 0 ){
+             setHighlights(data as IHighlight[]);
+            }
+            else{
+            }
           }
         })
         .catch((e) => {
@@ -29,7 +35,7 @@ export const useNostrHighlights = () => {
     };
 
     pollHighlights();
-    const timer = setInterval(pollHighlights, 1000);
+    const timer = setInterval(pollHighlights, 3000);
 
     return () => {
       clearInterval(timer);
