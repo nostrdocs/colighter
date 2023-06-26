@@ -13,6 +13,7 @@ const SidebarApp = () => {
   React.useEffect(() => {
     function handleMessage(message: { action: MessageAction }) {
       if (message.action === MessageAction.OPEN_SIDEBAR) {
+        console.log("Testing if side bar is open")
         toggleSidebar();
       }
       if (message.action === MessageAction.CLOSE_SIDEBAR) {
