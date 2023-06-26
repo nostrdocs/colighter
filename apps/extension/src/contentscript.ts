@@ -39,7 +39,6 @@ const debug = process.env.NODE_ENV === 'development';
 chrome.runtime.sendMessage({ action: 'content_script_loaded' });
 
 let highlights: IHighlight[] = [];
-let keys: string[] = [];
 let highlighter: Highlighter | null = null;
 
 /**
@@ -73,19 +72,6 @@ chrome.runtime.onMessage.addListener(
       case MessageAction.LOAD_HIGHLIGHTS:
         const pageUrl = request.data;
 
-        // if (debug) {
-        //   const localHighlights = localStorage.getItem('colighter');
-        //   if (localHighlights) {
-        //     highlights.push(JSON.parse(localHighlights));
-        //     if (highlights.length > 0) {
-        //       highlights.forEach(({ range, text }) => {
-        //         if (!range) return;
-        //         console.log('loads', text, range);
-        //         highlighter?.deserialize(range);
-        //       });
-        //     }
-        //   }
-        // }
         if (!ndk) {
           return (outcome = {
             success: false,
@@ -99,47 +85,32 @@ chrome.runtime.onMessage.addListener(
         let highlightsToLoad: any[] = [];
 
         if (debug) {
-          const h = await ndk.fetchEvents(highlightFilter)
-
-          console.log('nostr', {h})
-          console.log('keys', keys)
-          
-   
-          // keys.map(async (key) => {
-          //   const localHighlights = JSON.parse(localStorage.getItem(key) || '');
-          //   console.log(h[0]);
-          //   highlightsToLoad.push(localHighlights, ...h)
-          // });
-          console.log({highlightsToLoad})
-          const localHighlights = JSON.parse(localStorage.getItem('colighter') || '');
-          // const parsedHighlight = JSON.parse(localHighlights || '');
-          const l = new Set([localHighlights, localHighlights, localHighlights])
-          console.log({ l });
-          highlightsToLoad = Object.entries(localHighlights).map(([key, value]) => ({key, value}));
-          console.log({ highlightsToLoad });
-          // highlightsToLoad = [
-          //   ...localHighlights,
-          //   ...(await ndk.fetchEvents(highlightFilter)),
-          // ];
+          const nostrHighlights = await ndk.fetchEvents(highlightFilter);
+          const localHighlights = JSON.parse(
+            localStorage.getItem('colighter') || '[]'
+          );
+          const localHighlightSet = new Set([localHighlights]);
+          highlightsToLoad = [...localHighlightSet, ...nostrHighlights];
         } else {
           highlightsToLoad = [...(await ndk.fetchEvents(highlightFilter))];
         }
         highlights = highlightsToLoad
           .filter((event: NDKEvent) => {
+            if (!event.tags) return false;
             const eventHasContent = event.content && event.content.length > 0;
             const eventLinksUrl =
-              event.tags.find((tag) => tag[0] === 'r')?.[1] === pageUrl;
+              event.tags.find(
+                (tag) => tag[0] === 'r' || tag[0] === 'range'
+              )?.[1] === pageUrl;
             return eventHasContent && eventLinksUrl;
           })
           .map(eventToHighlight);
-
         break;
 
       case MessageAction.GET_HIGHLIGHTS:
         highlights = highlights.filter(
           (highlight) => highlight.text.length > 0
         );
-        console.log({ highlights });
         outcome = {
           success: true,
           data: highlights,
@@ -148,6 +119,12 @@ chrome.runtime.onMessage.addListener(
 
       case MessageAction.CREATE_HIGHLIGHT:
         try {
+          if (!ndk) {
+            return (outcome = {
+              success: false,
+              error: 'No NDK instance',
+            } as ActionResponse);
+          }
           const { serializedRange, selectedText } =
             await highlightCurrentSelection(highlighter);
 
@@ -155,12 +132,6 @@ chrome.runtime.onMessage.addListener(
             throw new Error('No selection');
           }
 
-          if (!ndk) {
-            return (outcome = {
-              success: false,
-              error: 'No NDK instance',
-            } as ActionResponse);
-          }
           return tryPublishHighlight(serializedRange, selectedText, ndk);
         } catch (e) {
           outcome = {
@@ -249,7 +220,6 @@ const tryPublishHighlight = async (
     ];
 
     if (debug) {
-      keys.push(range)
       localStorage.setItem('colighter', JSON.stringify(event));
     } else {
       await event.publish();
