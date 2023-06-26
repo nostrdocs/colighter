@@ -24,8 +24,7 @@ export const useNostrHighlights = () => {
             const isAllDataWithText = data.every(highlight => highlight?.text)
             if(isAllDataWithText && data.length > 0 ){
              setHighlights(data as IHighlight[]);
-            }
-            else{
+             return;
             }
           }
         })

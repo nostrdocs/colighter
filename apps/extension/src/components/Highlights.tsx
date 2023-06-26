@@ -11,9 +11,8 @@ type HighlightsProps = {
 
 export function Highlights({ showRecentOnly }: HighlightsProps) {
   const [highlights] = useNostrHighlights();
-const highlightsWithText = highlights.filter(highlight => highlight.text)
   const highlightsToShow =  showRecentOnly ?
-  highlightsWithText.slice(0, 1) :highlightsWithText ;
+  highlights.slice(0, 1) :highlights ;
   
   return (
     <>
