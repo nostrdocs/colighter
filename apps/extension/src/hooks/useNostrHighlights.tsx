@@ -34,7 +34,7 @@ export const useNostrHighlights = () => {
     };
 
     pollHighlights();
-    const timer = setInterval(pollHighlights, 3000);
+    const timer = setInterval(pollHighlights, 1000);
 
     return () => {
       clearInterval(timer);
