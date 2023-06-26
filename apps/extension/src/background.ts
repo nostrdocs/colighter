@@ -26,7 +26,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 
   if (details.reason === 'install' || details.reason === 'update') {
-    chrome.tabs.query({ currentWindow: true }, function (tabs) {
+    chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
       for (let tab of tabs) {
         if (!tab.id || !tab.url) return;
         try {
