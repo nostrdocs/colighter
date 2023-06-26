@@ -82,7 +82,7 @@ chrome.runtime.onMessage.addListener(
           kinds: [KIND_HIGHLIGHT],
           tags: [['r', pageUrl]],
         };
-        let highlightsToLoad: any[] = [];
+        let highlightsToLoad: NDKEvent[] = [];
 
         if (debug) {
           const nostrHighlights = await ndk.fetchEvents(highlightFilter);
