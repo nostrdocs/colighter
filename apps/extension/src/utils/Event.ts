@@ -1,13 +1,14 @@
 import { MessageAction } from '../types';
 
-export function handleSidebar(action: MessageAction) {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+export  function handleSidebar(action: MessageAction) {
+ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
     const activeTab = tabs[0];
     if (activeTab.id) {
-      chrome.tabs.sendMessage(activeTab.id, {
+     await chrome.tabs.sendMessage(activeTab.id, {
         action,
       });
-      window.close();
+     window.close(); 
+      
       return;
     }
   });

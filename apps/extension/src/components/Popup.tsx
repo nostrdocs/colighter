@@ -35,7 +35,7 @@ export function Popup() {
     <Flex
       overflow='hidden'
       gap={30}
-      width={400}
+      width={400} 
       borderRadius={12}
       flexDir='column'
       border={`1px solid ${theme.palette.lightGray}`}
