@@ -20,11 +20,11 @@ export const useNostrHighlights = () => {
         .then((outcome: ActionResponse) => {
           if (outcome?.success) {
             const data = (outcome as SucccessAcionResponse).data;
-            // Check if every highlight has a text property before setting
-            const isAllDataWithText = data.every(highlight => highlight?.text)
-            if(isAllDataWithText && data.length > 0 ){
-             setHighlights(data as IHighlight[]);
-             return;
+            const isDataWithText =
+              data.length > 0 &&
+              data.every((highlight: Partial<IHighlight>) => highlight?.text);
+            if (isDataWithText) {
+              setHighlights(data as IHighlight[]);
             }
           }
         })

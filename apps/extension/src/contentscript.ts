@@ -22,16 +22,16 @@ const settings = new Settings();
 let ndk: NDK | null = null;
 
 const initializeNDK = async () => {
-  {
-    const newNdk = new NDK({
-      explicitRelayUrls: await settings.getRelays(),
-      signer: new NDKNip07Signer(),
-    });
+  const newNdk = new NDK({
+    explicitRelayUrls: await settings.getRelays(),
+    signer: new NDKNip07Signer(),
+  });
 
-    await newNdk.connect();
-    return newNdk;
-  }
+  await newNdk.connect();
+  return newNdk;
 };
+
+const debug = process.env.NODE_ENV === 'development';
 
 /**
  * Sends a message to background script to confirm if loaded tabs have content script
@@ -39,6 +39,7 @@ const initializeNDK = async () => {
 chrome.runtime.sendMessage({ action: 'content_script_loaded' });
 
 let highlights: IHighlight[] = [];
+let keys: string[] = [];
 let highlighter: Highlighter | null = null;
 
 /**
@@ -58,19 +59,72 @@ chrome.runtime.onMessage.addListener(
       success: false,
     };
 
-    ndk = ndk || (await initializeNDK());
+    try {
+      if (!ndk) {
+        ndk = await initializeNDK();
+      }
+    } catch (e) {
+      console.error('Failed to initialize NDK', e);
+    }
+
+    console.log('request', request);
 
     switch (request.action) {
       case MessageAction.LOAD_HIGHLIGHTS:
         const pageUrl = request.data;
 
+        // if (debug) {
+        //   const localHighlights = localStorage.getItem('colighter');
+        //   if (localHighlights) {
+        //     highlights.push(JSON.parse(localHighlights));
+        //     if (highlights.length > 0) {
+        //       highlights.forEach(({ range, text }) => {
+        //         if (!range) return;
+        //         console.log('loads', text, range);
+        //         highlighter?.deserialize(range);
+        //       });
+        //     }
+        //   }
+        // }
+        if (!ndk) {
+          return (outcome = {
+            success: false,
+            error: 'No NDK instance',
+          } as ActionResponse);
+        }
         const highlightFilter = {
           kinds: [KIND_HIGHLIGHT],
           tags: [['r', pageUrl]],
         };
+        let highlightsToLoad: any[] = [];
 
-        // TODO: Subscibe to highlight events
-        highlights = [...(await ndk.fetchEvents(highlightFilter))]
+        if (debug) {
+          const h = await ndk.fetchEvents(highlightFilter)
+
+          console.log('nostr', {h})
+          console.log('keys', keys)
+          
+   
+          // keys.map(async (key) => {
+          //   const localHighlights = JSON.parse(localStorage.getItem(key) || '');
+          //   console.log(h[0]);
+          //   highlightsToLoad.push(localHighlights, ...h)
+          // });
+          console.log({highlightsToLoad})
+          const localHighlights = JSON.parse(localStorage.getItem('colighter') || '');
+          // const parsedHighlight = JSON.parse(localHighlights || '');
+          const l = new Set([localHighlights, localHighlights, localHighlights])
+          console.log({ l });
+          highlightsToLoad = Object.entries(localHighlights).map(([key, value]) => ({key, value}));
+          console.log({ highlightsToLoad });
+          // highlightsToLoad = [
+          //   ...localHighlights,
+          //   ...(await ndk.fetchEvents(highlightFilter)),
+          // ];
+        } else {
+          highlightsToLoad = [...(await ndk.fetchEvents(highlightFilter))];
+        }
+        highlights = highlightsToLoad
           .filter((event: NDKEvent) => {
             const eventHasContent = event.content && event.content.length > 0;
             const eventLinksUrl =
@@ -78,9 +132,14 @@ chrome.runtime.onMessage.addListener(
             return eventHasContent && eventLinksUrl;
           })
           .map(eventToHighlight);
+
         break;
 
       case MessageAction.GET_HIGHLIGHTS:
+        highlights = highlights.filter(
+          (highlight) => highlight.text.length > 0
+        );
+        console.log({ highlights });
         outcome = {
           success: true,
           data: highlights,
@@ -92,6 +151,16 @@ chrome.runtime.onMessage.addListener(
           const { serializedRange, selectedText } =
             await highlightCurrentSelection(highlighter);
 
+          if (!serializedRange || !selectedText) {
+            throw new Error('No selection');
+          }
+
+          if (!ndk) {
+            return (outcome = {
+              success: false,
+              error: 'No NDK instance',
+            } as ActionResponse);
+          }
           return tryPublishHighlight(serializedRange, selectedText, ndk);
         } catch (e) {
           outcome = {
@@ -141,29 +210,29 @@ chrome.runtime.onMessage.addListener(
 
 // TODO: Fetch shortcut from extension config
 // TODO: sync shortcut message with background script
-chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
-  document.addEventListener('keydown', (event) => {
-    const keys = shortcut.split('+');
+// chrome.storage.local.get('shortcut', ({ shortcut = 'Ctrl+H' }) => {
+//   document.addEventListener('keydown', (event) => {
+//     const keys = shortcut.split('+');
 
-    let ctrlPressed = keys.includes('Ctrl') ? event.ctrlKey : true;
-    let altPressed = keys.includes('Alt') ? event.altKey : true;
-    let shiftPressed = keys.includes('Shift') ? event.shiftKey : true;
-    let keyIsCorrect = keys.includes(event.key.toUpperCase());
+//     let ctrlPressed = keys.includes('Ctrl') ? event.ctrlKey : true;
+//     let altPressed = keys.includes('Alt') ? event.altKey : true;
+//     let shiftPressed = keys.includes('Shift') ? event.shiftKey : true;
+//     let keyIsCorrect = keys.includes(event.key.toUpperCase());
 
-    if (ctrlPressed && altPressed && shiftPressed && keyIsCorrect) {
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        const activeTab = tabs[0];
-        if (activeTab.id) {
-          console.log('shortcut', keyIsCorrect);
-          chrome.tabs.sendMessage(activeTab.id, {
-            action: MessageAction.CREATE_HIGHLIGHT,
-          });
-          return;
-        }
-      });
-    }
-  });
-});
+//     if (ctrlPressed && altPressed && shiftPressed && keyIsCorrect) {
+//       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+//         const activeTab = tabs[0];
+//         if (activeTab.id) {
+//           console.log('shortcut', keyIsCorrect);
+//           chrome.tabs.sendMessage(activeTab.id, {
+//             action: MessageAction.CREATE_HIGHLIGHT,
+//           });
+//           return;
+//         }
+//       });
+//     }
+//   });
+// });
 
 const tryPublishHighlight = async (
   range: string,
@@ -179,7 +248,12 @@ const tryPublishHighlight = async (
       ['range', range, 'colighter'],
     ];
 
-    await event.publish();
+    if (debug) {
+      keys.push(range)
+      localStorage.setItem('colighter', JSON.stringify(event));
+    } else {
+      await event.publish();
+    }
 
     // TODO: Should we wait for the event to come from nostr subscription?
     highlights.push(eventToHighlight(event));
