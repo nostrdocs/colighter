@@ -51,4 +51,8 @@ export interface IHighlight {
    * This is a JSON serialized representation of the range
    */
   range?: string;
+   /** Created time of the highlight
+   * This is a unix time of when the highlight was created
+   */
+  created_at?: number
 }
