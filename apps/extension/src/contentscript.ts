@@ -230,7 +230,6 @@ const tryPublishHighlight = async (
       ['r', window.location.href],
       ['range', range, 'colighter'],
     ];
-    console.log(event,"event")
     if (colighter.debug === 1) {
       localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify({event}));
     } else {
@@ -262,7 +261,7 @@ const eventToHighlight = (event: NDKEvent): IHighlight => {
     text: event.content,
     author: event.pubkey,
     id: event.id,
-    created_at: event.created_at,
+    createdAt: event.created_at,
     range,
   };
 };

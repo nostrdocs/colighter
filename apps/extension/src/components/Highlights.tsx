@@ -14,7 +14,6 @@ type HighlightsProps = {
 export function Highlights({ showRecentOnly }: HighlightsProps) {
   const [highlights] = useNostrHighlights();
   const highlightsToShow = showRecentOnly ? highlights.slice(0, 1) : highlights;
-  console.log(highlights, 'hightds showing');
   return (
     <>
       {highlightsToShow.map((highlight) => (
@@ -26,14 +25,14 @@ export function Highlights({ showRecentOnly }: HighlightsProps) {
 
 type HighlightViewProps = Pick<
   IHighlight,
-  'text' | 'author' | 'id' | 'created_at'
+  'text' | 'author' | 'id' | 'createdAt'
 >;
 
 const HighlightView = ({
   text,
   id,
   author,
-  created_at,
+  createdAt,
 }: HighlightViewProps) => {
   const { settings } = useSettings();
   const [nostrId, setNostrId] = useState<{
@@ -67,15 +66,12 @@ const HighlightView = ({
         justifyContent={'space-between'}
         alignItems={'center'}
       >
-        {/* i don't know if this is the best way to handle it  
-           most times the author is an empty string?
-        */}
         {(author || nostrId?.pubkey) && (
-          <Avatar name={author || nostrId?.pubkey} width={25} height={25} />
+          <Avatar width={25} height={25} />
         )}
-        {created_at && (
+        {createdAt && (
           <Text color={theme.palette.secondaryTint} fontWeight={700}>
-            {convertUnixTimestampToDate(created_at)}
+            {convertUnixTimestampToDate(createdAt)}
           </Text>
         )}
       </Flex>
