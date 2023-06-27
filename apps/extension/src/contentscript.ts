@@ -231,7 +231,7 @@ const tryPublishHighlight = async (
       ['range', range, 'colighter'],
     ];
     if (colighter.debug === 1) {
-      localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(event));
+      localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify({event}));
     } else {
       await event.publish();
     }
