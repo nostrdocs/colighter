@@ -89,18 +89,20 @@ export function Account() {
                 </Text>
               </Td>
               {nostrId && (
-                <IconButton
-                  aria-label='Copy'
-                  icon={<CopyIcon />}
-                  color='primary'
-                  variant='ghost'
-                  onClick={() => {
-                    copyToClipboard(nostrId.pubkey);
-                  }}
-                />
+                <Td py='20px'>
+                  <IconButton
+                    aria-label='Copy'
+                    icon={<CopyIcon />}
+                    color='primary'
+                    variant='ghost'
+                    onClick={() => {
+                      copyToClipboard(nostrId.pubkey);
+                    }}
+                  />
+                </Td>
               )}
             </Tr>
-            <Tr display='flex' alignItems='center' justifyContent='center'>
+            <Tr display='flex'justifyContent='center'>
               <Td py='20px'>Private key</Td>
               <Td width={'100%'} minWidth='' py='20px'>
                 <Text
@@ -113,15 +115,18 @@ export function Account() {
                 </Text>
               </Td>
               {nostrId && (
-                <IconButton
-                  aria-label='Copy'
-                  icon={<CopyIcon />}
-                  color='primary'
-                  variant='ghost'
-                  onClick={() => {
-                    copyToClipboard(nostrId.privkey);
-                  }}
-                />
+                <Td py='20px'>
+                  <IconButton
+                    aria-label='Copy'
+                    padding={"0px"}
+                    icon={<CopyIcon />}
+                    color='primary'
+                    variant='ghost'
+                    onClick={() => {
+                      copyToClipboard(nostrId.privkey);
+                    }}
+                  />
+                </Td>
               )}
             </Tr>
             <Tr
