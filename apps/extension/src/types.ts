@@ -54,5 +54,5 @@ export interface IHighlight {
    /** Created time of the highlight
    * This is a unix time of when the highlight was created
    */
-  created_at?: number
+  createdAt?: number
 }
