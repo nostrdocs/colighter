@@ -1,9 +1,10 @@
 import React from 'react';
-import { Avatar, AvatarGroup, Box, Text } from '@chakra-ui/react';
+import { Avatar,  Box, Flex, Text } from '@chakra-ui/react';
 
 import { useNostrHighlights } from '../hooks/useNostrHighlights';
 import { IHighlight } from '../types';
 import { theme } from '../theme';
+import { convertUnixTimestampToDate } from '../utils/unixConverter';
 
 type HighlightsProps = {
   showRecentOnly?: boolean;
@@ -12,26 +13,20 @@ type HighlightsProps = {
 export function Highlights({ showRecentOnly }: HighlightsProps) {
   const [highlights] = useNostrHighlights();
   const highlightsToShow = showRecentOnly ? highlights.slice(0, 1) : highlights;
-
+  console.log(highlights,"hightds showing")
   return (
     <>
       {highlightsToShow.map((highlight) => (
         <HighlightView {...highlight} key={highlight.id} />
       ))}
-      {
-        <AvatarGroup mt={4} size='md' max={3}>
-          {highlights.map(({ author, id }) => (
-            <Avatar name={author} src='https://bit.ly/code-beast' key={id} />
-          ))}
-        </AvatarGroup>
-      }
     </>
   );
 }
 
-type HighlightViewProps = Pick<IHighlight, 'text' | 'author' | 'id'>;
+type HighlightViewProps = Pick<IHighlight, 'text' | 'author' | 'id' | "created_at">;
 
-const HighlightView = ({ text, id }: HighlightViewProps) => {
+const HighlightView = ({ text, id, author, created_at  }: HighlightViewProps) => {
+  // convertUnixTimestampToDate()
   return (
     <Box
       key={id}
@@ -42,6 +37,10 @@ const HighlightView = ({ text, id }: HighlightViewProps) => {
       <Text textAlign='left' padding='12px' fontStyle='italic'>
         {text}
       </Text>
+      <Flex padding={"12px"} justifyContent={"space-between"} alignItems={"center"}>
+        {author && <Avatar name={author} width={25} height={25}/>}
+        {created_at && <Text color={theme.palette.secondaryTint} fontWeight={700}>{convertUnixTimestampToDate(created_at)}</Text>}
+      </Flex>
     </Box>
   );
 };
