@@ -17,6 +17,7 @@ import { Settings } from './utils/Storage';
 import './nostrprovider';
 
 const KIND_HIGHLIGHT = 9802;
+const HIGHLIGHT_STORAGE_KEY = 'colighter';
 
 const settings = new Settings();
 let ndk: NDK | null = null;
@@ -31,7 +32,15 @@ const initializeNDK = async () => {
   return newNdk;
 };
 
-const debug = process.env.NODE_ENV === 'development';
+let colighter: NDKEvent & { debug: number } = JSON.parse(
+  localStorage.getItem(HIGHLIGHT_STORAGE_KEY) || '{}'
+);
+if (!colighter.debug && process.env.NODE_ENV === 'development') {
+  colighter.debug = 1;
+} else if (process.env.NODE_ENV === 'production') {
+  colighter.debug = 0;
+}
+localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(colighter));
 
 /**
  * Sends a message to background script to confirm if loaded tabs have content script
@@ -63,7 +72,10 @@ chrome.runtime.onMessage.addListener(
         ndk = await initializeNDK();
       }
     } catch (e) {
-      console.error('Failed to initialize NDK', e);
+      return (outcome = {
+        success: false,
+        error: 'Failed to initialize NDK',
+      } as ActionResponse);
     }
 
     console.log('request', request);
@@ -82,17 +94,16 @@ chrome.runtime.onMessage.addListener(
           kinds: [KIND_HIGHLIGHT],
           tags: [['r', pageUrl]],
         };
-        let highlightsToLoad: NDKEvent[] = [];
+        let highlightsToLoad: NDKEvent[] = [
+          ...(await ndk.fetchEvents(highlightFilter)),
+        ];
 
-        if (debug) {
-          const nostrHighlights = await ndk.fetchEvents(highlightFilter);
+        if (colighter.debug === 1) {
           const localHighlights = JSON.parse(
-            localStorage.getItem('colighter') || '[]'
+            localStorage.getItem(HIGHLIGHT_STORAGE_KEY) || '[]'
           );
           const localHighlightSet = new Set([localHighlights]);
-          highlightsToLoad = [...localHighlightSet, ...nostrHighlights];
-        } else {
-          highlightsToLoad = [...(await ndk.fetchEvents(highlightFilter))];
+          highlightsToLoad = [...highlightsToLoad, ...localHighlightSet];
         }
         highlights = highlightsToLoad
           .filter((event: NDKEvent) => {
@@ -219,8 +230,8 @@ const tryPublishHighlight = async (
       ['range', range, 'colighter'],
     ];
 
-    if (debug) {
-      localStorage.setItem('colighter', JSON.stringify(event));
+    if (colighter.debug === 1) {
+      localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(event));
     } else {
       await event.publish();
     }
