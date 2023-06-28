@@ -225,6 +225,7 @@ const tryPublishHighlight = async (
     const event = new NDKEvent(ndk);
     event.content = text;
     event.kind = KIND_HIGHLIGHT;
+    event.created_at = Math.floor(Date.now() / 1000);
     event.tags = [
       ['r', window.location.href],
       ['range', range, 'colighter'],

@@ -30,7 +30,12 @@ type HighlightViewProps = Pick<
   'text' | 'author' | 'id' | 'createdAt'
 >;
 
-const HighlightView = ({ text, id, author, createdAt }: HighlightViewProps) => {
+const HighlightView = ({
+  text,
+  id,
+  author,
+  createdAt,
+}: HighlightViewProps) => {
   const { settings } = useSettings();
   const [nostrId, setNostrId] = useState<{
     privkey: string;
@@ -63,7 +68,9 @@ const HighlightView = ({ text, id, author, createdAt }: HighlightViewProps) => {
         justifyContent={'space-between'}
         alignItems={'center'}
       >
-        {(author || nostrId?.pubkey) && <Avatar width={25} height={25} />}
+        {(author || nostrId?.pubkey) && (
+          <Avatar width={25} height={25} />
+        )}
         {createdAt && (
           <Text color={theme.palette.secondaryTint} fontWeight={700}>
             {convertUnixTimestampToDate(createdAt)}
