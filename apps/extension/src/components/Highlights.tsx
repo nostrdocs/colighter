@@ -16,9 +16,11 @@ export function Highlights({ showRecentOnly }: HighlightsProps) {
   const highlightsToShow = showRecentOnly ? highlights.slice(0, 1) : highlights;
   return (
     <>
-      {highlightsToShow.map((highlight) => (
-        <HighlightView {...highlight} key={highlight.id} />
-      ))}
+      {highlightsToShow
+        .sort((a, b) => (b.createdAt || 0 ) - (a.createdAt || 0))
+        .map((highlight) => (
+          <HighlightView {...highlight} key={highlight.id} />
+        ))}
     </>
   );
 }
@@ -28,12 +30,7 @@ type HighlightViewProps = Pick<
   'text' | 'author' | 'id' | 'createdAt'
 >;
 
-const HighlightView = ({
-  text,
-  id,
-  author,
-  createdAt,
-}: HighlightViewProps) => {
+const HighlightView = ({ text, id, author, createdAt }: HighlightViewProps) => {
   const { settings } = useSettings();
   const [nostrId, setNostrId] = useState<{
     privkey: string;
@@ -66,9 +63,7 @@ const HighlightView = ({
         justifyContent={'space-between'}
         alignItems={'center'}
       >
-        {(author || nostrId?.pubkey) && (
-          <Avatar width={25} height={25} />
-        )}
+        {(author || nostrId?.pubkey) && <Avatar width={25} height={25} />}
         {createdAt && (
           <Text color={theme.palette.secondaryTint} fontWeight={700}>
             {convertUnixTimestampToDate(createdAt)}
