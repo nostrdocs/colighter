@@ -37,3 +37,6 @@ yarn-error.log*
 
 # Local history
 .history
+
+#Vscode
+.vscode
