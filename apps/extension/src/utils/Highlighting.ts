@@ -33,6 +33,7 @@ export const getOtherUsersHighlighter = () => {
 
   return highlighter;
 };
+
 export const createSelectionAtRange = (range: RangyRange): RangySelection => {
   const selection = rangy.getSelection();
 
