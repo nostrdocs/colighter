@@ -21,7 +21,7 @@ export function Highlights({ showRecentOnly, myHighlights }: HighlightsProps) {
     settings.getNostrIdentity().then((id) => setPubKey(id.pubkey));
   }, [settings]);
   const highlightsToShow = showRecentOnly
-    ? highlights.slice(0, 1)
+    ? highlights.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 1)
     : myHighlights
     ? highlights.filter((highlight) => highlight.author === pubKey)
     : highlights;
