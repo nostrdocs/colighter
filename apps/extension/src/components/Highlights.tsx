@@ -53,7 +53,6 @@ const HighlightView = ({ text, id, author, createdAt }: HighlightViewProps) => {
       .getNostrIdentity()
       .then((id) => {
         setNostrId(id);
-        console.log(id);
       })
       .catch((err) => {
         // Show error message

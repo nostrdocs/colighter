@@ -48,6 +48,7 @@ localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(colighter));
 chrome.runtime.sendMessage({ action: 'content_script_loaded' });
 
 let highlights: IHighlight[] = [];
+let otherUsersHighlights: IHighlight[] = [];
 let highlighter: Highlighter | null = null;
 
 /**
@@ -105,15 +106,30 @@ chrome.runtime.onMessage.addListener(
           const localHighlightSet = new Set([localHighlights]);
           highlightsToLoad = [...highlightsToLoad, ...localHighlightSet];
         }
+        let pubKey;
+        pubKey = (await settings.getNostrIdentity()).pubkey;
         highlights = highlightsToLoad
           .filter((event: NDKEvent) => {
             if (!event.tags) return false;
             const eventHasContent = event.content && event.content.length > 0;
+            const isCurrentUser = event.pubkey === pubKey;
             const eventLinksUrl =
               event.tags.find(
                 (tag) => tag[0] === 'r' || tag[0] === 'range'
               )?.[1] === pageUrl;
-            return eventHasContent && eventLinksUrl;
+            return eventHasContent && eventLinksUrl && isCurrentUser;
+          })
+          .map(eventToHighlight);
+        otherUsersHighlights = highlightsToLoad
+          .filter((event: NDKEvent) => {
+            if (!event.tags) return false;
+            const eventHasContent = event.content && event.content.length > 0;
+            const isCurrentUser = event.pubkey !== pubKey;
+            const eventLinksUrl =
+              event.tags.find(
+                (tag) => tag[0] === 'r' || tag[0] === 'range'
+              )?.[1] === pageUrl;
+            return eventHasContent && eventLinksUrl && isCurrentUser;
           })
           .map(eventToHighlight);
         break;
@@ -122,9 +138,12 @@ chrome.runtime.onMessage.addListener(
         highlights = highlights.filter(
           (highlight) => highlight.text.length > 0
         );
+        otherUsersHighlights = otherUsersHighlights.filter(
+          (highlight) => highlight.text.length > 0
+        );
         outcome = {
           success: true,
-          data: highlights,
+          data: [...highlights, ...otherUsersHighlights],
         } as ActionResponse;
         break;
 
@@ -231,7 +250,7 @@ const tryPublishHighlight = async (
     ];
     if (colighter.debug === 1) {
       event.created_at = Math.floor(Date.now() / 1000);
-      event.pubkey = (await settings.getNostrIdentity()).pubkey
+      event.pubkey = (await settings.getNostrIdentity()).pubkey;
       localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(event));
     } else {
       await event.publish();
