@@ -20,6 +20,19 @@ export const getHighlighter = () => {
   return highlighter;
 };
 
+/** TODO Make the classApplier dynamic */
+export const getOtherUsersHighlighter = () => {
+  const styleElement = document.createElement('style');
+  // TODO: Use background color based on user settings
+  const cssStyles = `.${HIGHLIGHT_MARKER} { background-color: #CE97FB; }`;
+  styleElement.textContent = cssStyles;
+  document.head.appendChild(styleElement);
+
+  const highlighter = rangy.createHighlighter();
+  highlighter.addClassApplier(rangy.createClassApplier(HIGHLIGHT_MARKER));
+
+  return highlighter;
+};
 export const createSelectionAtRange = (range: RangyRange): RangySelection => {
   const selection = rangy.getSelection();
 

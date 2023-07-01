@@ -99,7 +99,12 @@ export function Sidebar() {
                 height='1px'
                 bg={`${theme.palette.lightGray}}`}
               ></Box>
-              <Highlights />
+
+              {selected.ALL_HIGHLIGHTS?
+                <Highlights />:
+                <Highlights myHighlights />
+              }
+            
             </Box>
           </DrawerBody>
 
